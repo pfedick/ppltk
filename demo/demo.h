@@ -29,9 +29,10 @@ private:
     ppltk::Frame* menue;
     ppltk::Label* fpsLabel;
     ppltk::Button* exitButton;
-    ppltk::Button* okButton;
+
 
     ppltk::Frame* toolbar;
+    ppltk::TextEdit* text;
 
     ppltk::LineInput* input;
 

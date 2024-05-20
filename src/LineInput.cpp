@@ -55,7 +55,6 @@ LineInput::LineInput()
 	myBackgroundColor=style.inputBackgroundColor;
 	myFont=style.inputFont;
 	setBackgroundColor(style.inputBackgroundColor);
-	setSizeStrategyWidth(Widget::MINIMUM_EXPANDING);
 	setTransparent(false);
 	cursorpos=0;
 	startpos=0;
@@ -76,7 +75,6 @@ LineInput::LineInput(int x, int y, int width, int height, const String& text)
 	myColor=style.inputFontColor;
 	myFont=style.inputFont;
 	setBackgroundColor(style.inputBackgroundColor);
-	setSizeStrategyWidth(Widget::MINIMUM_EXPANDING);
 	setTransparent(false);
 	myText=text;
 	if (validator) {

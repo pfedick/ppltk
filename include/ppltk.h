@@ -436,6 +436,33 @@ public:
     void* getPrivateData();
 };
 
+class SizePolicy
+{
+public:
+    enum PolicyFlag {
+        GrowFlag=1,
+        ExpandFlag=2,
+        ShrinkFlag=4,
+        IgnoreFlag=8
+    };
+
+    enum Policy {
+        Fixed = 0,
+        Minimum = GrowFlag,
+        Maximum = ShrinkFlag,
+        Preferred = GrowFlag | ShrinkFlag,
+        MinimumExpanding = GrowFlag | ExpandFlag,
+        Expanding = GrowFlag | ShrinkFlag | ExpandFlag,
+        Ignored = ShrinkFlag | GrowFlag | IgnoreFlag
+    };
+
+    Policy HorizontalPolicy;
+    Policy VerticalPolicy;
+    int HorizontalStretch;
+    int VerticalStretch;
+
+    SizePolicy();
+};
 
 
 class Widget : public EventHandler
@@ -461,18 +488,11 @@ private:
     bool		deleteRequested;
     bool		modal;
     bool        use_own_drawbuffer;
-    Size		strategy;
     String		myName;
     void updateDrawbuffer();
     void markWidgetsAboveForRedraw(Widget* widget);
 
 public:
-    enum SizeStrategy {
-        FIXED=1,
-        MAXIMUM_EXPANDING,
-        MINIMUM_EXPANDING,
-    };
-
     Widget();
     Widget(int x, int y, int width, int height);
     virtual ~Widget();
@@ -516,10 +536,7 @@ public:
     void setSize(const Size& s);
     void setTopmost(bool flag);
     void setClientOffset(int left, int top, int right, int bottom);
-    void setSizeStrategyWidth(SizeStrategy s);
-    SizeStrategy sizeStrategyWidth() const;
-    void setSizeStrategyHeight(SizeStrategy s);
-    SizeStrategy sizeStrategyHeight() const;
+
 
     void setTransparent(bool flag);
     bool isTransparent() const;
@@ -551,13 +568,13 @@ public:
     bool redrawRequired() const;
     Size preferedSize() const;
     void setName(const String& name);
-    String name() const;
+    const String& name() const;
 
     bool isChildOf(Widget* other) const;
 
 
-    virtual String widgetType() const;
 
+    virtual String widgetType() const;
     virtual void paint(Drawable& draw);
     virtual Size contentSize() const;
 };
@@ -1034,6 +1051,36 @@ public:
     void lostFocusEvent(ppltk::FocusEvent* event);
     void mouseMoveEvent(ppltk::MouseEvent* event);
     void mouseWheelEvent(ppltk::MouseEvent* event);
+
+};
+
+class TextEdit : public Frame
+{
+private:
+    ppl7::WideString myText;
+    ppl7::grafix::Font myFont;
+    ppl7::grafix::Color myColor;
+    ppl7::String placeholder;
+
+
+public:
+    TextEdit();
+    TextEdit(int x, int y, int width, int height);
+    ~TextEdit();
+
+    void setText(const ppl7::WideString& text);
+    void setText(const ppl7::String& text);
+    const ppl7::WideString& text() const;
+
+    void setPlaceholderText(const ppl7::String& text);
+    const ppl7::String& placeholderText() const;
+    const Font& font() const;
+    void setFont(const Font& font);
+    void setColor(const ppl7::grafix::Color& color);
+    const ppl7::grafix::Color& color() const;
+
+    virtual ppl7::String widgetType() const;
+    virtual void paint(ppl7::grafix::Drawable& draw);
 
 };
 

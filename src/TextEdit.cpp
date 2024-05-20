@@ -2,8 +2,13 @@
  * This file is part of "Patrick's Programming Library", Version 7 (PPL7).
  * Web: http://www.pfp.de/ppl/
  *
+ * $Author$
+ * $Revision$
+ * $Date$
+ * $Id$
+ *
  *******************************************************************************
- * Copyright (c) 2022, Patrick Fedick <patrick@pfp.de>
+ * Copyright (c) 2013, Patrick Fedick <patrick@pfp.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +32,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <string.h>
 #include "ppltk.h"
 
 
@@ -36,39 +45,59 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
-Label::Label()
+TextEdit::TextEdit()
 	:Frame()
 {
 	const WidgetStyle& style=GetWidgetStyle();
-	setBorderStyle(NoBorder);
-	myColor=style.labelFontColor;
-	myFont=style.labelFont;
-	setTransparent(true);
+	setBorderStyle(Inset);
+	//myColor=style.inputFontColor;
+	//myBackgroundColor=style.inputBackgroundColor;
+	//myFont=style.inputFont;
+	setBackgroundColor(style.inputBackgroundColor);
+	setTransparent(false);
 
 }
 
-Label::Label(int x, int y, int width, int height, const String& text, BorderStyle style)
+TextEdit::TextEdit(int x, int y, int width, int height)
 	:Frame(x, y, width, height)
 {
-	const WidgetStyle& wstyle=GetWidgetStyle();
-	setBorderStyle(style);
-	myColor=wstyle.labelFontColor;
-	myFont=wstyle.labelFont;
-	setTransparent(true);
-	myText=text;
+	const WidgetStyle& style=GetWidgetStyle();
+	setBorderStyle(Inset);
+	//myColor=style.inputFontColor;
+	//myFont=style.inputFont;
+	setBackgroundColor(style.inputBackgroundColor);
+	setTransparent(false);
 }
 
-Label::~Label()
+String TextEdit::widgetType() const
 {
-
+	return String("TextEdit");
 }
 
-const String& Label::text() const
+TextEdit::~TextEdit()
+{
+	/*
+	if (timerId) GetWindowManager()->removeTimer(timerId);
+	timerId=0;
+	if (drag_started) {
+		drag_started=false;
+		ppltk::GetWindowManager()->releaseMouse(this);
+	}
+	*/
+}
+
+const ppl7::WideString& TextEdit::text() const
 {
 	return myText;
 }
 
-void Label::setText(const String& text)
+void TextEdit::setText(const String& text)
+{
+	WideString new_text=text;
+	setText(new_text);
+}
+
+void TextEdit::setText(const WideString& text)
 {
 	if (text == myText) return;
 	myText=text;
@@ -76,36 +105,24 @@ void Label::setText(const String& text)
 	geometryChanged();
 }
 
-const Color& Label::color() const
+const ppl7::grafix::Color& TextEdit::color() const
 {
 	return myColor;
 }
 
-void Label::setColor(const Color& c)
+void TextEdit::setColor(const Color& c)
 {
-	if (c == myColor) return;
 	myColor=c;
 	needsRedraw();
 }
 
-const Drawable& Label::icon() const
-{
-	return myIcon;
-}
 
-void Label::setIcon(const Drawable& icon)
-{
-	myIcon=icon;
-	needsRedraw();
-	geometryChanged();
-}
-
-const Font& Label::font() const
+const Font& TextEdit::font() const
 {
 	return myFont;
 }
 
-void Label::setFont(const Font& font)
+void TextEdit::setFont(const Font& font)
 {
 	myFont=font;
 	needsRedraw();
@@ -113,44 +130,14 @@ void Label::setFont(const Font& font)
 }
 
 
-Size Label::contentSize() const
-{
-	Size s;
-	s=myFont.measure(myText);
-	if (myIcon.isEmpty() == false) {
-		s.width+=4 + myIcon.width();
-		int h=2 + myIcon.height();
-		if (s.height < h) s.height=h;
-	}
-	return s;
-}
-
-String Label::widgetType() const
-{
-	return "Label";
-}
 
 
-void Label::paint(Drawable& draw)
+void TextEdit::paint(Drawable& draw)
 {
+	//const WidgetStyle& style=GetWidgetStyle();
 	Frame::paint(draw);
 	Drawable d=clientDrawable(draw);
-	//printf ("Text: %s, width: %i, height: %i\n",(const char*)myText, d.width(), d.height());
-	int x=0;
-	if (myIcon.isEmpty() == false) {
-		if (myText.isEmpty()) {
-			d.bltAlpha(myIcon, (d.width()) / 2 - myIcon.width() / 2, (d.height()) / 2 - myIcon.height() / 2);
-			return;
 
-		} else {
-			d.bltAlpha(myIcon, x, (d.height()) / 2 - myIcon.height() / 2);
-			x+=4 + myIcon.width();
-		}
-	}
-	myFont.setColor(myColor);
-	myFont.setOrientation(Font::TOP);
-	Size s=myFont.measure(myText);
-	d.print(myFont, x, (d.height() - s.height) >> 1, myText);
 }
 
 

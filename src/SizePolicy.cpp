@@ -35,50 +35,14 @@ namespace ppltk {
 using namespace ppl7;
 using namespace ppl7::grafix;
 
-
-HorizontalLayout::HorizontalLayout()
+SizePolicy::SizePolicy()
 {
-	spacing=2;
-	lastTotal=0;
-}
-
-HorizontalLayout::~HorizontalLayout()
-{
-
-}
-
-String HorizontalLayout::widgetType() const
-{
-	return "HorizontalLayout";
-}
-
-void HorizontalLayout::paint(Drawable& draw)
-{
-
+	HorizontalPolicy=Policy::Preferred;
+	VerticalPolicy=Policy::Preferred;
+	HorizontalStretch=0;
+	VerticalStretch=0;
 }
 
 
-void HorizontalLayout::geometryChangedEvent(Event* event)
-{
-	printf("HorizontalLayout::geometryChangedEvent, %ti Childs\n", numChilds());
-	event->accept();
-}
-
-
-HorizontalSpacer::HorizontalSpacer()
-{
-
-}
-
-
-String HorizontalSpacer::widgetType() const
-{
-	return "HorizontalSpacer";
-}
-
-void HorizontalSpacer::paint(Drawable& draw)
-{
-
-}
 
 }	// EOF namespace ppltk

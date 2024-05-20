@@ -20,9 +20,11 @@ OBJECTS = compile/Button.o \
 	compile/listwidget.o \
 	compile/radiobutton.o \
 	compile/scrollbar.o \
+	compile/SizePolicy.o \
 	compile/slider.o \
 	compile/SpinBox.o \
 	compile/Surface.o \
+	compile/TextEdit.o \
 	compile/Widget.o \
 	compile/WidgetStyle.o \
 	compile/Window.o \
@@ -96,6 +98,10 @@ compile/scrollbar.o: src/scrollbar.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/scrollbar.o -c src/scrollbar.cpp $(CFLAGS)
 
+compile/SizePolicy.o: src/SizePolicy.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/SizePolicy.o -c src/SizePolicy.cpp $(CFLAGS)
+
 compile/slider.o: src/slider.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/slider.o -c src/slider.cpp $(CFLAGS)
@@ -107,6 +113,10 @@ compile/SpinBox.o: src/SpinBox.cpp Makefile include/ppltk.h
 compile/Surface.o: src/Surface.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/Surface.o -c src/Surface.cpp $(CFLAGS)
+
+compile/TextEdit.o: src/TextEdit.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/TextEdit.o -c src/TextEdit.cpp $(CFLAGS)
 
 compile/Widget.o: src/Widget.cpp Makefile include/ppltk.h
 	- @mkdir -p compile

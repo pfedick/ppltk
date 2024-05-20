@@ -35,7 +35,6 @@ namespace ppltk {
 using namespace ppl7;
 using namespace ppl7::grafix;
 
-
 Widget::Widget()
 {
 	parent=NULL;
@@ -52,9 +51,8 @@ Widget::Widget()
 	MaxSize.height=65535;
 	MinSize.width=0;
 	MinSize.height=0;
-	strategy.width=MINIMUM_EXPANDING;
-	strategy.height=MINIMUM_EXPANDING;
 	use_own_drawbuffer=false;
+	myName.set("unknown");
 }
 
 Widget::Widget(int x, int y, int width, int height)
@@ -73,9 +71,8 @@ Widget::Widget(int x, int y, int width, int height)
 	MaxSize.height=65535;
 	MinSize.width=0;
 	MinSize.height=0;
-	strategy.width=MINIMUM_EXPANDING;
-	strategy.height=MINIMUM_EXPANDING;
 	use_own_drawbuffer=false;
+	myName.set("unknown");
 	create(x, y, width, height);
 }
 
@@ -155,33 +152,6 @@ Widget* Widget::getTopmostParent() const
 	if (parent) return parent->getTopmostParent();
 	return (Widget*)this;
 }
-
-void Widget::setSizeStrategyWidth(SizeStrategy s)
-{
-	if (s != strategy.width) {
-		strategy.width=s;
-		geometryChanged();
-	}
-}
-
-Widget::SizeStrategy Widget::sizeStrategyWidth() const
-{
-	return (SizeStrategy)strategy.width;
-}
-
-void Widget::setSizeStrategyHeight(SizeStrategy s)
-{
-	if (s != strategy.height) {
-		strategy.height=s;
-		geometryChanged();
-	}
-}
-
-Widget::SizeStrategy Widget::sizeStrategyHeight() const
-{
-	return (SizeStrategy)strategy.height;
-}
-
 
 void Widget::addChild(Widget* w)
 {
@@ -655,10 +625,9 @@ void Widget::setName(const String& name)
 	myName=name;
 }
 
-String Widget::name() const
+const String& Widget::name() const
 {
-	if (myName.notEmpty()) return myName;
-	return String("unknown");
+	return myName;
 }
 
 String Widget::widgetType() const

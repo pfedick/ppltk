@@ -83,6 +83,10 @@ void MainWindow::create(int width, int height, bool fullscreen)
     toolbar=new ppltk::Frame(64, 64, this->width() - 128, this->height() - 92);
     addChild(toolbar);
 
+    text=new ppltk::TextEdit(0, 32, toolbar->clientSize().width, 300);
+    text->setEventHandler(this);
+    toolbar->addChild(text);
+
     int x=0;
     ppltk::Label* label=new ppltk::Label(x, 0, 60, menueSize.height, "FPS:");
     menue->addChild(label);
