@@ -1,6 +1,7 @@
 #ifndef DEMO_H_
 #define DEMO_H_
 
+#include "ppltk.h"
 
 class FrameRate
 {
@@ -18,26 +19,26 @@ public:
     void updateFPS();
 };
 
-class MainWindow : public ppl7::tk::Window
+class MainWindow : public ppltk::Window
 {
 private:
     ppl7::grafix::Grafix* gfx;
-    ppl7::tk::WindowManager* wm;
-    ppl7::tk::WidgetStyle Style;
+    ppltk::WindowManager* wm;
+    ppltk::WidgetStyle Style;
 
-    ppl7::tk::Frame* menue;
-    ppl7::tk::Label* fpsLabel;
-    ppl7::tk::Button* exitButton;
-    ppl7::tk::Button* okButton;
+    ppltk::Frame* menue;
+    ppltk::Label* fpsLabel;
+    ppltk::Button* exitButton;
+    ppltk::Button* okButton;
 
-    ppl7::tk::Frame* toolbar;
+    ppltk::Frame* toolbar;
 
-    ppl7::tk::LineInput* input;
+    ppltk::LineInput* input;
 
     FrameRate fps;
 
-    virtual void closeEvent(ppl7::tk::Event* event);
-    virtual void mouseClickEvent(ppl7::tk::MouseEvent* event);
+    virtual void closeEvent(ppltk::Event* event);
+    virtual void mouseClickEvent(ppltk::MouseEvent* event);
 
 public:
     MainWindow();

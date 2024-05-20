@@ -28,33 +28,34 @@
 
 #ifndef _PPLTK_INCLUDE
 #define _PPLTK_INCLUDE
+
 #ifndef _PPL7_INCLUDE
 #include <ppl7.h>
-#endif
 #endif
 
 #ifndef _PPL7_GRAFIX
 #include <ppl7-grafix.h>
 #endif
-#endif
+
 
 #include <list>
 
 
 namespace ppltk {
 
-PPL7EXCEPTION(NoWindowManagerException, ppl7::Exception);
-PPL7EXCEPTION(DuplicateWindowManagerException, ppl7::Exception);
-PPL7EXCEPTION(InitializationException, ppl7::Exception);
-PPL7EXCEPTION(ExistingPrimaryWindowException, ppl7::Exception);
-PPL7EXCEPTION(WindowCreateException, ppl7::Exception);
-PPL7EXCEPTION(WindowAlreadyCreatedException, ppl7::Exception);
-PPL7EXCEPTION(SurfaceCreateException, ppl7::Exception);
-PPL7EXCEPTION(EventLoopException, ppl7::Exception);
-PPL7EXCEPTION(UnknownEventException, ppl7::Exception);
-PPL7EXCEPTION(NoWindowException, ppl7::Exception);
-PPL7EXCEPTION(SDLException, ppl7::Exception);
+PPL7EXCEPTION(NoWindowManagerException, Exception);
+PPL7EXCEPTION(DuplicateWindowManagerException, Exception);
+PPL7EXCEPTION(InitializationException, Exception);
+PPL7EXCEPTION(ExistingPrimaryWindowException, Exception);
+PPL7EXCEPTION(WindowCreateException, Exception);
+PPL7EXCEPTION(WindowAlreadyCreatedException, Exception);
+PPL7EXCEPTION(SurfaceCreateException, Exception);
+PPL7EXCEPTION(EventLoopException, Exception);
+PPL7EXCEPTION(UnknownEventException, Exception);
+PPL7EXCEPTION(NoWindowException, Exception);
+PPL7EXCEPTION(SDLException, Exception);
 
+using namespace ppl7;
 using namespace ppl7::grafix;
 
 class WidgetStyle
@@ -992,8 +993,8 @@ public:
     virtual Size contentSize() const;
 
     virtual void mouseDownEvent(MouseEvent* event);
-    virtual void mouseMoveEvent(ppl7::tk::MouseEvent* event);
-    virtual void mouseUpEvent(ppl7::tk::MouseEvent* event);
+    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
+    virtual void mouseUpEvent(ppltk::MouseEvent* event);
     virtual void gotFocusEvent(FocusEvent* event);
     virtual void lostFocusEvent(FocusEvent* event);
     virtual void textInputEvent(TextInputEvent* event);
@@ -1005,11 +1006,11 @@ public:
 };
 
 
-class Scrollbar : public ppl7::tk::Widget
+class Scrollbar : public ppltk::Widget
 {
 private:
-    ppl7::tk::Button* up_button;
-    ppl7::tk::Button* down_button;
+    ppltk::Button* up_button;
+    ppltk::Button* down_button;
     int size;
     int pos;
     int visibleItems;
@@ -1028,15 +1029,15 @@ public:
     int position() const;
     virtual ppl7::String widgetType() const;
     virtual void paint(ppl7::grafix::Drawable& draw);
-    void mouseDownEvent(ppl7::tk::MouseEvent* event);
-    void mouseUpEvent(ppl7::tk::MouseEvent* event);
-    void lostFocusEvent(ppl7::tk::FocusEvent* event);
-    void mouseMoveEvent(ppl7::tk::MouseEvent* event);
-    void mouseWheelEvent(ppl7::tk::MouseEvent* event);
+    void mouseDownEvent(ppltk::MouseEvent* event);
+    void mouseUpEvent(ppltk::MouseEvent* event);
+    void lostFocusEvent(ppltk::FocusEvent* event);
+    void mouseMoveEvent(ppltk::MouseEvent* event);
+    void mouseWheelEvent(ppltk::MouseEvent* event);
 
 };
 
-class CheckBox : public ppl7::tk::Label
+class CheckBox : public ppltk::Label
 {
 private:
     bool	ischecked;
@@ -1050,10 +1051,10 @@ public:
 
     virtual ppl7::String widgetType() const;
     virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppl7::tk::MouseEvent* event);
+    virtual void mouseDownEvent(ppltk::MouseEvent* event);
 };
 
-class RadioButton : public ppl7::tk::Label
+class RadioButton : public ppltk::Label
 {
 private:
     bool	ischecked;
@@ -1066,10 +1067,10 @@ public:
     void setChecked(bool checked);
     virtual ppl7::String widgetType() const;
     virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppl7::tk::MouseEvent* event);
+    virtual void mouseDownEvent(ppltk::MouseEvent* event);
 };
 
-class ListWidget : public ppl7::tk::Frame
+class ListWidget : public ppltk::Frame
 {
 public:
     class ListWidgetItem
@@ -1107,17 +1108,17 @@ public:
 
     virtual ppl7::String widgetType() const;
     virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void valueChangedEvent(ppl7::tk::Event* event, int value);
-    virtual void mouseDownEvent(ppl7::tk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppl7::tk::MouseEvent* event);
-    virtual void lostFocusEvent(ppl7::tk::FocusEvent* event);
-    virtual void mouseMoveEvent(ppl7::tk::MouseEvent* event);
+    virtual void valueChangedEvent(ppltk::Event* event, int value);
+    virtual void mouseDownEvent(ppltk::MouseEvent* event);
+    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
+    virtual void lostFocusEvent(ppltk::FocusEvent* event);
+    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
 };
 
-class ComboBox : public ppl7::tk::Widget
+class ComboBox : public ppltk::Widget
 {
 private:
-    ppl7::tk::Label* dropdown_button;
+    ppltk::Label* dropdown_button;
     ppl7::String myCurrentText;
     ppl7::String myCurrentIdentifier;
     size_t myCurrentIndex;
@@ -1151,10 +1152,10 @@ public:
 
     virtual ppl7::String widgetType() const;
     virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppl7::tk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppl7::tk::MouseEvent* event);
-    virtual void valueChangedEvent(ppl7::tk::Event* event, int value);
-    virtual void lostFocusEvent(ppl7::tk::FocusEvent* event);
+    virtual void mouseDownEvent(ppltk::MouseEvent* event);
+    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
+    virtual void valueChangedEvent(ppltk::Event* event, int value);
+    virtual void lostFocusEvent(ppltk::FocusEvent* event);
 };
 
 class AbstractSpinBox : public Widget
@@ -1272,7 +1273,7 @@ public:
 
 };
 
-class AbstractSlider : public ppl7::tk::Widget
+class AbstractSlider : public ppltk::Widget
 {
     friend class HorizontalSlider;
 private:
@@ -1302,7 +1303,7 @@ public:
 
 };
 
-class DoubleAbstractSlider : public ppl7::tk::Widget
+class DoubleAbstractSlider : public ppltk::Widget
 {
     friend class HorizontalSlider;
 private:
@@ -1341,7 +1342,7 @@ private:
     int start_x;
 
     void sliderValueChanged(int64_t value);
-    void valueChangedEvent(ppl7::tk::Event* event, int64_t value);
+    void valueChangedEvent(ppltk::Event* event, int64_t value);
 
 public:
     HorizontalSlider(int x, int y, int width, int height);
@@ -1349,11 +1350,11 @@ public:
     void enableSpinBox(bool enabled, int64_t stepsize=1, int width=100);
 
     virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppl7::tk::MouseEvent* event);
-    virtual void mouseUpEvent(ppl7::tk::MouseEvent* event);
-    virtual void lostFocusEvent(ppl7::tk::FocusEvent* event);
-    virtual void mouseMoveEvent(ppl7::tk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppl7::tk::MouseEvent* event);
+    virtual void mouseDownEvent(ppltk::MouseEvent* event);
+    virtual void mouseUpEvent(ppltk::MouseEvent* event);
+    virtual void lostFocusEvent(ppltk::FocusEvent* event);
+    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
+    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
 
 
 
@@ -1370,7 +1371,7 @@ private:
     int start_x;
 
     void sliderValueChanged(double value);
-    void valueChangedEvent(ppl7::tk::Event* event, double value);
+    void valueChangedEvent(ppltk::Event* event, double value);
 
 public:
     DoubleHorizontalSlider(int x, int y, int width, int height);
@@ -1378,11 +1379,11 @@ public:
     void enableSpinBox(bool enabled, double stepsize=0.1f, int decimals=2, int width=100);
 
     virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppl7::tk::MouseEvent* event);
-    virtual void mouseUpEvent(ppl7::tk::MouseEvent* event);
-    virtual void lostFocusEvent(ppl7::tk::FocusEvent* event);
-    virtual void mouseMoveEvent(ppl7::tk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppl7::tk::MouseEvent* event);
+    virtual void mouseDownEvent(ppltk::MouseEvent* event);
+    virtual void mouseUpEvent(ppltk::MouseEvent* event);
+    virtual void lostFocusEvent(ppltk::FocusEvent* event);
+    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
+    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
 
 
 };

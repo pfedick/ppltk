@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <ppl7.h>
 #include <ppl7-grafix.h>
-#include <ppl7-tk.h>
 #include "demo.h"
 
 int start(int agrc, char** argv)
@@ -21,7 +20,7 @@ int start(int agrc, char** argv)
     }
 
     ppl7::grafix::Grafix gfx;
-    ppl7::tk::WindowManager_SDL2 wm;
+    ppltk::WindowManager_SDL2 wm;
 
     MainWindow win;
     win.create(1280, 720, false);
@@ -53,9 +52,9 @@ MainWindow::MainWindow()
     fpsLabel=NULL;
     exitButton=NULL;
     toolbar=NULL;
-    ppl7::tk::WidgetStyle s(ppl7::tk::WidgetStyle::Dark);
+    ppltk::WidgetStyle s(ppltk::WidgetStyle::Dark);
     Style=s;
-    wm=ppl7::tk::GetWindowManager();
+    wm=ppltk::GetWindowManager();
     wm->setWidgetStyle(Style);
 
 }
@@ -70,47 +69,47 @@ void MainWindow::create(int width, int height, bool fullscreen)
 {
     setSize(width, height);
     setBackgroundColor(ppl7::grafix::Color(92, 92, 92, 92));
-    int flags=ppl7::tk::Window::DefaultWindow;
+    int flags=ppltk::Window::DefaultWindow;
     if (fullscreen) {
-        flags=ppl7::tk::Window::DefaultFullscreen;
+        flags=ppltk::Window::DefaultFullscreen;
     }
     setFlags(flags);
-    ppl7::tk::GetWindowManager()->createWindow(*this);
+    ppltk::GetWindowManager()->createWindow(*this);
 
-    menue=new ppl7::tk::Frame(0, 0, this->width(), 32);
+    menue=new ppltk::Frame(0, 0, this->width(), 32);
     addChild(menue);
     ppl7::grafix::Size menueSize=menue->clientSize();
 
-    toolbar=new ppl7::tk::Frame(64, 64, this->width() - 128, this->height() - 92);
+    toolbar=new ppltk::Frame(64, 64, this->width() - 128, this->height() - 92);
     addChild(toolbar);
 
     int x=0;
-    ppl7::tk::Label* label=new ppl7::tk::Label(x, 0, 60, menueSize.height, "FPS:");
+    ppltk::Label* label=new ppltk::Label(x, 0, 60, menueSize.height, "FPS:");
     menue->addChild(label);
 
-    fpsLabel=new ppl7::tk::Label(x + 60, 0, 60, menueSize.height, "0");
-    fpsLabel->setBorderStyle(ppl7::tk::Label::Inset);
+    fpsLabel=new ppltk::Label(x + 60, 0, 60, menueSize.height, "0");
+    fpsLabel->setBorderStyle(ppltk::Label::Inset);
     menue->addChild(fpsLabel);
 
-    exitButton=new ppl7::tk::Button(menueSize.width - menueSize.height, 0, menueSize.height, menueSize.height, "Exit");
+    exitButton=new ppltk::Button(menueSize.width - menueSize.height, 0, menueSize.height, menueSize.height, "Exit");
     exitButton->setIcon(gfx->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
     menue->addChild(exitButton);
 
 }
 
-void MainWindow::closeEvent(ppl7::tk::Event* event)
+void MainWindow::closeEvent(ppltk::Event* event)
 {
-    ppl7::tk::WindowManager* wm=ppl7::tk::GetWindowManager();
+    ppltk::WindowManager* wm=ppltk::GetWindowManager();
     wm->destroyWindow(*this);
     event->accept();
 }
 
-void MainWindow::mouseClickEvent(ppl7::tk::MouseEvent* event)
+void MainWindow::mouseClickEvent(ppltk::MouseEvent* event)
 {
     Widget* w=event->widget();
     if (w == exitButton) {
-        ppl7::tk::WindowManager* wm=ppl7::tk::GetWindowManager();
+        ppltk::WindowManager* wm=ppltk::GetWindowManager();
         wm->destroyWindow(*this);
         event->accept();
     }
