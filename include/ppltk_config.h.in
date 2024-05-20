@@ -1,6 +1,40 @@
 #ifndef _PPLTK_CONFIG
 #define _PPLTK_CONFIG
 
+#undef PACKAGE_VERSION
+#undef HAVE_CXX17
+#undef HAVE_STDIO_H
+#undef HAVE_STDLIB_H
+#undef HAVE_STRING_H
+#undef HAVE_INTTYPES_H
+#undef HAVE_STDINT_H
+#undef HAVE_STRINGS_H
+#undef HAVE_SYS_STAT_H
+#undef HAVE_SYS_TYPES_H
+#undef HAVE_UNISTD_H
+#undef HAVE_SYS_TIME_H
+#undef STDC_HEADERS
+#undef HAVE_UINTPTR_T
+#undef HAVE__BOOL
+#undef HAVE_STDBOOL_H
+#undef X_DISPLAY_MISSING
+#undef HAVE_STDLIB_H
+#undef HAVE_STDINT_H
+#undef HAVE_INTTYPES_H
+#undef HAVE_UNISTD_H
+#undef HAVE_STDARG_H
+#undef HAVE_STDDEF_H
+#undef HAVE_STDIO_H
+#undef HAVE_MATH_H
+#undef HAVE_SYS_TYPES_H
+#undef HAVE_STRINGS_H
+#undef HAVE_ERRNO_H
+#undef HAVE_SYS_STAT_H
+#undef HAVE_LIMITS_H
+#undef HAVE_CTYPE_H
+#undef HAVE_WCTYPE_H
+#undef HAVE_LOCALE_H
+#undef HAVE_WCHAR_H
 
 #undef HAVE_SDL2 1
 

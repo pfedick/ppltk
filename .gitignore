@@ -6,3 +6,5 @@ configure~
 config.log
 config.status
 include/stamp-h*
+include/ppltk_config.h
+Makefile
