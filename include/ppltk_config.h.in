@@ -2,7 +2,7 @@
 #define _PPLTK_CONFIG
 
 
-#define HAVE_SDL2 1
+#undef HAVE_SDL2 1
 
 
 #endif

@@ -1,8 +1,8 @@
 CXX		= g++
 EXTRA_CFLAGS =
 INCLUDE	= -I include
-CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) `ppl7-config --cflags release`
-LIB		= `ppl7-config --libs release`  -lstdc++
+CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) `ppl7-config --cflags release` @SDL2_CFLAGS@
+LIB		= `ppl7-config --libs release` @SDL2_LIBS@ -lstdc++
 LIBDEP	:= $(shell ppl7-config --ppllib release)
 PROGRAM	= ppltk
 
