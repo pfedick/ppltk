@@ -37,33 +37,33 @@ LIBDEP	:= @LIBPPL7@
 PROGRAM	= ppltk
 
 
-OBJECTS = compile/Button.o \
-	compile/checkbox.o \
-	compile/combobox.o \
-	compile/Divider.o \
-	compile/doubleslider.o \
+OBJECTS = 	compile/WindowManager.o \
+	compile/WindowManager_SDL2.o \
 	compile/Event.o \
-	compile/Frame.o \
-	compile/Label.o \
-	compile/LineInput.o \
-	compile/listwidget.o \
-	compile/radiobutton.o \
-	compile/scrollbar.o \
-	compile/SizePolicy.o \
-	compile/slider.o \
-	compile/SpinBox.o \
-	compile/Surface.o \
-	compile/TextEdit.o \
 	compile/Widget.o \
 	compile/WidgetStyle.o \
 	compile/Window.o \
-	compile/WindowManager.o \
-	compile/WindowManager_SDL2.o \
+	compile/widget_Button.o \
+	compile/widget_checkbox.o \
+	compile/widget_combobox.o \
+	compile/widget_Divider.o \
+	compile/widget_doubleslider.o \
+	compile/widget_Frame.o \
+	compile/widget_Label.o \
+	compile/widget_LineInput.o \
+	compile/widget_listwidget.o \
+	compile/widget_radiobutton.o \
+	compile/widget_scrollbar.o \
+	compile/SizePolicy.o \
+	compile/widget_slider.o \
+	compile/widget_SpinBox.o \
+	compile/widget_Surface.o \
+	compile/widget_TextEdit.o \
 	compile/layout_Layout.o \
 	compile/layout_BoxLayout.o \
 	compile/layout_HBoxLayout.o \
 	compile/layout_VBoxLayout.o \
-	compile/layout_FormLayout.o 
+	compile/layout_FormLayout.o
 
 
 $(PROGRAM): $(OBJECTS) compile/main.o $(LIBDEP)
@@ -80,73 +80,13 @@ compile/main.o: demo/main.cpp Makefile include/ppltk.h demo/demo.h
 	- @mkdir -p compile
 	$(CXX) -o compile/main.o -c demo/main.cpp $(CFLAGS)
 
-compile/Button.o: src/Button.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/Button.o -c src/Button.cpp $(CFLAGS)
-
-compile/checkbox.o: src/checkbox.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/checkbox.o -c src/checkbox.cpp $(CFLAGS)
-
-compile/combobox.o: src/combobox.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/combobox.o -c src/combobox.cpp $(CFLAGS)
-
-compile/Divider.o: src/Divider.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/Divider.o -c src/Divider.cpp $(CFLAGS)
-
-compile/doubleslider.o: src/doubleslider.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/doubleslider.o -c src/doubleslider.cpp $(CFLAGS)
-
 compile/Event.o: src/Event.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/Event.o -c src/Event.cpp $(CFLAGS)
 
-compile/Frame.o: src/Frame.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/Frame.o -c src/Frame.cpp $(CFLAGS)
-
-compile/Label.o: src/Label.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/Label.o -c src/Label.cpp $(CFLAGS)
-
-compile/LineInput.o: src/LineInput.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/LineInput.o -c src/LineInput.cpp $(CFLAGS)
-
-compile/listwidget.o: src/listwidget.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/listwidget.o -c src/listwidget.cpp $(CFLAGS)
-
-compile/radiobutton.o: src/radiobutton.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/radiobutton.o -c src/radiobutton.cpp $(CFLAGS)
-
-compile/scrollbar.o: src/scrollbar.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/scrollbar.o -c src/scrollbar.cpp $(CFLAGS)
-
 compile/SizePolicy.o: src/SizePolicy.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/SizePolicy.o -c src/SizePolicy.cpp $(CFLAGS)
-
-compile/slider.o: src/slider.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/slider.o -c src/slider.cpp $(CFLAGS)
-
-compile/SpinBox.o: src/SpinBox.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/SpinBox.o -c src/SpinBox.cpp $(CFLAGS)
-
-compile/Surface.o: src/Surface.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/Surface.o -c src/Surface.cpp $(CFLAGS)
-
-compile/TextEdit.o: src/TextEdit.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/TextEdit.o -c src/TextEdit.cpp $(CFLAGS)
 
 compile/Widget.o: src/Widget.cpp Makefile include/ppltk.h include/ppltk_layout.h
 	- @mkdir -p compile
@@ -168,6 +108,68 @@ compile/WindowManager_SDL2.o: src/WindowManager_SDL2.cpp Makefile include/ppltk.
 	- @mkdir -p compile
 	$(CXX) -o compile/WindowManager_SDL2.o -c src/WindowManager_SDL2.cpp $(CFLAGS)
 
+
+### Widgets ############################################################
+
+compile/widget_Button.o: src/widgets/Button.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_Button.o -c src/widgets/Button.cpp $(CFLAGS)
+
+compile/widget_checkbox.o: src/widgets/checkbox.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_checkbox.o -c src/widgets/checkbox.cpp $(CFLAGS)
+
+compile/widget_combobox.o: src/widgets/combobox.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_combobox.o -c src/widgets/combobox.cpp $(CFLAGS)
+
+compile/widget_Divider.o: src/widgets/Divider.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_Divider.o -c src/widgets/Divider.cpp $(CFLAGS)
+
+compile/widget_doubleslider.o: src/widgets/doubleslider.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_doubleslider.o -c src/widgets/doubleslider.cpp $(CFLAGS)
+
+compile/widget_Frame.o: src/widgets/Frame.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_Frame.o -c src/widgets/Frame.cpp $(CFLAGS)
+
+compile/widget_Label.o: src/widgets/Label.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_Label.o -c src/widgets/Label.cpp $(CFLAGS)
+
+compile/widget_LineInput.o: src/widgets/LineInput.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_LineInput.o -c src/widgets/LineInput.cpp $(CFLAGS)
+
+compile/widget_listwidget.o: src/widgets/listwidget.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_listwidget.o -c src/widgets/listwidget.cpp $(CFLAGS)
+
+compile/widget_radiobutton.o: src/widgets/radiobutton.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_radiobutton.o -c src/widgets/radiobutton.cpp $(CFLAGS)
+
+compile/widget_scrollbar.o: src/widgets/scrollbar.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_scrollbar.o -c src/widgets/scrollbar.cpp $(CFLAGS)
+
+compile/widget_slider.o: src/widgets/slider.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_slider.o -c src/widgets/slider.cpp $(CFLAGS)
+
+compile/widget_SpinBox.o: src/widgets/SpinBox.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_SpinBox.o -c src/widgets/SpinBox.cpp $(CFLAGS)
+
+compile/widget_Surface.o: src/widgets/Surface.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_Surface.o -c src/widgets/Surface.cpp $(CFLAGS)
+
+compile/widget_TextEdit.o: src/widgets/TextEdit.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_TextEdit.o -c src/widgets/TextEdit.cpp $(CFLAGS)
 
 ### Layout ############################################################
 
