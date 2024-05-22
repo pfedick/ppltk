@@ -27,59 +27,48 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
+#ifndef _PPLTK_LAYOUT_INCLUDE
+#define _PPLTK_LAYOUT_INCLUDE
 
-#ifndef DEMO_H_
-#define DEMO_H_
+#ifndef _PPL7_INCLUDE
+#include <ppl7.h>
+#endif
 
-#include "ppltk.h"
+#ifndef _PPL7_GRAFIX
+#include <ppl7-grafix.h>
+#endif
 
-class FrameRate
+#include <list>
+
+
+
+namespace ppltk {
+
+class Layout
 {
-private:
-    int desiredFrameRate;
-    int fps;
-    int framecount;
-    ppl7::ppl_time_t lastFpsTime;
-
-public:
-    FrameRate();
-    void setFrameRate(int fps);
-    int getFrameCount() const;
-    int getFPS() const;
-    void updateFPS();
-};
-
-class MainWindow : public ppltk::Window
-{
-private:
-    ppl7::grafix::Grafix* gfx;
-    ppltk::WindowManager* wm;
-    ppltk::WidgetStyle Style;
-
-    ppltk::Frame* menue;
-    ppltk::Label* fpsLabel;
-    ppltk::Button* exitButton;
-
-
-    ppltk::Frame* testframe;
-    ppltk::TextEdit* text;
-
-    ppltk::LineInput* input;
-
-    FrameRate fps;
-
-    virtual void closeEvent(ppltk::Event* event);
-    virtual void mouseClickEvent(ppltk::MouseEvent* event);
-    virtual void resizeEvent(ppltk::ResizeEvent* event);
-
-public:
-    MainWindow();
-    ~MainWindow();
-
-    void create(int width, int height, bool fullscreen);
-    void updateFrameRate();
-
 
 };
 
-#endif /* DEMO_H_ */
+class BoxLayout : public Layout
+{
+
+};
+
+class HBoxLayout : public BoxLayout
+{
+
+};
+
+class VBoxLayout : public BoxLayout
+{
+
+};
+
+class FormLayout : public Layout
+{
+
+};
+
+} // EOF namespace ppltk
+
+#endif

@@ -45,7 +45,6 @@ OBJECTS = compile/Button.o \
 	compile/Event.o \
 	compile/Frame.o \
 	compile/Label.o \
-	compile/Layout.o \
 	compile/LineInput.o \
 	compile/listwidget.o \
 	compile/radiobutton.o \
@@ -59,7 +58,12 @@ OBJECTS = compile/Button.o \
 	compile/WidgetStyle.o \
 	compile/Window.o \
 	compile/WindowManager.o \
-	compile/WindowManager_SDL2.o
+	compile/WindowManager_SDL2.o \
+	compile/layout_Layout.o \
+	compile/layout_BoxLayout.o \
+	compile/layout_HBoxLayout.o \
+	compile/layout_VBoxLayout.o \
+	compile/layout_FormLayout.o 
 
 
 $(PROGRAM): $(OBJECTS) compile/main.o $(LIBDEP)
@@ -108,10 +112,6 @@ compile/Label.o: src/Label.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/Label.o -c src/Label.cpp $(CFLAGS)
 
-compile/Layout.o: src/Layout.cpp Makefile include/ppltk.h
-	- @mkdir -p compile
-	$(CXX) -o compile/Layout.o -c src/Layout.cpp $(CFLAGS)
-
 compile/LineInput.o: src/LineInput.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/LineInput.o -c src/LineInput.cpp $(CFLAGS)
@@ -148,7 +148,7 @@ compile/TextEdit.o: src/TextEdit.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/TextEdit.o -c src/TextEdit.cpp $(CFLAGS)
 
-compile/Widget.o: src/Widget.cpp Makefile include/ppltk.h
+compile/Widget.o: src/Widget.cpp Makefile include/ppltk.h include/ppltk_layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/Widget.o -c src/Widget.cpp $(CFLAGS)
 
@@ -167,3 +167,26 @@ compile/WindowManager.o: src/WindowManager.cpp Makefile include/ppltk.h
 compile/WindowManager_SDL2.o: src/WindowManager_SDL2.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/WindowManager_SDL2.o -c src/WindowManager_SDL2.cpp $(CFLAGS)
+
+
+### Layout ############################################################
+
+compile/layout_Layout.o: src/layout/Layout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+	- @mkdir -p compile
+	$(CXX) -o compile/layout_Layout.o -c src/layout/Layout.cpp $(CFLAGS)
+
+compile/layout_BoxLayout.o: src/layout/BoxLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+	- @mkdir -p compile
+	$(CXX) -o compile/layout_BoxLayout.o -c src/layout/BoxLayout.cpp $(CFLAGS)
+
+compile/layout_HBoxLayout.o: src/layout/HBoxLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+	- @mkdir -p compile
+	$(CXX) -o compile/layout_HBoxLayout.o -c src/layout/HBoxLayout.cpp $(CFLAGS)
+
+compile/layout_VBoxLayout.o: src/layout/VBoxLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+	- @mkdir -p compile
+	$(CXX) -o compile/layout_VBoxLayout.o -c src/layout/VBoxLayout.cpp $(CFLAGS)
+
+compile/layout_FormLayout.o: src/layout/FormLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+	- @mkdir -p compile
+	$(CXX) -o compile/layout_FormLayout.o -c src/layout/FormLayout.cpp $(CFLAGS)

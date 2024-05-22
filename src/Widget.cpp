@@ -40,6 +40,7 @@ using namespace ppl7::grafix;
 Widget::Widget()
 {
 	parent=NULL;
+	myLayout=NULL;
 	lockcount=0;
 	visible=true;
 	enabled=true;
@@ -89,6 +90,17 @@ Widget::~Widget()
 	}
 	childs.clear();
 }
+
+void Widget::setLayout(Layout *layout)
+{
+	myLayout=layout;
+}
+
+Layout *Widget::layout() const
+{
+	return myLayout;
+}
+
 
 void Widget::updateDrawbuffer()
 {

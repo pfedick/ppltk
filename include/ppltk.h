@@ -467,12 +467,15 @@ public:
     SizePolicy();
 };
 
+class Layout;
+
 
 class Widget : public EventHandler
 {
     friend class WindowManager;
 private:
     Widget* parent;
+    Layout *myLayout;
     Image 	drawbuffer;
     //Surface		*surface;
     RGBFormat	format;
@@ -511,6 +514,9 @@ public:
 
     void setUseOwnDrawbuffer(bool enable);
     void destroyChilds();
+
+    void setLayout(Layout *layout);
+    Layout *layout() const;
 
     const Point& pos() const;
     Point absolutePosition() const;
@@ -920,6 +926,8 @@ public:
     virtual void paint(Drawable& draw);
     virtual Size contentSize() const;
 };
+
+
 
 class HorizontalLayout : public Widget
 {
