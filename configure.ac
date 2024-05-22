@@ -46,6 +46,7 @@ AC_CONFIG_HEADERS([include/ppltk_config.h])
 ###############################################################################
 #sinclude(autoconf/ax_cxx_compile_stdcxx.m4)
 sinclude(autoconf/sdl2.m4)
+sinclude(autoconf/ppl7.m4)
 #sinclude(autoconf/lib-link.m4)
 #sinclude(autoconf/checkfuncs.m4)
 #sinclude(autoconf/ax_gcc_x86_cpuid.m4)
@@ -158,10 +159,25 @@ AM_PATH_SDL2([2.0.0],
             report_have_sdl2="yes"
 			AC_SUBST(SDL2_CFLAGS)
 			AC_SUBST(SDL2_LIBS)
-            ,:)
-
-
+            ,
+			AC_MSG_ERROR([libsdl2 is required])
+			:)
 AC_SUBST(report_have_sdl2)
+
+report_have_ppl7="no"
+AX_PATH_LIB_PPL7([7.0.0],
+            AC_DEFINE(HAVE_PPL7, 1, [ Define if you have libppl7. ])
+            report_have_ppl7="yes"
+			AC_SUBST(LIBPPL7_CFLAGS)
+			AC_SUBST(LIBPPL7_LIBS)
+			AC_SUBST(LIBPPL7)
+			AX_PPL7_FEATURE(zlib,,AC_MSG_ERROR([ppl7 feature "zlib" is required]))
+			AX_PPL7_FEATURE(png,,AC_MSG_ERROR([ppl7 feature "png" is required]))
+			#AX_PPL7_FEATURE(blubb,,AC_MSG_ERROR([ppl7 feature "blubb" is required]))
+            ,
+			AC_MSG_ERROR([ppl7 is required])
+			:)
+AC_SUBST(report_have_ppl7)
 
 
 ###############################################################################
@@ -183,6 +199,7 @@ AC_MSG_RESULT([
 ******************************************************************************
 **
 **   SDL2 library:         $report_have_sdl2
+**   PPL7 library:         $report_have_sdl2
 **
 ******************************************************************************
 ])
