@@ -475,7 +475,7 @@ class Widget : public EventHandler
     friend class WindowManager;
 private:
     Widget* parent;
-    Layout *myLayout;
+    Layout* myLayout;
     Image 	drawbuffer;
     //Surface		*surface;
     RGBFormat	format;
@@ -515,8 +515,8 @@ public:
     void setUseOwnDrawbuffer(bool enable);
     void destroyChilds();
 
-    void setLayout(Layout *layout);
-    Layout *layout() const;
+    void setLayout(Layout* layout);
+    Layout* layout() const;
 
     const Point& pos() const;
     Point absolutePosition() const;
@@ -925,31 +925,6 @@ public:
     virtual String widgetType() const;
     virtual void paint(Drawable& draw);
     virtual Size contentSize() const;
-};
-
-
-
-class HorizontalLayout : public Widget
-{
-private:
-    int	spacing;
-    int lastTotal;
-public:
-    HorizontalLayout();
-    virtual ~HorizontalLayout();
-
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-    virtual void geometryChangedEvent(Event* event);
-};
-
-class HorizontalSpacer : public Widget
-{
-public:
-    HorizontalSpacer();
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-
 };
 
 class InputValidator

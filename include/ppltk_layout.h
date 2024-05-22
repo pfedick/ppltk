@@ -44,29 +44,153 @@
 
 namespace ppltk {
 
+class Widget;
+
+class Margins
+{
+private:
+    int _left, _right, _top, _bottom;
+public:
+    Margins();
+    Margins(int left, int top, int right, int bottom);
+    int left() const;
+    int right() const;
+    int top() const;
+    int bottom() const;
+    bool isNull() const;
+
+    void set(int left, int top, int right, int bottom);
+    void setLeft(int left);
+    void setRight(int right);
+    void setTop(int top);
+    void setBottom(int bottom);
+    Margins& operator*=(int factor);
+    Margins& operator*=(float factor);
+    Margins& operator+=(const Margins& other);
+    Margins& operator+=(int value);
+    Margins& operator-=(const Margins& other);
+    Margins& operator-=(int value);
+    Margins& operator/=(int divisor);
+    Margins& operator/=(float divisor);
+};
+
+bool operator!=(const Margins& m1, const Margins& m2);
+bool operator==(const Margins& m1, const Margins& m2);
+Margins operator*(const Margins& margins, int factor);
+Margins operator*(int factor, const Margins& margins);
+Margins operator*(const Margins& margins, float factor);
+Margins operator*(float factor, const Margins& margins);
+Margins operator+(const Margins& m1, const Margins& m2);
+Margins operator+(const Margins& lhs, int rhs);
+Margins operator+(int lhs, const Margins& rhs);
+Margins operator+(const Margins& margins);
+Margins operator-(const Margins& m1, const Margins& m2);
+Margins operator-(const Margins& lhs, int rhs);
+Margins operator-(const Margins& margins);
+Margins operator/(const Margins& margins, int divisor);
+Margins operator/(const Margins& margins, float divisor);
+Margins operator|(const Margins& m1, const Margins& m2);
+
+
+
 class Layout
 {
+private:
+    Widget* myParent;
+    Margins myMargins;
+
+public:
+    Layout(Widget* parent=NULL);
+    Widget* parent() const;
+
+    void setContentsMargins(int left, int top, int right, int bottom);
+    void setContentsMargins(const Margins& margins);
+
+    virtual int count() const=0;
+
+
 
 };
 
 class BoxLayout : public Layout
 {
+public:
+    enum class Direction {
+        LeftToRight=0,
+        TopToBottom=2
+    };
 
+private:
+    enum class ItemType {
+        Widget,
+        Layout,
+        Space
+    };
+
+    class SpaceItem {
+    public:
+        int size;
+    };
+
+    class Item {
+    public:
+        ItemType type;
+        union element {
+            Widget* widget;
+            Layout* layout;
+            SpaceItem* space;
+        };
+
+
+    };
+    Direction myDirection;
+
+public:
+    BoxLayout(Direction dir, Widget* parent=NULL);
+    virtual ~BoxLayout();
+    void addWidget(Widget* widget);
+    void addLayout(Layout* layout);
+    void addSpacing(int size);
+    //void addStretch(int stretch=0);
+    Direction direction() const;
+    virtual int count() const override;
 };
 
 class HBoxLayout : public BoxLayout
 {
+private:
+public:
+    HBoxLayout();
+    HBoxLayout(Widget* parent);
+    virtual ~HBoxLayout();
 
 };
 
 class VBoxLayout : public BoxLayout
 {
-
+public:
+    VBoxLayout();
+    VBoxLayout(Widget* parent);
+    virtual ~VBoxLayout();
 };
 
 class FormLayout : public Layout
 {
+private:
+public:
+    FormLayout();
+    FormLayout(Widget* parent);
+    ~FormLayout();
 
+    void addRow(Widget* label, Widget* field);
+    void addRow(Widget* label, Layout* field);
+
+    void addRow(const ppl7::String& labelText, Widget* field);
+    void addRow(const ppl7::String& labelText, Layout* field);
+    int rowCount() const;
+
+
+    virtual int count() const override;
 };
 
 } // EOF namespace ppltk

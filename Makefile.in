@@ -63,7 +63,8 @@ OBJECTS = 	compile/WindowManager.o \
 	compile/layout_BoxLayout.o \
 	compile/layout_HBoxLayout.o \
 	compile/layout_VBoxLayout.o \
-	compile/layout_FormLayout.o
+	compile/layout_FormLayout.o \
+	compile/layout_Margins.o
 
 
 $(PROGRAM): $(OBJECTS) compile/main.o $(LIBDEP)
@@ -192,3 +193,7 @@ compile/layout_VBoxLayout.o: src/layout/VBoxLayout.cpp Makefile include/ppltk.h 
 compile/layout_FormLayout.o: src/layout/FormLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_FormLayout.o -c src/layout/FormLayout.cpp $(CFLAGS)
+
+compile/layout_Margins.o: src/layout/Margins.cpp Makefile include/ppltk_layout.h
+	- @mkdir -p compile
+	$(CXX) -o compile/layout_Margins.o -c src/layout/Margins.cpp $(CFLAGS)

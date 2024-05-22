@@ -30,13 +30,28 @@
 
 
 #include "ppltk.h"
-
+#include "ppltk_layout.h"
 
 namespace ppltk {
 
 using namespace ppl7;
 using namespace ppl7::grafix;
 
+VBoxLayout::VBoxLayout()
+    : BoxLayout(BoxLayout::Direction::TopToBottom)
+{
 
+}
+
+VBoxLayout::VBoxLayout(Widget* parent)
+    : BoxLayout(BoxLayout::Direction::TopToBottom, parent)
+{
+
+}
+
+VBoxLayout::~VBoxLayout()
+{
+
+}
 
 }	// EOF namespace ppltk

@@ -30,7 +30,7 @@
 
 
 #include "ppltk.h"
-
+#include "ppltk_layout.h"
 
 namespace ppltk {
 
@@ -38,5 +38,44 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
+BoxLayout::BoxLayout(Direction dir, Widget* parent)
+    : Layout(parent)
+{
+    myDirection=dir;
+}
+
+BoxLayout::~BoxLayout()
+{
+
+}
+
+
+BoxLayout::Direction BoxLayout::direction() const
+{
+    return myDirection;
+}
+
+void BoxLayout::addWidget(Widget* widget)
+{
+
+
+}
+
+void BoxLayout::addLayout(Layout* layout)
+{
+
+}
+
+void BoxLayout::addSpacing(int size)
+{
+
+}
+
+
+
+int BoxLayout::count() const
+{
+    return 0;
+}
 
 }	// EOF namespace ppltk

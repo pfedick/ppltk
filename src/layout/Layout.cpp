@@ -30,57 +30,35 @@
 
 
 #include "ppltk.h"
-
+#include "ppltk_layout.h"
 
 namespace ppltk {
 
 using namespace ppl7;
 using namespace ppl7::grafix;
 
-
-HorizontalLayout::HorizontalLayout()
+Layout::Layout(Widget* parent)
 {
-	spacing=2;
-	lastTotal=0;
+	myParent = parent;
+	if (parent) parent->setLayout(this);
+	myMargins.set(0, 0, 0, 0);
 }
 
-HorizontalLayout::~HorizontalLayout()
+Widget* Layout::parent() const
 {
-
+	return myParent;
 }
 
-String HorizontalLayout::widgetType() const
+void Layout::setContentsMargins(int left, int top, int right, int bottom)
 {
-	return "HorizontalLayout";
+	myMargins.set(left, top, right, bottom);
 }
 
-void HorizontalLayout::paint(Drawable& draw)
+void Layout::setContentsMargins(const Margins& margins)
 {
-
-}
-
-
-void HorizontalLayout::geometryChangedEvent(Event* event)
-{
-	printf("HorizontalLayout::geometryChangedEvent, %ti Childs\n", numChilds());
-	event->accept();
+	myMargins=margins;
 }
 
 
-HorizontalSpacer::HorizontalSpacer()
-{
-
-}
-
-
-String HorizontalSpacer::widgetType() const
-{
-	return "HorizontalSpacer";
-}
-
-void HorizontalSpacer::paint(Drawable& draw)
-{
-
-}
 
 }	// EOF namespace ppltk
