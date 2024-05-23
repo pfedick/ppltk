@@ -55,6 +55,16 @@ BoxLayout::Direction BoxLayout::direction() const
     return myDirection;
 }
 
+void BoxLayout::setSpacing(int spacing)
+{
+    mySpacing=spacing;
+}
+
+int BoxLayout::spacing() const
+{
+    return mySpacing;
+}
+
 void BoxLayout::addWidget(Widget* widget)
 {
 

@@ -230,17 +230,76 @@ Margins operator*(float factor, const Margins& margins)
         (int)((float)margins.bottom() * factor));
 }
 
-/* TODO
-Margins operator+(const Margins& m1, const Margins& m2);
-Margins operator+(const Margins& lhs, int rhs);
-Margins operator+(int lhs, const Margins& rhs);
-Margins operator+(const Margins& margins);
-Margins operator-(const Margins& m1, const Margins& m2);
-Margins operator-(const Margins& lhs, int rhs);
-Margins operator-(const Margins& margins);
-Margins operator/(const Margins& margins, int divisor);
-Margins operator/(const Margins& margins, float divisor);
-Margins operator|(const Margins& m1, const Margins& m2);
-*/
+Margins operator+(const Margins& m1, const Margins& m2)
+{
+    return Margins(m1.left() + m2.left(),
+        m1.top() + m2.top(),
+        m1.right() + m2.right(),
+        m1.bottom() + m2.bottom()
+    );
+}
+
+Margins operator+(const Margins& m1, int value)
+{
+    return Margins(m1.left() + value,
+        m1.top() + value,
+        m1.right() + value,
+        m1.bottom() + value
+    );
+}
+
+Margins operator+(int value, const Margins& m1)
+{
+    return Margins(m1.left() + value,
+        m1.top() + value,
+        m1.right() + value,
+        m1.bottom() + value
+    );
+}
+
+Margins operator-(const Margins& m1, const Margins& m2)
+{
+    return Margins(m1.left() - m2.left(),
+        m1.top() - m2.top(),
+        m1.right() - m2.right(),
+        m1.bottom() - m2.bottom()
+    );
+}
+
+Margins operator-(const Margins& m1, int value)
+{
+    return Margins(m1.left() - value,
+        m1.top() - value,
+        m1.right() - value,
+        m1.bottom() - value
+    );
+}
+
+Margins operator/(const Margins& m1, int divisor)
+{
+    return Margins(m1.left() / divisor,
+        m1.top() / divisor,
+        m1.right() / divisor,
+        m1.bottom() / divisor
+    );
+}
+
+Margins operator/(const Margins& m1, float divisor)
+{
+    return Margins((int)((float)m1.left() / divisor),
+        (int)((float)m1.top() / divisor),
+        (int)((float)m1.right() / divisor),
+        (int)((float)m1.bottom() / divisor)
+    );
+}
+
+Margins operator|(const Margins& m1, const Margins& m2)
+{
+    return Margins(m1.left() > m2.left() ? m1.left() : m2.left(),
+        m1.top() > m2.top() ? m1.top() : m2.top(),
+        m1.right() > m2.right() ? m1.right() : m2.right(),
+        m1.bottom() > m2.bottom() ? m1.bottom() : m2.bottom());
+}
+
 
 }	// EOF namespace ppltk

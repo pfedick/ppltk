@@ -81,12 +81,10 @@ Margins operator*(int factor, const Margins& margins);
 Margins operator*(const Margins& margins, float factor);
 Margins operator*(float factor, const Margins& margins);
 Margins operator+(const Margins& m1, const Margins& m2);
-Margins operator+(const Margins& lhs, int rhs);
-Margins operator+(int lhs, const Margins& rhs);
-Margins operator+(const Margins& margins);
+Margins operator+(const Margins& m1, int value);
+Margins operator+(int value, const Margins& m1);
 Margins operator-(const Margins& m1, const Margins& m2);
 Margins operator-(const Margins& lhs, int rhs);
-Margins operator-(const Margins& margins);
 Margins operator/(const Margins& margins, int divisor);
 Margins operator/(const Margins& margins, float divisor);
 Margins operator|(const Margins& m1, const Margins& m2);
@@ -109,6 +107,11 @@ public:
     virtual int count() const=0;
 
 
+
+};
+
+class Spacer : public Layout
+{
 
 };
 
@@ -144,6 +147,7 @@ private:
 
     };
     Direction myDirection;
+    int mySpacing;
 
 public:
     BoxLayout(Direction dir, Widget* parent=NULL);
@@ -152,6 +156,9 @@ public:
     void addLayout(Layout* layout);
     void addSpacing(int size);
     //void addStretch(int stretch=0);
+
+    void setSpacing(int spacing);
+    int spacing() const;
     Direction direction() const;
     virtual int count() const override;
 };
