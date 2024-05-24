@@ -161,20 +161,6 @@ String Button::widgetType() const
 	return "Button";
 }
 
-
-Size Button::contentSize() const
-{
-	Size s;
-	s=myFont.measure(Text);
-	if (Icon.isEmpty() == false) {
-		s.width+=4 + Icon.width();
-		int h=2 + Icon.height();
-		if (s.height < h) s.height=h;
-	}
-	s.width+=6;
-	return s;
-}
-
 void Button::mouseDownEvent(MouseEvent* event)
 {
 	if (is_checkable) {
@@ -209,6 +195,20 @@ void Button::mouseLeaveEvent(MouseEvent* event)
 	}
 	EventHandler::mouseLeaveEvent(event);
 }
+
+Size Button::contentSize() const
+{
+	Size s;
+	s=myFont.measure(Text);
+	if (Icon.isEmpty() == false) {
+		s.width+=4 + Icon.width();
+		int h=2 + Icon.height();
+		if (s.height < h) s.height=h;
+	}
+	s.width+=6;
+	return s;
+}
+
 
 void Button::paint(Drawable& draw)
 {

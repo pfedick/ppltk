@@ -30,6 +30,7 @@
 
 
 #include "ppltk.h"
+#include "ppltk-layout.h"
 
 
 namespace ppltk {

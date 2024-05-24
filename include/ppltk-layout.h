@@ -105,6 +105,10 @@ public:
     void setContentsMargins(const Margins& margins);
 
     virtual int count() const=0;
+    virtual ppl7::grafix::Size sizeHint() const=0;
+    virtual ppl7::grafix::Size maximumSize() const=0;
+    virtual ppl7::grafix::Size minimumSize() const=0;
+
 
 
 

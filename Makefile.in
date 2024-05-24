@@ -89,7 +89,7 @@ compile/SizePolicy.o: src/SizePolicy.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/SizePolicy.o -c src/SizePolicy.cpp $(CFLAGS)
 
-compile/Widget.o: src/Widget.cpp Makefile include/ppltk.h include/ppltk_layout.h
+compile/Widget.o: src/Widget.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/Widget.o -c src/Widget.cpp $(CFLAGS)
 
@@ -174,26 +174,26 @@ compile/widget_TextEdit.o: src/widgets/TextEdit.cpp Makefile include/ppltk.h
 
 ### Layout ############################################################
 
-compile/layout_Layout.o: src/layout/Layout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+compile/layout_Layout.o: src/layout/Layout.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_Layout.o -c src/layout/Layout.cpp $(CFLAGS)
 
-compile/layout_BoxLayout.o: src/layout/BoxLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+compile/layout_BoxLayout.o: src/layout/BoxLayout.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_BoxLayout.o -c src/layout/BoxLayout.cpp $(CFLAGS)
 
-compile/layout_HBoxLayout.o: src/layout/HBoxLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+compile/layout_HBoxLayout.o: src/layout/HBoxLayout.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_HBoxLayout.o -c src/layout/HBoxLayout.cpp $(CFLAGS)
 
-compile/layout_VBoxLayout.o: src/layout/VBoxLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+compile/layout_VBoxLayout.o: src/layout/VBoxLayout.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_VBoxLayout.o -c src/layout/VBoxLayout.cpp $(CFLAGS)
 
-compile/layout_FormLayout.o: src/layout/FormLayout.cpp Makefile include/ppltk.h include/ppltk_layout.h
+compile/layout_FormLayout.o: src/layout/FormLayout.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_FormLayout.o -c src/layout/FormLayout.cpp $(CFLAGS)
 
-compile/layout_Margins.o: src/layout/Margins.cpp Makefile include/ppltk_layout.h
+compile/layout_Margins.o: src/layout/Margins.cpp Makefile include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_Margins.o -c src/layout/Margins.cpp $(CFLAGS)

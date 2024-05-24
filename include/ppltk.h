@@ -477,6 +477,7 @@ private:
     Widget* parent;
     Layout* myLayout;
     Image 	drawbuffer;
+    SizePolicy mySizePolicy;
     //Surface		*surface;
     RGBFormat	format;
     Point		p;
@@ -529,7 +530,12 @@ public:
     void setMaxSize(const Size& s);
     void setMaxSize(int width=65535, int height=65535);
     void setMinSize(const Size& s);
-    void setMinSize(int width=65535, int height=65535);
+    void setMinSize(int width=0, int height=0);
+    const SizePolicy& sizePolicy() const;
+    void setSizePolicy(const SizePolicy& policy);
+    void setSizePolicy(SizePolicy::Policy horizontal, SizePolicy::Policy vertical);
+
+
     int width() const;
     int height() const;
     int x() const;
@@ -586,6 +592,9 @@ public:
     virtual String widgetType() const;
     virtual void paint(Drawable& draw);
     virtual Size contentSize() const;
+    virtual ppl7::grafix::Size sizeHint() const;
+    virtual ppl7::grafix::Size minimumSizeHint() const;
+
 };
 
 class WindowManager;

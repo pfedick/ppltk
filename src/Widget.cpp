@@ -30,6 +30,7 @@
 
 
 #include "ppltk.h"
+#include "ppltk-layout.h"
 
 
 namespace ppltk {
@@ -91,12 +92,12 @@ Widget::~Widget()
 	childs.clear();
 }
 
-void Widget::setLayout(Layout *layout)
+void Widget::setLayout(Layout* layout)
 {
 	myLayout=layout;
 }
 
-Layout *Widget::layout() const
+Layout* Widget::layout() const
 {
 	return myLayout;
 }
@@ -322,6 +323,42 @@ void Widget::setMinSize(int width, int height)
 		geometryChanged();
 	}
 }
+
+const SizePolicy& Widget::sizePolicy() const
+{
+	return mySizePolicy;
+}
+
+void Widget::setSizePolicy(const SizePolicy& policy)
+{
+	mySizePolicy=policy;
+	geometryChanged();
+}
+
+void Widget::setSizePolicy(SizePolicy::Policy horizontal, SizePolicy::Policy vertical)
+{
+	mySizePolicy.HorizontalPolicy=horizontal;
+	mySizePolicy.VerticalPolicy=vertical;
+	geometryChanged();
+}
+
+
+ppl7::grafix::Size Widget::sizeHint() const
+{
+	if (!myLayout) return ppl7::grafix::Size(-1, -1);
+	return myLayout->sizeHint();
+	/*The default implementation of sizeHint() returns an invalid size if there is no layout for this widget, and returns the layout's preferred size otherwise.
+	*/
+}
+
+ppl7::grafix::Size Widget::minimumSizeHint() const
+{
+	if (!myLayout) return ppl7::grafix::Size(-1, -1);
+	return myLayout->minimumSize();
+	/*The default implementation of minimumSizeHint() returns an invalid size if there is no layout for this widget, and returns the layout's minimum size otherwise. Most built-in widgets reimplement minimumSizeHint().
+	*/
+}
+
 
 void Widget::geometryChanged()
 {
