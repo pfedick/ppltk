@@ -832,6 +832,7 @@ private:
     bool	is_checked;
 public:
     Button();
+    Button(const String& text=String(), const Drawable& icon=Drawable());
     Button(int x, int y, int width, int height, const String& text=String(), const Drawable& icon=Drawable());
     virtual ~Button();
     const String& text() const;

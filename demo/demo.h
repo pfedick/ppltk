@@ -32,6 +32,7 @@
 #define DEMO_H_
 
 #include "ppltk.h"
+#include "ppltk-layout.h"
 
 class FrameRate
 {
@@ -59,6 +60,7 @@ private:
     ppltk::Frame* menue;
     ppltk::Label* fpsLabel;
     ppltk::Button* exitButton;
+    ppltk::HBoxLayout* layout_menue;
 
 
     ppltk::Frame* testframe;

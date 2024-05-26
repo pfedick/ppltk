@@ -112,6 +112,10 @@ void MainWindow::create(int width, int height, bool fullscreen)
     addChild(menue);
     ppl7::grafix::Size menueSize=menue->clientSize();
 
+    layout_menue=new ppltk::HBoxLayout();
+    menue->setLayout(layout_menue);
+
+
     testframe=new ppltk::Frame(64, 64, this->width() - 128, this->height() - 92);
     addChild(testframe);
 
@@ -119,18 +123,20 @@ void MainWindow::create(int width, int height, bool fullscreen)
     text->setEventHandler(this);
     testframe->addChild(text);
 
+
+
     int x=0;
     ppltk::Label* label=new ppltk::Label(x, 0, 60, menueSize.height, "FPS:");
-    menue->addChild(label);
+    layout_menue->addWidget(label);
 
     fpsLabel=new ppltk::Label(x + 60, 0, 60, menueSize.height, "0");
     fpsLabel->setBorderStyle(ppltk::Label::Inset);
-    menue->addChild(fpsLabel);
+    layout_menue->addWidget(fpsLabel);
 
     exitButton=new ppltk::Button(menueSize.width - menueSize.height, 0, menueSize.height, menueSize.height, "Exit");
     exitButton->setIcon(gfx->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
-    menue->addChild(exitButton);
+    layout_menue->addWidget(exitButton);
 
 }
 

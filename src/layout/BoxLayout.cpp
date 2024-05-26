@@ -88,4 +88,21 @@ int BoxLayout::count() const
     return 0;
 }
 
+ppl7::grafix::Size BoxLayout::sizeHint() const
+{
+    return ppl7::grafix::Size(-1, -1);
+}
+
+ppl7::grafix::Size BoxLayout::maximumSize() const
+{
+    return ppl7::grafix::Size(-1, -1);
+}
+
+ppl7::grafix::Size BoxLayout::minimumSize() const
+{
+    return ppl7::grafix::Size(-1, -1);
+}
+
+
+
 }	// EOF namespace ppltk

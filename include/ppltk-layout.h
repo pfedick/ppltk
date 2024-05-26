@@ -164,7 +164,12 @@ public:
     void setSpacing(int spacing);
     int spacing() const;
     Direction direction() const;
-    virtual int count() const override;
+    int count() const override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size maximumSize() const override;
+    ppl7::grafix::Size minimumSize() const override;
+
+
 };
 
 class HBoxLayout : public BoxLayout
