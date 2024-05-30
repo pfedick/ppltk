@@ -126,6 +126,17 @@ void TextEdit::setFont(const Font& font)
 }
 
 
+ppl7::grafix::Size TextEdit::sizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+ppl7::grafix::Size TextEdit::minimumSizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
 
 
 void TextEdit::paint(Drawable& draw)

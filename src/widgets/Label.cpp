@@ -38,14 +38,14 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
-Label::Label()
-	:Frame()
+Label::Label(const String& text, BorderStyle style)
+	:Frame(style)
 {
-	const WidgetStyle& style=GetWidgetStyle();
-	setBorderStyle(NoBorder);
-	myColor=style.labelFontColor;
-	myFont=style.labelFont;
+	const WidgetStyle& widgetstyle=GetWidgetStyle();
+	myColor=widgetstyle.labelFontColor;
+	myFont=widgetstyle.labelFont;
 	setTransparent(true);
+	myText=text;
 
 }
 
@@ -115,6 +115,7 @@ void Label::setFont(const Font& font)
 }
 
 
+/*
 Size Label::contentSize() const
 {
 	Size s;
@@ -126,6 +127,21 @@ Size Label::contentSize() const
 	}
 	return s;
 }
+*/
+
+ppl7::grafix::Size Label::sizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+ppl7::grafix::Size Label::minimumSizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+
 
 String Label::widgetType() const
 {

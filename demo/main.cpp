@@ -129,12 +129,10 @@ void MainWindow::create(int width, int height, bool fullscreen)
     ppltk::Label* label=new ppltk::Label(x, 0, 60, menueSize.height, "FPS:");
     layout_menue->addWidget(label);
 
-    fpsLabel=new ppltk::Label(x + 60, 0, 60, menueSize.height, "0");
-    fpsLabel->setBorderStyle(ppltk::Label::Inset);
+    fpsLabel=new ppltk::Label("0", ppltk::Label::Inset);
     layout_menue->addWidget(fpsLabel);
 
-    exitButton=new ppltk::Button(menueSize.width - menueSize.height, 0, menueSize.height, menueSize.height, "Exit");
-    exitButton->setIcon(gfx->Toolbar.getDrawable(68));
+    exitButton=new ppltk::Button("Exit", gfx->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
     layout_menue->addWidget(exitButton);
 

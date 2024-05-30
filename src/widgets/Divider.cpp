@@ -70,10 +70,26 @@ String VerticalDivider::widgetType() const
 	return "VerticalDivider";
 }
 
+/*
 Size VerticalDivider::contentSize() const
 {
 	return Size(6, height());
 }
+*/
+
+ppl7::grafix::Size VerticalDivider::sizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+ppl7::grafix::Size VerticalDivider::minimumSizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+
 
 HorizontalDivider::HorizontalDivider()
 {
@@ -104,11 +120,24 @@ String HorizontalDivider::widgetType() const
 	return "HorizontalDevider";
 }
 
+/*
 Size HorizontalDivider::contentSize() const
 {
 	return Size(width(), 6);
 }
+*/
 
+ppl7::grafix::Size HorizontalDivider::sizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+ppl7::grafix::Size HorizontalDivider::minimumSizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
 
 
 }	// EOF namespace ppltk

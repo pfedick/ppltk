@@ -38,13 +38,14 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
-Frame::Frame()
+Frame::Frame(BorderStyle style)
 {
-	const WidgetStyle& style=GetWidgetStyle();
+	const WidgetStyle& widgetstyle=GetWidgetStyle();
 	myBorderStyle=Upset;
-	myBackground=style.frameBackgroundColor;
-	myBorderColorLight=style.frameBorderColorLight;
-	myBorderColorShadow=style.frameBorderColorShadow;
+	myBackground=widgetstyle.frameBackgroundColor;
+	myBorderColorLight=widgetstyle.frameBorderColorLight;
+	myBorderColorShadow=widgetstyle.frameBorderColorShadow;
+	myBorderStyle=style;
 	setTransparent(false);
 	setClientOffset(3, 3, 3, 3);
 }
@@ -104,7 +105,6 @@ void Frame::setBorderColorShadow(const Color& c)
 	myBorderColorShadow=c;
 	needsRedraw();
 }
-
 
 void Frame::paint(Drawable& draw)
 {

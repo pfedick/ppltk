@@ -581,7 +581,6 @@ public:
     void draw(Drawable& d);
     void redraw(Drawable& d);
     bool redrawRequired() const;
-    Size preferedSize() const;
     void setName(const String& name);
     const String& name() const;
 
@@ -591,7 +590,6 @@ public:
 
     virtual String widgetType() const;
     virtual void paint(Drawable& draw);
-    virtual Size contentSize() const;
     virtual ppl7::grafix::Size sizeHint() const;
     virtual ppl7::grafix::Size minimumSizeHint() const;
 
@@ -831,7 +829,6 @@ private:
     bool	is_checkable;
     bool	is_checked;
 public:
-    Button();
     Button(const String& text=String(), const Drawable& icon=Drawable());
     Button(int x, int y, int width, int height, const String& text=String(), const Drawable& icon=Drawable());
     virtual ~Button();
@@ -854,13 +851,13 @@ public:
 
 
 
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-    virtual Size contentSize() const;
-
-    virtual void mouseDownEvent(MouseEvent* event);
-    virtual void mouseUpEvent(MouseEvent* event);
-    virtual void mouseLeaveEvent(MouseEvent* event);
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size minimumSizeHint() const override;
+    void mouseDownEvent(MouseEvent* event) override;
+    void mouseUpEvent(MouseEvent* event) override;
+    void mouseLeaveEvent(MouseEvent* event) override;
 
 };
 
@@ -876,7 +873,7 @@ public:
         Upset,
         Inset
     };
-    Frame();
+    Frame(BorderStyle style=Upset);
     Frame(int x, int y, int width, int height, BorderStyle style=Upset);
     ~Frame();
     BorderStyle borderStyle() const;
@@ -888,8 +885,8 @@ public:
     const Color& borderColorShadow() const;
     void setBorderColorShadow(const Color& c);
 
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
 };
 
 class Label : public Frame
@@ -900,7 +897,7 @@ private:
     Image	myIcon;
     Color	myColor;
 public:
-    Label();
+    Label(const String& text=String(), BorderStyle style=NoBorder);
     Label(int x, int y, int width, int height, const String& text=String(), BorderStyle style=NoBorder);
     ~Label();
     const String& text() const;
@@ -912,9 +909,11 @@ public:
     const Font& font() const;
     void setFont(const Font& font);
 
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-    virtual Size contentSize() const;
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size minimumSizeHint() const override;
+
 };
 
 class VerticalDivider : public Widget
@@ -922,9 +921,11 @@ class VerticalDivider : public Widget
 public:
     VerticalDivider();
     VerticalDivider(int x, int y, int width, int height);
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-    virtual Size contentSize() const;
+
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size minimumSizeHint() const override;
 };
 
 class HorizontalDivider : public Widget
@@ -932,9 +933,11 @@ class HorizontalDivider : public Widget
 public:
     HorizontalDivider();
     HorizontalDivider(int x, int y, int width, int height);
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-    virtual Size contentSize() const;
+
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size minimumSizeHint() const override;
 };
 
 class InputValidator
@@ -1001,9 +1004,11 @@ public:
 
     void setInputValidator(InputValidator* validator);
 
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-    virtual Size contentSize() const;
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size minimumSizeHint() const override;
+
 
     virtual void mouseDownEvent(MouseEvent* event);
     virtual void mouseMoveEvent(ppltk::MouseEvent* event);
@@ -1075,8 +1080,10 @@ public:
     void setColor(const ppl7::grafix::Color& color);
     const ppl7::grafix::Color& color() const;
 
-    virtual ppl7::String widgetType() const;
-    virtual void paint(ppl7::grafix::Drawable& draw);
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size minimumSizeHint() const override;
 
 };
 

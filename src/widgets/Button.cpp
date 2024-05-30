@@ -38,7 +38,7 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
-Button::Button()
+Button::Button(const String& text, const Drawable& icon)
 {
 	const WidgetStyle& style=GetWidgetStyle();
 	background=style.buttonBackgroundColor;
@@ -48,6 +48,8 @@ Button::Button()
 	isDown=false;
 	is_checkable=false;
 	is_checked=false;
+	Text=text;
+	Icon=icon;
 }
 
 Button::Button(int x, int y, int width, int height, const String& text, const Drawable& icon)
@@ -196,6 +198,20 @@ void Button::mouseLeaveEvent(MouseEvent* event)
 	EventHandler::mouseLeaveEvent(event);
 }
 
+ppl7::grafix::Size Button::sizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+ppl7::grafix::Size Button::minimumSizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+
+/*
 Size Button::contentSize() const
 {
 	Size s;
@@ -208,7 +224,7 @@ Size Button::contentSize() const
 	s.width+=6;
 	return s;
 }
-
+*/
 
 void Button::paint(Drawable& draw)
 {

@@ -345,18 +345,27 @@ void Widget::setSizePolicy(SizePolicy::Policy horizontal, SizePolicy::Policy ver
 
 ppl7::grafix::Size Widget::sizeHint() const
 {
-	if (!myLayout) return ppl7::grafix::Size(-1, -1);
-	return myLayout->sizeHint();
 	/*The default implementation of sizeHint() returns an invalid size if there is no layout for this widget, and returns the layout's preferred size otherwise.
 	*/
+
+	if (!myLayout) return ppl7::grafix::Size::invalid();
+	ppl7::grafix::Size s=myLayout->sizeHint();
+	if (s.isValid()) s+=ppl7::grafix::Size(myClientOffset.left() + myClientOffset.right(),
+		myClientOffset.top() + myClientOffset.bottom());
+	return s;
+
 }
 
 ppl7::grafix::Size Widget::minimumSizeHint() const
 {
-	if (!myLayout) return ppl7::grafix::Size(-1, -1);
-	return myLayout->minimumSize();
 	/*The default implementation of minimumSizeHint() returns an invalid size if there is no layout for this widget, and returns the layout's minimum size otherwise. Most built-in widgets reimplement minimumSizeHint().
 	*/
+
+	if (!myLayout) return ppl7::grafix::Size::invalid();
+	ppl7::grafix::Size s=myLayout->minimumSize();
+	if (s.isValid()) s+=ppl7::grafix::Size(myClientOffset.left() + myClientOffset.right(),
+		myClientOffset.top() + myClientOffset.bottom());
+	return s;
 }
 
 
@@ -647,7 +656,7 @@ void Widget::paint(Drawable& draw)
 	}
 }
 
-
+/*
 Size Widget::preferedSize() const
 {
 	Size s, c;
@@ -670,6 +679,8 @@ Size Widget::contentSize() const
 {
 	return Size();
 }
+*/
+
 
 void Widget::setName(const String& name)
 {

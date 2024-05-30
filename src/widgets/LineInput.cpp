@@ -168,11 +168,26 @@ void LineInput::setFont(const Font& font)
 	geometryChanged();
 }
 
-
+/*
 Size LineInput::contentSize() const
 {
 	return myFont.measure(myText);
 }
+*/
+
+ppl7::grafix::Size LineInput::sizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+ppl7::grafix::Size LineInput::minimumSizeHint() const
+{
+	// TODO
+	return ppl7::grafix::Size::invalid();
+}
+
+
 
 String LineInput::widgetType() const
 {
@@ -274,10 +289,6 @@ void LineInput::lostFocusEvent(FocusEvent* event)
 
 void LineInput::textInputEvent(TextInputEvent* event)
 {
-	/*printf("LineInput::textInputEvent(%s, %s), text=%ls\n",
-		this->widgetType().toChar(),
-		this->name().toChar(), (const wchar_t*)event->text);
-		*/
 	if (validator) {
 		if (validator->validateInput(event->text) == false) return;
 	}
