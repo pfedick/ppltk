@@ -110,7 +110,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
     menue=new ppltk::Frame(0, 0, this->width(), 32);
     addChild(menue);
-    ppl7::grafix::Size menueSize=menue->clientSize();
+    //ppl7::grafix::Size menueSize=menue->clientSize();
 
     layout_menue=new ppltk::HBoxLayout();
     menue->setLayout(layout_menue);
@@ -125,8 +125,8 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
 
 
-    int x=0;
-    ppltk::Label* label=new ppltk::Label(x, 0, 60, menueSize.height, "FPS:");
+
+    ppltk::Label* label=new ppltk::Label("FPS:");
     layout_menue->addWidget(label);
 
     fpsLabel=new ppltk::Label("0", ppltk::Label::Inset);

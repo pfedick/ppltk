@@ -518,6 +518,7 @@ public:
 
     void setLayout(Layout* layout);
     Layout* layout() const;
+    void invalidateLayout();
 
     const Point& pos() const;
     Point absolutePosition() const;

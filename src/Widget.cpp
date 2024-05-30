@@ -84,6 +84,7 @@ Widget::~Widget()
 {
 	GetWindowManager()->unregisterWidget(this);
 	if (parent) parent->removeChild(this);
+	if (myLayout) delete myLayout;
 	std::list<Widget*>::iterator it;
 	while (childs.begin() != childs.end()) {
 		Widget* child=*childs.begin();
@@ -95,11 +96,20 @@ Widget::~Widget()
 void Widget::setLayout(Layout* layout)
 {
 	myLayout=layout;
+	layout->myParent=this;
+	layout->isValid=false;
 }
 
 Layout* Widget::layout() const
 {
 	return myLayout;
+}
+
+void Widget::invalidateLayout()
+{
+	if (myLayout) myLayout->isValid=false;
+	needsRedraw();
+	if (parent && parent->myLayout) parent->invalidateLayout();
 }
 
 
@@ -554,6 +564,7 @@ Size Widget::clientSize() const
 void Widget::draw(Drawable& d)
 {
 	if (!visible) return;
+	if (myLayout && myLayout->isValid == false) myLayout->recalculate();
 	if (needsredraw == false && child_needsredraw == false) return;
 	std::list<Widget*>::iterator it;
 	Drawable mycd=drawable(d);

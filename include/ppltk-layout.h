@@ -93,16 +93,24 @@ Margins operator|(const Margins& m1, const Margins& m2);
 
 class Layout
 {
+    friend class Widget;
 private:
     Widget* myParent;
     Margins myMargins;
+    bool isValid;
 
 public:
     Layout(Widget* parent=NULL);
+    virtual ~Layout();
     Widget* parent() const;
 
     void setContentsMargins(int left, int top, int right, int bottom);
     void setContentsMargins(const Margins& margins);
+    const Margins& contentsMargins() const;
+    void invalidate();
+    void recalculate();
+
+    virtual void update()=0;
 
     virtual int count() const=0;
     virtual ppl7::grafix::Size sizeHint() const=0;
@@ -111,11 +119,6 @@ public:
 
 
 
-
-};
-
-class Spacer : public Layout
-{
 
 };
 
@@ -130,8 +133,7 @@ public:
 private:
     enum class ItemType {
         Widget,
-        Layout,
-        Space
+        Layout
     };
 
     class SpaceItem {
@@ -142,14 +144,14 @@ private:
     class Item {
     public:
         ItemType type;
-        union element {
+        union {
             Widget* widget;
             Layout* layout;
-            SpaceItem* space;
         };
-
-
+        Item(Widget*);
+        Item(Layout*);
     };
+    std::list<Item> item_list;
     Direction myDirection;
     int mySpacing;
 
@@ -165,6 +167,7 @@ public:
     int spacing() const;
     Direction direction() const;
     int count() const override;
+    void update() override;
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size maximumSize() const override;
     ppl7::grafix::Size minimumSize() const override;
@@ -205,8 +208,8 @@ public:
     void addRow(const ppl7::String& labelText, Layout* field);
     int rowCount() const;
 
-
-    virtual int count() const override;
+    void update() override;
+    int count() const override;
 };
 
 } // EOF namespace ppltk

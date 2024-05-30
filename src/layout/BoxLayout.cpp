@@ -38,6 +38,18 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
+BoxLayout::Item::Item(Widget* w)
+    : type(BoxLayout::ItemType::Widget), widget(w)
+{
+
+}
+
+BoxLayout::Item::Item(Layout* l)
+    : type(BoxLayout::ItemType::Layout), layout(l)
+{
+
+}
+
 BoxLayout::BoxLayout(Direction dir, Widget* parent)
     : Layout(parent)
 {
@@ -67,25 +79,30 @@ int BoxLayout::spacing() const
 
 void BoxLayout::addWidget(Widget* widget)
 {
-
-
+    if (!parent()) return;
+    item_list.push_back(Item(widget));
+    invalidate();
+    parent()->addChild(widget);
 }
 
 void BoxLayout::addLayout(Layout* layout)
 {
-
+    if (!parent()) return;
+    // TODO: should we create a widtget and put the layout in?
+    item_list.push_back(Item(layout));
+    invalidate();
 }
 
 void BoxLayout::addSpacing(int size)
 {
-
+    if (!parent()) return;
+    // TODO: create a widget with minimum and maximum size and policy fixed
+    invalidate();
 }
-
-
 
 int BoxLayout::count() const
 {
-    return 0;
+    return (int)item_list.size();
 }
 
 ppl7::grafix::Size BoxLayout::sizeHint() const
@@ -103,6 +120,20 @@ ppl7::grafix::Size BoxLayout::minimumSize() const
     return ppl7::grafix::Size(-1, -1);
 }
 
+void BoxLayout::update()
+{
+    std::list<Item>::iterator it;
+    const Margins& m=contentsMargins();
+    int x=m.left();
+    int y=m.top();
+    for (it=item_list.begin();it != item_list.end();++it) {
+        x+=mySpacing;
+        if (it->type == ItemType::Widget) {
+            it->widget->setPos(x, y);
+            it->widget->setSize(50, 30);
+        }
+    }
 
+}
 
 }	// EOF namespace ppltk
