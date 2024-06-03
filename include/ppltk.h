@@ -968,13 +968,13 @@ private:
     WideString	myText;
     WideString validatedText;
     Font	myFont;
-    Image	myIcon;
     Color	myColor;
     Color	myBackgroundColor;
     size_t	cursorpos;
     size_t	startpos;
     Selection selection;
     int		cursorx;
+    int     cursory;
     int		cursorwidth;
     bool	blinker;
     bool 	drag_started;
@@ -1059,15 +1059,49 @@ public:
 class TextEdit : public Frame
 {
 private:
+    class Selection
+    {
+    public:
+        int x1;
+        int x2;
+        int start, end;
+
+        Selection();
+        bool exists() const;
+        void clear();
+        void begin(int position);
+
+
+    };
+
     ppl7::WideString myText;
+    ppl7::WideString validatedText;
     ppl7::grafix::Font myFont;
-    ppl7::grafix::Color myColor;
-    ppl7::String placeholder;
+    ppl7::grafix::Color myColor, myBackgroundColor;
+    ppl7::WideString placeholder;
+    size_t	cursorpos;
+    size_t	startpos;
+    Selection selection;
+    int		cursorx;
+    int		cursorwidth;
+    bool	blinker;
+    bool 	drag_started;
+    bool	overwrite;
+    int		drag_start_position;
+    int		timerId;
+    InputValidator* validator;
+
+    void calcSelectionPosition();
+    void calcCursorPosition();
+    int calcPosition(int x);
+    int getDrawStartPositionOfChar(size_t pos);
+    void validateAndSendEvent(const WideString& text);
+    void deleteSelection();
 
 
 public:
     TextEdit();
-    TextEdit(int x, int y, int width, int height);
+    TextEdit(int x, int y, int width, int height,const String& text=String());
     ~TextEdit();
 
     void setText(const ppl7::WideString& text);
@@ -1080,12 +1114,26 @@ public:
     void setFont(const Font& font);
     void setColor(const ppl7::grafix::Color& color);
     const ppl7::grafix::Color& color() const;
+    const Color& backgroundColor() const;
+    void setBackgroundColor(const Color& c);
+
+    void setInputValidator(InputValidator* validator);
 
     String widgetType() const override;
     void paint(Drawable& draw) override;
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size minimumSizeHint() const override;
 
+    virtual void mouseDownEvent(MouseEvent* event);
+    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
+    virtual void mouseUpEvent(ppltk::MouseEvent* event);
+    virtual void gotFocusEvent(FocusEvent* event);
+    virtual void lostFocusEvent(FocusEvent* event);
+    virtual void textInputEvent(TextInputEvent* event);
+    virtual void keyDownEvent(KeyEvent* event);
+    virtual void keyUpEvent(KeyEvent* event);
+    virtual void timerEvent(Event* event);
+    virtual void mouseDblClickEvent(MouseEvent* event);
 };
 
 class CheckBox : public ppltk::Label

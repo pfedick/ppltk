@@ -119,7 +119,13 @@ void MainWindow::create(int width, int height, bool fullscreen)
     testframe=new ppltk::Frame(64, 64, this->width() - 128, this->height() - 92);
     addChild(testframe);
 
-    text=new ppltk::TextEdit(0, 32, testframe->clientSize().width, 300);
+    text=new ppltk::TextEdit(0, 32, testframe->clientSize().width-10, testframe->clientSize().height-40);
+    text->setText("Dies ist ein Demo-Text, der über mehrere Zeilen geht.\n"
+        "Hier die zweite Zeile, danach eine Leerzeile\n\n"
+        "Und jetzt kommt ein etwas längerer Text ohne Zeilenumbruch. Dieser muss von selbst umbrechen, "
+        "insbesondere auch, wenn das Fenster verkleinert oder vergrößert wird. Mal schauen, wie gut das "
+        "klappt, wie man es rendert, und wie man da drin navigieren kann. Ok, das sollte jetzt lang "
+        "genug sein.");
     text->setEventHandler(this);
     testframe->addChild(text);
 
@@ -159,6 +165,8 @@ void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
 {
     testframe->setSize(this->width() - 128, this->height() - 92);
     menue->setWidth(this->width());
+    testframe->setSize(this->width() - 128, this->height() - 92);
+    text->setSize(testframe->clientSize().width-10, testframe->clientSize().height-40);
     event->accept();
 
 }
