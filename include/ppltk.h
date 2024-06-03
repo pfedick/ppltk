@@ -1077,12 +1077,13 @@ private:
     ppl7::WideString myText;
     ppl7::WideString validatedText;
     ppl7::grafix::Font myFont;
-    ppl7::grafix::Color myColor, myBackgroundColor;
+    ppl7::grafix::Color myColor;
     ppl7::WideString placeholder;
     size_t	cursorpos;
     size_t	startpos;
     Selection selection;
     int		cursorx;
+    int     cursory;
     int		cursorwidth;
     bool	blinker;
     bool 	drag_started;
@@ -1101,7 +1102,7 @@ private:
 
 public:
     TextEdit();
-    TextEdit(int x, int y, int width, int height,const String& text=String());
+    TextEdit(int x, int y, int width, int height, const String& text=String());
     ~TextEdit();
 
     void setText(const ppl7::WideString& text);
@@ -1114,8 +1115,6 @@ public:
     void setFont(const Font& font);
     void setColor(const ppl7::grafix::Color& color);
     const ppl7::grafix::Color& color() const;
-    const Color& backgroundColor() const;
-    void setBackgroundColor(const Color& c);
 
     void setInputValidator(InputValidator* validator);
 

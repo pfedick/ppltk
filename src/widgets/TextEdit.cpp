@@ -48,7 +48,6 @@ TextEdit::TextEdit()
 	const WidgetStyle& style=GetWidgetStyle();
 	setBorderStyle(Inset);
 	myColor=style.inputFontColor;
-	myBackgroundColor=style.inputBackgroundColor;
 	myFont=style.inputFont;
 	setBackgroundColor(style.inputBackgroundColor);
 	setTransparent(false);
@@ -159,16 +158,6 @@ void TextEdit::setFont(const Font& font)
 	geometryChanged();
 }
 
-const Color& TextEdit::backgroundColor() const
-{
-	return myBackgroundColor;
-}
-void TextEdit::setBackgroundColor(const Color& c)
-{
-	myBackgroundColor=c;
-}
-
-
 ppl7::grafix::Size TextEdit::sizeHint() const
 {
 	// TODO
@@ -182,22 +171,75 @@ ppl7::grafix::Size TextEdit::minimumSizeHint() const
 }
 
 
+static ppl7::WideString GetWord(const ppl7::WideString& string, size_t& p)
+{
+	ppl7::WideString word;
+	while (p < string.size()) {
+		wchar_t c=string[p];
+		switch (c) {
+			case '\n':
+			case ' ':
+				if (word.size() > 0) return word;
+				word.append(c);
+				p++;
+				return word;
+			case '-':
+				word.append(c);
+				p++;
+				return word;
+			default:
+				word.append(c);
+				p++;
+		}
+	}
+	return word;
+}
+
 void TextEdit::paint(Drawable& draw)
 {
 	const WidgetStyle& style=GetWidgetStyle();
+	ppl7::grafix::Color saveBackgroundColor=backgroundColor();
 	if (myText != validatedText && validator != NULL) Frame::setBackgroundColor(style.inputInvalidBackgroundColor);
-	else Frame::setBackgroundColor(myBackgroundColor);
 	Frame::paint(draw);
+	Frame::setBackgroundColor(saveBackgroundColor);
+
 	Drawable d=clientDrawable(draw);
-	if (selection.x1 != selection.x2) d.fillRect(selection.x1, 0, selection.x2, d.height(), style.inputSelectedBackgroundColor);
-	//printf ("Text: %s, width: %i, height: %i\n",(const char*)myText, d.width(), d.height());
+	// TODO: if (selection.x1 != selection.x2) d.fillRect(selection.x1, 0, selection.x2, d.height(), style.inputSelectedBackgroundColor);
+
 	int x=0;
+	int y=0;
+	ppl7::grafix::Size s=myFont.measure(L" ");
+	int h=s.height;
+
 	myFont.setColor(myColor);
 	myFont.setOrientation(Font::TOP);
-	Size s=myFont.measure(myText);
-	d.print(myFont, x, (d.height() - s.height) >> 1, myText);
+	size_t p=0;
+	while (p < myText.size()) {
+		ppl7::WideString word=GetWord(myText, p);
+		if (word.size()) {
+			if (word[0] == '\n') {
+				x=0;
+				y+=h;
+			} else if (word[0] == ' ') {
+				s=myFont.measure(word);
+				d.print(myFont, x, y, word);
+				x+=s.width;
+			} else {
+				s=myFont.measure(word);
+				if (x + s.width >= d.width()) {
+					x=0;
+					y+=h;
+				}
+				d.print(myFont, x, y, word);
+				x+=s.width;
+			}
+		}
+	}
+	//x=0;
+	//s=myFont.measure(myText);
+	//d.print(myFont, x, (d.height() - s.height) >> 1, myText);
 	//d.invert(Rect(cursorx,0,cursorx+cursorwidth,d.height()),myColor,backgroundColor());
-	if (blinker) d.fillRect(cursorx, 0, cursorx + cursorwidth, d.height(), myColor);
+	if (blinker) d.fillRect(cursorx, cursory, cursorx + cursorwidth, cursory + h, myColor);
 }
 
 void TextEdit::mouseDownEvent(MouseEvent* event)
