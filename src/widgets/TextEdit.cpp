@@ -52,7 +52,6 @@ TextEdit::TextEdit()
 	setBackgroundColor(style.inputBackgroundColor);
 	setTransparent(false);
 	cursorpos=0;
-	startpos=0;
 	cursorx=0;
 	cursory=0;
 	line_height=0;
@@ -81,7 +80,6 @@ TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
 		if (validator->validateText(text) == true) validatedText=text;
 	}
 	cursorpos=0;
-	startpos=0;
 	cursorx=0;
 	line_height=0;
 	cache_line_width=0;
@@ -137,7 +135,6 @@ void TextEdit::setText(const String& text)
 	if (new_text == myText) return;
 	if (validator != NULL && validator->validateText(new_text) == false) return;
 	myText=new_text;
-	startpos=0;
 	if (cursorpos > myText.size()) cursorpos=myText.size();
 	calcCursorPosition();
 	selection.clear();
@@ -235,12 +232,13 @@ void TextEdit::rebuildCache(int width)
 	int y=0;
 	ppl7::grafix::Size s=myFont.measure(L" ");
 	line_height=s.height;
-	ppl7::PrintDebug("TextEdit::rebuildCache\n");
+	//ppl7::PrintDebug("TextEdit::rebuildCache\n");
 	size_t p=0;
 	while (p < myText.size()) {
 		ppl7::WideString word=GetWord(myText, p);
 		if (word.size()) {
 			if (word[0] == '\n') {
+				addToCache(word,x,y, line);
 				x=0;
 				y+=line_height;
 				line++;
@@ -262,6 +260,7 @@ void TextEdit::rebuildCache(int width)
 	}
 	cache_line_width=width;
 	cache_is_valid=true;
+	calcCursorPosition();
 }
 
 
@@ -283,8 +282,10 @@ void TextEdit::paint(Drawable& draw)
 	WideString letter;
 	std::map<size_t,CacheItem>::const_iterator it;
 	for (it=position_cache.begin();it!=position_cache.end();++it) {
-		letter.set(it->second.letter);
-		d.print(myFont, it->second.p.x, it->second.p.y, letter);
+		if (it->second.letter!='\n') {
+			letter.set(it->second.letter);
+			d.print(myFont, it->second.p.x, it->second.p.y, letter);
+		}
 	}
 	if (blinker) d.fillRect(cursorx, cursory, cursorx + cursorwidth, cursory + line_height, myColor);
 }
@@ -404,14 +405,18 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 		if (key_modifier == KeyEvent::KEYMOD_NONE) {
 			if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
 				cursorpos--;
+				blinker=true;
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_RIGHT && cursorpos < myText.size()) {
+				blinker=true;
 				cursorpos++;
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
+				blinker=true;
 				cursorpos=0;
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
+				blinker=true;
 				cursorpos=myText.size();
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_BACKSPACE && cursorpos > 0) {
@@ -425,6 +430,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				calcCursorPosition();
 				invalidateCache();
 				validateAndSendEvent(myText);
+				blinker=true;
 			} else if (event->key == KeyEvent::KEY_DELETE) {
 				if (selection.exists()) {
 					deleteSelection();
@@ -435,6 +441,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				calcCursorPosition();
 				invalidateCache();
 				validateAndSendEvent(myText);
+				blinker=true;
 			}
 			selection.clear();
 			calcSelectionPosition();
@@ -530,14 +537,14 @@ void TextEdit::calcCursorPosition()
 	Size s1;
 	if ((ssize_t)cursorpos < 0) cursorpos=0;
 	if (cursorpos > text.size()) cursorpos=text.size();
-	if (cursorpos == 0) {
-		cursorx=0;
-		cursory=0;
-		startpos=0;
-	} else {
-		left=text.left(cursorpos);
-		s1=myFont.measure(left);
-		cursorx=s1.width;
+	cursorx=0;
+	cursory=0;
+	if (cursorpos > 0) {
+		std::map<size_t,CacheItem>::const_iterator it=position_cache.find(cursorpos);
+		if (it!=position_cache.end()) {
+			cursorx=it->second.p.x;
+			cursory=it->second.p.y;
+		}
 	}
 	needsRedraw();
 }
@@ -562,11 +569,10 @@ int TextEdit::calcPosition(const ppl7::grafix::Point &p)
 
 ppl7::grafix::Point TextEdit::getDrawStartPositionOfChar(size_t pos)
 {
-	/* TODO
-	WideString text=myText.left(pos);
-	Size s1=myFont.measure(text);
-	return s1.width;
-	*/
+	std::map<size_t,CacheItem>::const_iterator it=position_cache.find(pos);
+	if (it!=position_cache.end()) {
+		return it->second.p;
+	}
 	return ppl7::grafix::Point(0,0);
 }
 

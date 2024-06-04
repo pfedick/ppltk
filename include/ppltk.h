@@ -1091,7 +1091,6 @@ private:
     bool cache_is_valid;
 
     size_t	cursorpos;
-    size_t	startpos;
     Selection selection;
     int		cursorx;
     int     cursory;
