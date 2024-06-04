@@ -206,7 +206,7 @@ static ppl7::WideString GetWord(const ppl7::WideString& string, size_t& p)
 	return word;
 }
 
-void TextEdit::addToCache(const ppl7::WideString &word, int x, int y, int line)
+void TextEdit::addToCache(const ppl7::WideString& word, int x, int y, int line)
 {
 	size_t p=0;
 	ppl7::WideString letter;
@@ -218,7 +218,7 @@ void TextEdit::addToCache(const ppl7::WideString &word, int x, int y, int line)
 		item.line=line;
 		item.p.x=x;
 		item.p.y=y;
-		position_cache.insert(std::pair<size_t,TextEdit::CacheItem>(position_cache.size(),item));
+		position_cache.insert(std::pair<size_t, TextEdit::CacheItem>(position_cache.size(), item));
 		x+=item.size.width;
 		p++;
 	}
@@ -238,13 +238,13 @@ void TextEdit::rebuildCache(int width)
 		ppl7::WideString word=GetWord(myText, p);
 		if (word.size()) {
 			if (word[0] == '\n') {
-				addToCache(word,x,y, line);
+				addToCache(word, x, y, line);
 				x=0;
 				y+=line_height;
 				line++;
 			} else if (word[0] == ' ') {
 				s=myFont.measure(word);
-				addToCache(word,x,y, line);
+				addToCache(word, x, y, line);
 				x+=s.width;
 			} else {
 				s=myFont.measure(word);
@@ -253,7 +253,7 @@ void TextEdit::rebuildCache(int width)
 					y+=line_height;
 					line++;
 				}
-				addToCache(word,x,y, line);
+				addToCache(word, x, y, line);
 				x+=s.width;
 			}
 		}
@@ -273,16 +273,16 @@ void TextEdit::paint(Drawable& draw)
 	Frame::setBackgroundColor(saveBackgroundColor);
 
 	Drawable d=clientDrawable(draw);
-	if (d.width()!=cache_line_width) invalidateCache();
+	if (d.width() != cache_line_width) invalidateCache();
 
 	if (!cache_is_valid) rebuildCache(d.width());
 
 	myFont.setColor(myColor);
 	myFont.setOrientation(Font::TOP);
 	WideString letter;
-	std::map<size_t,CacheItem>::const_iterator it;
-	for (it=position_cache.begin();it!=position_cache.end();++it) {
-		if (it->second.letter!='\n') {
+	std::map<size_t, CacheItem>::const_iterator it;
+	for (it=position_cache.begin();it != position_cache.end();++it) {
+		if (it->second.letter != '\n') {
 			letter.set(it->second.letter);
 			d.print(myFont, it->second.p.x, it->second.p.y, letter);
 		}
@@ -401,24 +401,39 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 {
 	//printf("TextEdit::keyDownEvent(keycode=%i, repeat=%i, modifier: %i)\n", event->key, event->repeat, event->modifier);
 	if (isEnabled()) {
+		blinker=true;
 		int key_modifier=event->modifier & KeyEvent::KEYMOD_MODIFIER;
 		if (key_modifier == KeyEvent::KEYMOD_NONE) {
 			if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
 				cursorpos--;
-				blinker=true;
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_RIGHT && cursorpos < myText.size()) {
-				blinker=true;
 				cursorpos++;
 				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
-				blinker=true;
-				cursorpos=0;
+			} else if (event->key == KeyEvent::KEY_UP) {
+				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+				p.y-=line_height;
+				if (p.y < 0) p.y=0;
+				cursorpos=calcPosition(p);
 				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
-				blinker=true;
-				cursorpos=myText.size();
+			} else if (event->key == KeyEvent::KEY_DOWN) {
+				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+				p.y+=line_height;
+				cursorpos=calcPosition(p);
 				calcCursorPosition();
+
+			} else if (event->key == KeyEvent::KEY_HOME) {
+				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+				p.x=0;
+				cursorpos=calcPosition(p);
+				calcCursorPosition();
+			} else if (event->key == KeyEvent::KEY_END) {
+				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+				p.x=cache_line_width + 100;
+				cursorpos=calcPosition(p);
+				calcCursorPosition();
+
+
 			} else if (event->key == KeyEvent::KEY_BACKSPACE && cursorpos > 0) {
 				if (selection.exists()) {
 					deleteSelection();
@@ -465,6 +480,12 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				invalidateCache();
 				calcCursorPosition();
 
+			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
+				cursorpos=0;
+				calcCursorPosition();
+			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
+				cursorpos=myText.size();
+				calcCursorPosition();
 			}
 
 		} else if (key_modifier == KeyEvent::KEYMOD_LEFTSHIFT || key_modifier == KeyEvent::KEYMOD_RIGHTSHIFT) {
@@ -483,19 +504,25 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				calcCursorPosition();
 				calcSelectionPosition();
 			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
+				// TODO
+				/*
 				if (!selection.exists()) selection.begin(cursorpos);
 				if ((int)cursorpos == selection.end) selection.end=selection.start;
 				cursorpos=0;
 				selection.start=cursorpos;
 				calcCursorPosition();
 				calcSelectionPosition();
+				*/
 			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
+				// TODO
+				/*
 				if (!selection.exists()) selection.begin(cursorpos);
 				if ((int)cursorpos == selection.start) selection.start=selection.end;
 				cursorpos=myText.size();
 				selection.end=cursorpos;
 				calcCursorPosition();
 				calcSelectionPosition();
+				*/
 			}
 		}
 
@@ -539,9 +566,16 @@ void TextEdit::calcCursorPosition()
 	if (cursorpos > text.size()) cursorpos=text.size();
 	cursorx=0;
 	cursory=0;
-	if (cursorpos > 0) {
-		std::map<size_t,CacheItem>::const_iterator it=position_cache.find(cursorpos);
-		if (it!=position_cache.end()) {
+	if (cursorpos > 0 && cursorpos >= position_cache.size()) {
+		std::map<size_t, CacheItem>::const_iterator it=position_cache.find(cursorpos - 1);
+		if (it != position_cache.end()) {
+			cursorx=it->second.p.x + it->second.size.width;
+			cursory=it->second.p.y;
+
+		}
+	} else if (cursorpos > 0) {
+		std::map<size_t, CacheItem>::const_iterator it=position_cache.find(cursorpos);
+		if (it != position_cache.end()) {
 			cursorx=it->second.p.x;
 			cursory=it->second.p.y;
 		}
@@ -549,31 +583,30 @@ void TextEdit::calcCursorPosition()
 	needsRedraw();
 }
 
-int TextEdit::calcPosition(const ppl7::grafix::Point &p)
+int TextEdit::calcPosition(const ppl7::grafix::Point& p)
 {
-	/* TODO
-	WideString text;
-	size_t c=0;
-	Size s1;
-	while (c < myText.size()) {
-		text=myText.left(c + 1);
-		s1=myFont.measure(text);
-		if (x < s1.width) break;
-		c++;
+	int l=p.y / line_height;
+	std::map<size_t, CacheItem>::const_iterator it;
+	int r=0, mx_y=0;
+	//ppl7::PrintDebug("x=%d\n", p.x);
+	for (it=position_cache.begin();it != position_cache.end();++it) {
+		mx_y=it->second.p.y;
+		if (it->second.line == l) {
+			r=it->first;
+			if (it->second.p.x <= p.x && (it->second.p.x + it->second.size.width) > p.x) return it->first;
+		}
 	}
-
-	return c;
-	*/
-	return 0;
+	if (p.y >= mx_y + line_height) r=position_cache.size() + 1;
+	return r;
 }
 
 ppl7::grafix::Point TextEdit::getDrawStartPositionOfChar(size_t pos)
 {
-	std::map<size_t,CacheItem>::const_iterator it=position_cache.find(pos);
-	if (it!=position_cache.end()) {
+	std::map<size_t, CacheItem>::const_iterator it=position_cache.find(pos);
+	if (it != position_cache.end()) {
 		return it->second.p;
 	}
-	return ppl7::grafix::Point(0,0);
+	return ppl7::grafix::Point(0, 0);
 }
 
 void TextEdit::calcSelectionPosition()
@@ -582,8 +615,8 @@ void TextEdit::calcSelectionPosition()
 		selection.p_start=getDrawStartPositionOfChar(selection.start);
 		selection.p_end=getDrawStartPositionOfChar(selection.end);
 	} else {
-		selection.p_start.setPoint(0,0);
-		selection.p_end.setPoint(0,0);
+		selection.p_start.setPoint(0, 0);
+		selection.p_end.setPoint(0, 0);
 	}
 }
 
@@ -602,8 +635,8 @@ bool TextEdit::Selection::exists() const
 
 void TextEdit::Selection::clear()
 {
-	p_start.setPoint(0,0);
-	p_end.setPoint(0,0);
+	p_start.setPoint(0, 0);
+	p_end.setPoint(0, 0);
 	start=-1;
 	end=-1;
 }
