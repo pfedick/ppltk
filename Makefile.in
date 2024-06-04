@@ -74,7 +74,7 @@ $(PROGRAM): $(OBJECTS) compile/main.o $(LIBDEP)
 all: $(PROGRAM)
 
 clean:
-	-rm -f *.o $(PROGRAM) *.core compile
+	-rm -rf *.o $(PROGRAM) *.core compile
 
 
 compile/main.o: demo/main.cpp Makefile include/ppltk.h demo/demo.h

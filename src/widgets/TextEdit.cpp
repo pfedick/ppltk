@@ -55,11 +55,14 @@ TextEdit::TextEdit()
 	startpos=0;
 	cursorx=0;
 	cursory=0;
+	line_height=0;
+	cache_line_width=0;
 	cursorwidth=2;
 	blinker=false;
 	overwrite=false;
 	timerId=0;
 	drag_started=false;
+	cache_is_valid=false;
 
 }
 
@@ -80,11 +83,14 @@ TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
 	cursorpos=0;
 	startpos=0;
 	cursorx=0;
+	line_height=0;
+	cache_line_width=0;
 	cursorwidth=2;
 	blinker=false;
 	overwrite=false;
 	timerId=0;
 	drag_started=false;
+	cache_is_valid=false;
 }
 
 String TextEdit::widgetType() const
@@ -100,6 +106,12 @@ TextEdit::~TextEdit()
 		drag_started=false;
 		ppltk::GetWindowManager()->releaseMouse(this);
 	}
+}
+
+void TextEdit::invalidateCache()
+{
+	cache_is_valid=false;
+	position_cache.clear();
 }
 
 const ppl7::WideString& TextEdit::text() const
@@ -130,6 +142,7 @@ void TextEdit::setText(const String& text)
 	calcCursorPosition();
 	selection.clear();
 	needsRedraw();
+	invalidateCache();
 	geometryChanged();
 	validateAndSendEvent(myText);
 }
@@ -154,6 +167,7 @@ const Font& TextEdit::font() const
 void TextEdit::setFont(const Font& font)
 {
 	myFont=font;
+	invalidateCache();
 	needsRedraw();
 	geometryChanged();
 }
@@ -195,6 +209,62 @@ static ppl7::WideString GetWord(const ppl7::WideString& string, size_t& p)
 	return word;
 }
 
+void TextEdit::addToCache(const ppl7::WideString &word, int x, int y, int line)
+{
+	size_t p=0;
+	ppl7::WideString letter;
+	CacheItem item;
+	while (p < word.size()) {
+		letter.set(word[p]);
+		item.letter=word[p];
+		item.size=myFont.measure(letter);
+		item.line=line;
+		item.p.x=x;
+		item.p.y=y;
+		position_cache.insert(std::pair<size_t,TextEdit::CacheItem>(position_cache.size(),item));
+		x+=item.size.width;
+		p++;
+	}
+}
+
+void TextEdit::rebuildCache(int width)
+{
+	position_cache.clear();
+	int line=0;
+	int x=0;
+	int y=0;
+	ppl7::grafix::Size s=myFont.measure(L" ");
+	line_height=s.height;
+	ppl7::PrintDebug("TextEdit::rebuildCache\n");
+	size_t p=0;
+	while (p < myText.size()) {
+		ppl7::WideString word=GetWord(myText, p);
+		if (word.size()) {
+			if (word[0] == '\n') {
+				x=0;
+				y+=line_height;
+				line++;
+			} else if (word[0] == ' ') {
+				s=myFont.measure(word);
+				addToCache(word,x,y, line);
+				x+=s.width;
+			} else {
+				s=myFont.measure(word);
+				if (x + s.width >= width) {
+					x=0;
+					y+=line_height;
+					line++;
+				}
+				addToCache(word,x,y, line);
+				x+=s.width;
+			}
+		}
+	}
+	cache_line_width=width;
+	cache_is_valid=true;
+}
+
+
 void TextEdit::paint(Drawable& draw)
 {
 	const WidgetStyle& style=GetWidgetStyle();
@@ -204,49 +274,26 @@ void TextEdit::paint(Drawable& draw)
 	Frame::setBackgroundColor(saveBackgroundColor);
 
 	Drawable d=clientDrawable(draw);
-	// TODO: if (selection.x1 != selection.x2) d.fillRect(selection.x1, 0, selection.x2, d.height(), style.inputSelectedBackgroundColor);
+	if (d.width()!=cache_line_width) invalidateCache();
 
-	int x=0;
-	int y=0;
-	ppl7::grafix::Size s=myFont.measure(L" ");
-	int h=s.height;
+	if (!cache_is_valid) rebuildCache(d.width());
 
 	myFont.setColor(myColor);
 	myFont.setOrientation(Font::TOP);
-	size_t p=0;
-	while (p < myText.size()) {
-		ppl7::WideString word=GetWord(myText, p);
-		if (word.size()) {
-			if (word[0] == '\n') {
-				x=0;
-				y+=h;
-			} else if (word[0] == ' ') {
-				s=myFont.measure(word);
-				d.print(myFont, x, y, word);
-				x+=s.width;
-			} else {
-				s=myFont.measure(word);
-				if (x + s.width >= d.width()) {
-					x=0;
-					y+=h;
-				}
-				d.print(myFont, x, y, word);
-				x+=s.width;
-			}
-		}
+	WideString letter;
+	std::map<size_t,CacheItem>::const_iterator it;
+	for (it=position_cache.begin();it!=position_cache.end();++it) {
+		letter.set(it->second.letter);
+		d.print(myFont, it->second.p.x, it->second.p.y, letter);
 	}
-	//x=0;
-	//s=myFont.measure(myText);
-	//d.print(myFont, x, (d.height() - s.height) >> 1, myText);
-	//d.invert(Rect(cursorx,0,cursorx+cursorwidth,d.height()),myColor,backgroundColor());
-	if (blinker) d.fillRect(cursorx, cursory, cursorx + cursorwidth, cursory + h, myColor);
+	if (blinker) d.fillRect(cursorx, cursory, cursorx + cursorwidth, cursory + line_height, myColor);
 }
 
 void TextEdit::mouseDownEvent(MouseEvent* event)
 {
 	//printf ("TextEdit::mouseDownEvent\n");
 	GetWindowManager()->setKeyboardFocus(this);
-	cursorpos=calcPosition(event->p.x);
+	cursorpos=calcPosition(event->p);
 	selection.clear();
 	blinker=true;
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
@@ -270,7 +317,7 @@ void TextEdit::mouseDownEvent(MouseEvent* event)
 void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 {
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
-		cursorpos=calcPosition(event->p.x);
+		cursorpos=calcPosition(event->p);
 		if ((int)cursorpos < drag_start_position) {
 			selection.start=cursorpos;
 			selection.end=drag_start_position;
@@ -297,7 +344,7 @@ void TextEdit::mouseUpEvent(ppltk::MouseEvent* event)
 
 void TextEdit::gotFocusEvent(FocusEvent* event)
 {
-	//printf("TextEdit::gotFocusEvent\n");
+	//ppl7::PrintDebug("TextEdit::gotFocusEvent\n");
 	blinker=true;
 	if (!timerId) timerId=GetWindowManager()->startTimer(this, 500);
 	needsRedraw();
@@ -328,6 +375,7 @@ void TextEdit::textInputEvent(TextInputEvent* event)
 	right=myText.mid(cursorpos);
 	left+=event->text + right;
 	myText=left;
+	invalidateCache();
 	cursorpos++;
 	calcCursorPosition();
 	selection.clear();
@@ -375,6 +423,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 					cursorpos--;
 				}
 				calcCursorPosition();
+				invalidateCache();
 				validateAndSendEvent(myText);
 			} else if (event->key == KeyEvent::KEY_DELETE) {
 				if (selection.exists()) {
@@ -384,6 +433,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 					myText=new_text;
 				}
 				calcCursorPosition();
+				invalidateCache();
 				validateAndSendEvent(myText);
 			}
 			selection.clear();
@@ -405,6 +455,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				WideString new_text=myText.left(cursorpos) + clipboard + myText.mid(cursorpos);
 				myText=new_text;
 				cursorpos+=clipboard.size();
+				invalidateCache();
 				calcCursorPosition();
 
 			}
@@ -453,6 +504,7 @@ void TextEdit::keyUpEvent(KeyEvent* event)
 
 void TextEdit::timerEvent(Event* event)
 {
+	//ppl7::PrintDebug("TextEdit::timerEvent\n");
 	blinker=!blinker;
 	needsRedraw();
 	//if (GetWindowManager()->getKeyboardFocus()==this) GetWindowManager()->startTimer(this,500);
@@ -474,24 +526,25 @@ void TextEdit::mouseDblClickEvent(MouseEvent* event)
 
 void TextEdit::calcCursorPosition()
 {
-	WideString text=myText, left, right;
+	WideString text=myText, left;
 	Size s1;
 	if ((ssize_t)cursorpos < 0) cursorpos=0;
 	if (cursorpos > text.size()) cursorpos=text.size();
 	if (cursorpos == 0) {
 		cursorx=0;
+		cursory=0;
 		startpos=0;
 	} else {
 		left=text.left(cursorpos);
-		right=text.mid(cursorpos);
 		s1=myFont.measure(left);
 		cursorx=s1.width;
 	}
 	needsRedraw();
 }
 
-int TextEdit::calcPosition(int x)
+int TextEdit::calcPosition(const ppl7::grafix::Point &p)
 {
+	/* TODO
 	WideString text;
 	size_t c=0;
 	Size s1;
@@ -503,30 +556,34 @@ int TextEdit::calcPosition(int x)
 	}
 
 	return c;
+	*/
+	return 0;
 }
 
-int TextEdit::getDrawStartPositionOfChar(size_t pos)
+ppl7::grafix::Point TextEdit::getDrawStartPositionOfChar(size_t pos)
 {
+	/* TODO
 	WideString text=myText.left(pos);
 	Size s1=myFont.measure(text);
 	return s1.width;
+	*/
+	return ppl7::grafix::Point(0,0);
 }
 
 void TextEdit::calcSelectionPosition()
 {
 	if (selection.exists()) {
-		selection.x1=getDrawStartPositionOfChar(selection.start);
-		selection.x2=getDrawStartPositionOfChar(selection.end);
+		selection.p_start=getDrawStartPositionOfChar(selection.start);
+		selection.p_end=getDrawStartPositionOfChar(selection.end);
 	} else {
-		selection.x1=0;
-		selection.x2=0;
+		selection.p_start.setPoint(0,0);
+		selection.p_end.setPoint(0,0);
 	}
 }
 
 
 TextEdit::Selection::Selection()
 {
-	x1=x2=0;
 	start=-1;
 	end=-1;
 }
@@ -539,7 +596,8 @@ bool TextEdit::Selection::exists() const
 
 void TextEdit::Selection::clear()
 {
-	x1=x2=0;
+	p_start.setPoint(0,0);
+	p_end.setPoint(0,0);
 	start=-1;
 	end=-1;
 }

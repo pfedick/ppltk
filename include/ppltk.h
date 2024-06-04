@@ -1062,16 +1062,23 @@ private:
     class Selection
     {
     public:
-        int x1;
-        int x2;
+        ppl7::grafix::Point p_start;
+        ppl7::grafix::Point p_end;
         int start, end;
 
         Selection();
         bool exists() const;
         void clear();
         void begin(int position);
+    };
 
-
+    class CacheItem
+    {
+        public:
+            wchar_t letter;
+            ppl7::grafix::Point p;
+            ppl7::grafix::Size size;
+            int line;
     };
 
     ppl7::WideString myText;
@@ -1079,12 +1086,18 @@ private:
     ppl7::grafix::Font myFont;
     ppl7::grafix::Color myColor;
     ppl7::WideString placeholder;
+
+    std::map<size_t,CacheItem> position_cache;
+    bool cache_is_valid;
+
     size_t	cursorpos;
     size_t	startpos;
     Selection selection;
     int		cursorx;
     int     cursory;
     int		cursorwidth;
+    int     line_height;
+    int     cache_line_width;
     bool	blinker;
     bool 	drag_started;
     bool	overwrite;
@@ -1094,10 +1107,13 @@ private:
 
     void calcSelectionPosition();
     void calcCursorPosition();
-    int calcPosition(int x);
-    int getDrawStartPositionOfChar(size_t pos);
+    int calcPosition(const ppl7::grafix::Point &p);
+    ppl7::grafix::Point getDrawStartPositionOfChar(size_t pos);
     void validateAndSendEvent(const WideString& text);
     void deleteSelection();
+    void addToCache(const ppl7::WideString &word, int x, int y, int line);
+    void invalidateCache();
+    void rebuildCache(int width);
 
 
 public:
