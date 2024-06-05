@@ -119,7 +119,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     testframe=new ppltk::Frame(64, 64, this->width() - 128, this->height() - 92);
     addChild(testframe);
 
-    text=new ppltk::TextEdit(0, 32, testframe->clientSize().width-10, testframe->clientSize().height-40);
+    text=new ppltk::TextEdit(0, 40, testframe->clientSize().width, testframe->clientSize().height-40);
     text->setText("Dies ist ein Demo-Text, der über mehrere Zeilen geht.\n"
         "Hier die zweite Zeile, danach eine Leerzeile\n\n"
         "Und jetzt kommt ein etwas längerer Text ohne Zeilenumbruch. Dieser muss von selbst umbrechen, "
@@ -130,6 +130,8 @@ void MainWindow::create(int width, int height, bool fullscreen)
     testframe->addChild(text);
 
 
+    input=new ppltk::LineInput(0,0,testframe->clientSize().width,30,"Ein einzeiliger Test Text");
+    testframe->addChild(input);
 
 
     ppltk::Label* label=new ppltk::Label("FPS:");
@@ -166,7 +168,8 @@ void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
     testframe->setSize(this->width() - 128, this->height() - 92);
     menue->setWidth(this->width());
     testframe->setSize(this->width() - 128, this->height() - 92);
-    text->setSize(testframe->clientSize().width-10, testframe->clientSize().height-40);
+    text->setSize(testframe->clientSize().width, testframe->clientSize().height-40);
+    input->setSize(testframe->clientSize().width, 30);
     event->accept();
 
 }
