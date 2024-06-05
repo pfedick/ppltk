@@ -307,6 +307,7 @@ void TextEdit::mouseDownEvent(MouseEvent* event)
 		WideString new_text=myText.left(cursorpos) + clipboard + myText.mid(cursorpos);
 		myText=new_text;
 		cursorpos+=clipboard.size();
+		invalidateCache();
 
 	}
 	calcCursorPosition();
@@ -594,6 +595,7 @@ int TextEdit::calcPosition(const ppl7::grafix::Point& p)
 		if (it->second.line == l) {
 			r=it->first;
 			if (it->second.p.x <= p.x && (it->second.p.x + it->second.size.width) > p.x) return it->first;
+			if (r==((int)position_cache.size()-1)) return (int)position_cache.size();
 		}
 	}
 	if (p.y >= mx_y + line_height) r=position_cache.size() + 1;
