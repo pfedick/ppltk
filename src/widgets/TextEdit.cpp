@@ -522,26 +522,28 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				else selection.start=cursorpos;
 				calcCursorPosition();
 				calcSelectionPosition();
+			} else if (event->key == KeyEvent::KEY_UP) {
+				if (!selection.exists()) selection.begin(cursorpos);
+				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+				p.y-=line_height;
+				if (p.y < 0) p.y=0;
+				cursorpos=calcPosition(p);
+				if (selection.start > (int)cursorpos) selection.start=cursorpos;
+				else selection.end=cursorpos;
+				calcCursorPosition();
+				calcSelectionPosition();
+			} else if (event->key == KeyEvent::KEY_DOWN) {
+				if (!selection.exists()) selection.begin(cursorpos);
+				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+				p.y+=line_height;
+				cursorpos=calcPosition(p);
+				if (selection.end < (int)cursorpos) selection.end=cursorpos;
+				else selection.start=cursorpos;
+				calcCursorPosition();
+				calcSelectionPosition();
 			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
-				// TODO
-				/*
-				if (!selection.exists()) selection.begin(cursorpos);
-				if ((int)cursorpos == selection.end) selection.end=selection.start;
-				cursorpos=0;
-				selection.start=cursorpos;
-				calcCursorPosition();
-				calcSelectionPosition();
-				*/
+
 			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
-				// TODO
-				/*
-				if (!selection.exists()) selection.begin(cursorpos);
-				if ((int)cursorpos == selection.start) selection.start=selection.end;
-				cursorpos=myText.size();
-				selection.end=cursorpos;
-				calcCursorPosition();
-				calcSelectionPosition();
-				*/
 			}
 		}
 
