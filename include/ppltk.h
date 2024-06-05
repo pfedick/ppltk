@@ -1113,6 +1113,7 @@ private:
     void addToCache(const ppl7::WideString &word, int x, int y, int line);
     void invalidateCache();
     void rebuildCache(int width);
+    void paintSelection(Drawable& draw);
 
 
 public:

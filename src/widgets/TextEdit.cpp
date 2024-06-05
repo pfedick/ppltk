@@ -264,6 +264,19 @@ void TextEdit::rebuildCache(int width)
 }
 
 
+void TextEdit::paintSelection(Drawable& draw)
+{
+	const WidgetStyle& style=GetWidgetStyle();
+	for (int i=selection.start;i<=selection.end;i++) {
+		std::map<size_t, CacheItem>::const_iterator it=position_cache.find(i);
+		if (it != position_cache.end()) {
+			draw.fillRect(it->second.p.x, it->second.p.y, it->second.p.x+it->second.size.width, it->second.p.y+it->second.size.height,
+				style.inputSelectedBackgroundColor);
+		}
+	}
+
+}
+
 void TextEdit::paint(Drawable& draw)
 {
 	const WidgetStyle& style=GetWidgetStyle();
@@ -277,6 +290,7 @@ void TextEdit::paint(Drawable& draw)
 
 	if (!cache_is_valid) rebuildCache(d.width());
 
+	if (selection.exists()) paintSelection(d);
 	myFont.setColor(myColor);
 	myFont.setOrientation(Font::TOP);
 	WideString letter;
