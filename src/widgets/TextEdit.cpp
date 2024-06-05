@@ -389,8 +389,7 @@ void TextEdit::textInputEvent(TextInputEvent* event)
 	deleteSelection();
 	left=myText.left(cursorpos);
 	right=myText.mid(cursorpos);
-	left+=event->text + right;
-	myText=left;
+	myText=left+event->text + right;
 	invalidateCache();
 	cursorpos++;
 	calcCursorPosition();
@@ -418,6 +417,11 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 	if (isEnabled()) {
 		blinker=true;
 		int key_modifier=event->modifier & KeyEvent::KEYMOD_MODIFIER;
+		if (event->key == KeyEvent::KEY_ENTER || event->key == KeyEvent::KEY_RETURN) {
+			TextInputEvent ev;
+			ev.text.set(L"\n");
+			textInputEvent(&ev);
+		}
 		if (key_modifier == KeyEvent::KEYMOD_NONE) {
 			if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
 				cursorpos--;
