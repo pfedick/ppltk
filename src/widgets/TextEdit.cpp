@@ -547,10 +547,22 @@ void TextEdit::timerEvent(Event* event)
 
 void TextEdit::mouseDblClickEvent(MouseEvent* event)
 {
+	GetWindowManager()->setKeyboardFocus(this);
 	selection.clear();
 	if (myText.notEmpty()) {
-		selection.start=0;
-		selection.end=(int)myText.size();
+		cursorpos=calcPosition(event->p);
+		selection.begin(cursorpos);
+		for (int i=cursorpos;i>=0;i--) {
+			wchar_t c=myText[i];
+			if (c=='\n' || c==' ' || c=='.' || c==',') break;
+			selection.start=i;
+		}
+		for (int i=cursorpos;i<(int)myText.size();i++) {
+			wchar_t c=myText[i];
+			if (c=='\n' || c==' ' || c=='.' || c==',') break;
+			selection.end=i;
+
+		}
 		needsRedraw();
 	}
 }
