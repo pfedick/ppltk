@@ -1062,8 +1062,6 @@ private:
     class Selection
     {
     public:
-        ppl7::grafix::Point p_start;
-        ppl7::grafix::Point p_end;
         int start, end;
 
         Selection();
@@ -1104,7 +1102,6 @@ private:
     int		timerId;
     InputValidator* validator;
 
-    void calcSelectionPosition();
     void calcCursorPosition();
     int calcPosition(const ppl7::grafix::Point &p);
     ppl7::grafix::Point getDrawStartPositionOfChar(size_t pos);

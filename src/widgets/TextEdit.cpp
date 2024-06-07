@@ -342,7 +342,6 @@ void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 			selection.end=cursorpos;
 		}
 		calcCursorPosition();
-		calcSelectionPosition();
 		needsRedraw();
 	} else if (drag_started) {
 		drag_started=false;
@@ -478,7 +477,6 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				blinker=true;
 			}
 			selection.clear();
-			calcSelectionPosition();
 
 		} else if (key_modifier == KeyEvent::KEYMOD_LEFTCTRL) {
 			//printf("key=%d\n", event->key);
@@ -514,14 +512,12 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				if (selection.start > (int)cursorpos) selection.start=cursorpos;
 				else selection.end=cursorpos;
 				calcCursorPosition();
-				calcSelectionPosition();
 			} else if (event->key == KeyEvent::KEY_RIGHT && cursorpos < myText.size()) {
 				if (!selection.exists()) selection.begin(cursorpos);
 				cursorpos++;
 				if (selection.end < (int)cursorpos) selection.end=cursorpos;
 				else selection.start=cursorpos;
 				calcCursorPosition();
-				calcSelectionPosition();
 			} else if (event->key == KeyEvent::KEY_UP) {
 				if (!selection.exists()) selection.begin(cursorpos);
 				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
@@ -531,7 +527,6 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				if (selection.start > (int)cursorpos) selection.start=cursorpos;
 				else selection.end=cursorpos;
 				calcCursorPosition();
-				calcSelectionPosition();
 			} else if (event->key == KeyEvent::KEY_DOWN) {
 				if (!selection.exists()) selection.begin(cursorpos);
 				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
@@ -540,7 +535,6 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				if (selection.end < (int)cursorpos) selection.end=cursorpos;
 				else selection.start=cursorpos;
 				calcCursorPosition();
-				calcSelectionPosition();
 			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
 
 			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
@@ -573,7 +567,6 @@ void TextEdit::mouseDblClickEvent(MouseEvent* event)
 	if (myText.notEmpty()) {
 		selection.start=0;
 		selection.end=(int)myText.size();
-		calcSelectionPosition();
 		needsRedraw();
 	}
 }
@@ -631,18 +624,6 @@ ppl7::grafix::Point TextEdit::getDrawStartPositionOfChar(size_t pos)
 	return ppl7::grafix::Point(0, 0);
 }
 
-void TextEdit::calcSelectionPosition()
-{
-	if (selection.exists()) {
-		selection.p_start=getDrawStartPositionOfChar(selection.start);
-		selection.p_end=getDrawStartPositionOfChar(selection.end);
-	} else {
-		selection.p_start.setPoint(0, 0);
-		selection.p_end.setPoint(0, 0);
-	}
-}
-
-
 TextEdit::Selection::Selection()
 {
 	start=-1;
@@ -657,8 +638,6 @@ bool TextEdit::Selection::exists() const
 
 void TextEdit::Selection::clear()
 {
-	p_start.setPoint(0, 0);
-	p_end.setPoint(0, 0);
 	start=-1;
 	end=-1;
 }
