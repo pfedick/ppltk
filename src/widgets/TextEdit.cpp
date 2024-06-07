@@ -508,6 +508,12 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				cursorpos+=clipboard.size();
 				invalidateCache();
 				calcCursorPosition();
+			} else if (event->key == KeyEvent::KEY_a) {
+				//ppl7::PrintDebug("select all\n");
+				selection.start=0;
+				selection.end=(int)myText.size()-1;
+				needsRedraw();
+				selectmode=true;
 
 			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
 				cursorpos=0;
