@@ -314,7 +314,7 @@ void TextEdit::mouseDownEvent(MouseEvent* event)
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
 		drag_started=true;
 		drag_start_position=cursorpos;
-		selection.begin((int)cursorpos);
+		//selection.begin((int)cursorpos);
 		ppltk::GetWindowManager()->grabMouse(this);
 	} else if (event->buttonMask & ppltk::MouseEvent::MouseButton::Middle) {
 		WideString clipboard=String(GetWindowManager()->getClipboardText());
@@ -336,10 +336,10 @@ void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 		cursorpos=calcPosition(event->p);
 		if ((int)cursorpos < drag_start_position) {
 			selection.start=cursorpos;
-			selection.end=drag_start_position;
+			selection.end=drag_start_position-1;
 		} else if ((int)cursorpos > drag_start_position) {
 			selection.start=drag_start_position;
-			selection.end=cursorpos;
+			selection.end=cursorpos-1;
 		}
 		calcCursorPosition();
 		needsRedraw();
@@ -634,10 +634,8 @@ void TextEdit::Selection::update_right(int position)
 	if (start ==-1 || end == -1) start=end=position-1;
 	else if (position==start+1 && start==end) clear();
 	else if (position<=end) start=position;
-	//else if (position==end) end=position;
 	else end=position-1;
-
-	ppl7::PrintDebug("r: position=%d, start=%d, end=%d\n", position,start,end);
+	//ppl7::PrintDebug("r: position=%d, start=%d, end=%d\n", position,start,end);
 
 }
 
@@ -647,7 +645,7 @@ void TextEdit::Selection::update_left(int position)
 	else if (position==start && position==end) clear();
 	else if (position>=start) end=position-1;
 	else start=position;
-	ppl7::PrintDebug("l: position=%d, start=%d, end=%d\n", position,start,end);
+	//ppl7::PrintDebug("l: position=%d, start=%d, end=%d\n", position,start,end);
 }
 
 
