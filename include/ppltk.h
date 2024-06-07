@@ -1070,6 +1070,7 @@ private:
         void begin(int position);
         void update_right(int position);
         void update_left(int position);
+        void go(int start,int end);
     };
 
     class CacheItem
