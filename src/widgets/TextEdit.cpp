@@ -410,26 +410,15 @@ void TextEdit::deleteSelection()
 	}
 }
 
-void TextEdit::updateSelection(int start, int end)
-{
-	if (start>end) {
-		int tmp=start;
-		start=end;
-		end=tmp;
-	}
-	if (!selection.exists()) selection.begin(start);
-	if (selection.start > (int)cursorpos) selection.start=end;
-	else selection.end=end;
-}
 
 void TextEdit::keyDownEvent(KeyEvent* event)
 {
 	//printf("TextEdit::keyDownEvent(keycode=%i, repeat=%i, modifier: %i)\n", event->key, event->repeat, event->modifier);
 	if (isEnabled()) {
 		blinker=true;
-		int old_cursorpos=cursorpos;
-
 		int key_modifier=event->modifier & KeyEvent::KEYMOD_MODIFIER;
+		bool selectmode=(key_modifier & (KeyEvent::KEYMOD_LEFTSHIFT | KeyEvent::KEYMOD_RIGHTSHIFT));
+		//ppl7::PrintDebug("%d\n",selectmode);
 
 		if (event->key == KeyEvent::KEY_ENTER || event->key == KeyEvent::KEY_RETURN) {
 			TextInputEvent ev;
@@ -439,31 +428,47 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 		
 		if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
 			cursorpos--;
+			if (selectmode) selection.update_left(cursorpos);
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_RIGHT && cursorpos < myText.size()) {
 			cursorpos++;
+			if (selectmode) selection.update_right(cursorpos);
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_UP) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.y-=line_height;
 			if (p.y < 0) p.y=0;
+			if (selectmode && !selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
+			if (selectmode) {
+				if (selection.start > (int)cursorpos) selection.start=cursorpos;
+				else selection.end=cursorpos;
+			}
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_DOWN) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.y+=line_height;
+			if (selectmode && !selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
+			if (selectmode) {
+				if (selection.end < (int)cursorpos) selection.end=cursorpos;
+				else selection.start=cursorpos;
+			}
 			calcCursorPosition();
 
 		} else if (event->key == KeyEvent::KEY_HOME) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.x=0;
+			if (selectmode && selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
-				calcCursorPosition();
+			if (selectmode) selection.start=cursorpos;
+			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_END) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.x=cache_line_width + 100;
+			if (selectmode && selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
+			if (selectmode) selection.end=cursorpos;
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_BACKSPACE && cursorpos > 0) {
 			if (selection.exists()) {
@@ -489,7 +494,6 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			validateAndSendEvent(myText);
 			blinker=true;
 		}
-		selection.clear();
 
 		if (key_modifier == KeyEvent::KEYMOD_LEFTCTRL) {
 			//printf("key=%d\n", event->key);
@@ -518,7 +522,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				calcCursorPosition();
 			}
 		}
-		if (key_modifier & (KeyEvent::KEYMOD_LEFTSHIFT | KeyEvent::KEYMOD_RIGHTSHIFT)) updateSelection(old_cursorpos, cursorpos);
+		if (!selectmode) selection.clear();
 	}
 	Frame::keyDownEvent(event);
 }
@@ -623,6 +627,27 @@ void TextEdit::Selection::clear()
 void TextEdit::Selection::begin(int position)
 {
 	start=end=position;
+}
+
+void TextEdit::Selection::update_right(int position)
+{
+	if (start ==-1 || end == -1) start=end=position-1;
+	else if (position==start+1 && start==end) clear();
+	else if (position<=end) start=position;
+	//else if (position==end) end=position;
+	else end=position-1;
+
+	ppl7::PrintDebug("r: position=%d, start=%d, end=%d\n", position,start,end);
+
+}
+
+void TextEdit::Selection::update_left(int position)
+{
+	if (start ==-1 || end == -1) start=end=position;
+	else if (position==start && position==end) clear();
+	else if (position>=start) end=position-1;
+	else start=position;
+	ppl7::PrintDebug("l: position=%d, start=%d, end=%d\n", position,start,end);
 }
 
 

@@ -1068,6 +1068,8 @@ private:
         bool exists() const;
         void clear();
         void begin(int position);
+        void update_right(int position);
+        void update_left(int position);
     };
 
     class CacheItem
@@ -1111,7 +1113,6 @@ private:
     void invalidateCache();
     void rebuildCache(int width);
     void paintSelection(Drawable& draw);
-    void updateSelection(int start, int end);
 
 
 public:
