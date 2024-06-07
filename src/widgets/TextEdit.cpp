@@ -438,6 +438,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_UP) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+			if (cursorpos>=myText.size()) p=getDrawStartPositionOfChar(cursorpos-1);
 			p.y-=line_height;
 			if (p.y < 0) p.y=0;
 			//if (selectmode && !selection.exists()) selection.begin(cursorpos);
@@ -446,11 +447,14 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_DOWN) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-			p.y+=line_height;
-			//if (selectmode && !selection.exists()) selection.begin(cursorpos);
-			cursorpos=calcPosition(p);
-			if (selectmode) selection.go(last_cursorpos,cursorpos);
-			calcCursorPosition();
+			if (cursorpos<myText.size()) {
+				p.y+=line_height;
+				//if (selectmode && !selection.exists()) selection.begin(cursorpos);
+				cursorpos=calcPosition(p);
+				if (cursorpos>myText.size()) cursorpos=myText.size();
+				if (selectmode) selection.go(last_cursorpos,cursorpos);
+				calcCursorPosition();
+			}
 
 		} else if (event->key == KeyEvent::KEY_HOME && !(key_modifier&KeyEvent::KEYMOD_LEFTCTRL)) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
