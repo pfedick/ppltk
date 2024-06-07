@@ -1111,6 +1111,7 @@ private:
     void invalidateCache();
     void rebuildCache(int width);
     void paintSelection(Drawable& draw);
+    void updateSelection(int start, int end);
 
 
 public:

@@ -410,75 +410,88 @@ void TextEdit::deleteSelection()
 	}
 }
 
+void TextEdit::updateSelection(int start, int end)
+{
+	if (start>end) {
+		int tmp=start;
+		start=end;
+		end=tmp;
+	}
+	if (!selection.exists()) selection.begin(start);
+	if (selection.start > (int)cursorpos) selection.start=end;
+	else selection.end=end;
+}
+
 void TextEdit::keyDownEvent(KeyEvent* event)
 {
 	//printf("TextEdit::keyDownEvent(keycode=%i, repeat=%i, modifier: %i)\n", event->key, event->repeat, event->modifier);
 	if (isEnabled()) {
 		blinker=true;
+		int old_cursorpos=cursorpos;
+
 		int key_modifier=event->modifier & KeyEvent::KEYMOD_MODIFIER;
+
 		if (event->key == KeyEvent::KEY_ENTER || event->key == KeyEvent::KEY_RETURN) {
 			TextInputEvent ev;
 			ev.text.set(L"\n");
 			textInputEvent(&ev);
 		}
-		if (key_modifier == KeyEvent::KEYMOD_NONE) {
-			if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
+		
+		if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
+			cursorpos--;
+			calcCursorPosition();
+		} else if (event->key == KeyEvent::KEY_RIGHT && cursorpos < myText.size()) {
+			cursorpos++;
+			calcCursorPosition();
+		} else if (event->key == KeyEvent::KEY_UP) {
+			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+			p.y-=line_height;
+			if (p.y < 0) p.y=0;
+			cursorpos=calcPosition(p);
+			calcCursorPosition();
+		} else if (event->key == KeyEvent::KEY_DOWN) {
+			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+			p.y+=line_height;
+			cursorpos=calcPosition(p);
+			calcCursorPosition();
+
+		} else if (event->key == KeyEvent::KEY_HOME) {
+			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+			p.x=0;
+			cursorpos=calcPosition(p);
+				calcCursorPosition();
+		} else if (event->key == KeyEvent::KEY_END) {
+			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
+			p.x=cache_line_width + 100;
+			cursorpos=calcPosition(p);
+			calcCursorPosition();
+		} else if (event->key == KeyEvent::KEY_BACKSPACE && cursorpos > 0) {
+			if (selection.exists()) {
+				deleteSelection();
+			} else {
+				WideString new_text=myText.left(cursorpos - 1) + myText.mid(cursorpos);
+				myText=new_text;
 				cursorpos--;
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_RIGHT && cursorpos < myText.size()) {
-				cursorpos++;
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_UP) {
-				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-				p.y-=line_height;
-				if (p.y < 0) p.y=0;
-				cursorpos=calcPosition(p);
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_DOWN) {
-				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-				p.y+=line_height;
-				cursorpos=calcPosition(p);
-				calcCursorPosition();
-
-			} else if (event->key == KeyEvent::KEY_HOME) {
-				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-				p.x=0;
-				cursorpos=calcPosition(p);
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_END) {
-				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-				p.x=cache_line_width + 100;
-				cursorpos=calcPosition(p);
-				calcCursorPosition();
-
-
-			} else if (event->key == KeyEvent::KEY_BACKSPACE && cursorpos > 0) {
-				if (selection.exists()) {
-					deleteSelection();
-				} else {
-					WideString new_text=myText.left(cursorpos - 1) + myText.mid(cursorpos);
-					myText=new_text;
-					cursorpos--;
-				}
-				calcCursorPosition();
-				invalidateCache();
-				validateAndSendEvent(myText);
-				blinker=true;
-			} else if (event->key == KeyEvent::KEY_DELETE) {
-				if (selection.exists()) {
-					deleteSelection();
-				} else {
-					WideString new_text=myText.left(cursorpos) + myText.mid(cursorpos + 1);
-					myText=new_text;
-				}
-				calcCursorPosition();
-				invalidateCache();
-				validateAndSendEvent(myText);
-				blinker=true;
 			}
-			selection.clear();
+			calcCursorPosition();
+			invalidateCache();
+			validateAndSendEvent(myText);
+			blinker=true;
+		} else if (event->key == KeyEvent::KEY_DELETE) {
+			if (selection.exists()) {
+				deleteSelection();
+			} else {
+				WideString new_text=myText.left(cursorpos) + myText.mid(cursorpos + 1);
+				myText=new_text;
+			}
+			calcCursorPosition();
+			invalidateCache();
+			validateAndSendEvent(myText);
+			blinker=true;
+		}
+		selection.clear();
 
-		} else if (key_modifier == KeyEvent::KEYMOD_LEFTCTRL) {
+		if (key_modifier == KeyEvent::KEYMOD_LEFTCTRL) {
 			//printf("key=%d\n", event->key);
 			if (event->key == KeyEvent::KEY_c) {
 				ppl7::String text;
@@ -504,43 +517,8 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				cursorpos=myText.size();
 				calcCursorPosition();
 			}
-
-		} else if (key_modifier == KeyEvent::KEYMOD_LEFTSHIFT || key_modifier == KeyEvent::KEYMOD_RIGHTSHIFT) {
-			if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
-				if (!selection.exists()) selection.begin(cursorpos);
-				cursorpos--;
-				if (selection.start > (int)cursorpos) selection.start=cursorpos;
-				else selection.end=cursorpos;
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_RIGHT && cursorpos < myText.size()) {
-				if (!selection.exists()) selection.begin(cursorpos);
-				cursorpos++;
-				if (selection.end < (int)cursorpos) selection.end=cursorpos;
-				else selection.start=cursorpos;
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_UP) {
-				if (!selection.exists()) selection.begin(cursorpos);
-				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-				p.y-=line_height;
-				if (p.y < 0) p.y=0;
-				cursorpos=calcPosition(p);
-				if (selection.start > (int)cursorpos) selection.start=cursorpos;
-				else selection.end=cursorpos;
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_DOWN) {
-				if (!selection.exists()) selection.begin(cursorpos);
-				ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-				p.y+=line_height;
-				cursorpos=calcPosition(p);
-				if (selection.end < (int)cursorpos) selection.end=cursorpos;
-				else selection.start=cursorpos;
-				calcCursorPosition();
-			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
-
-			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
-			}
 		}
-
+		if (key_modifier & (KeyEvent::KEYMOD_LEFTSHIFT | KeyEvent::KEYMOD_RIGHTSHIFT)) updateSelection(old_cursorpos, cursorpos);
 	}
 	Frame::keyDownEvent(event);
 }
