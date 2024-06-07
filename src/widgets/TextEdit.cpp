@@ -380,6 +380,7 @@ void TextEdit::lostFocusEvent(FocusEvent* event)
 
 void TextEdit::textInputEvent(TextInputEvent* event)
 {
+	//ppl7::PrintDebug("TextEdit::textInputEvent\n");
 	if (validator) {
 		if (validator->validateInput(event->text) == false) return;
 	}
@@ -416,6 +417,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 	//printf("TextEdit::keyDownEvent(keycode=%i, repeat=%i, modifier: %i)\n", event->key, event->repeat, event->modifier);
 	if (isEnabled()) {
 		blinker=true;
+		int last_cursorpos=cursorpos;
 		int key_modifier=event->modifier & KeyEvent::KEYMOD_MODIFIER;
 		bool selectmode=(key_modifier & (KeyEvent::KEYMOD_LEFTSHIFT | KeyEvent::KEYMOD_RIGHTSHIFT));
 		//ppl7::PrintDebug("%d\n",selectmode);
@@ -438,37 +440,30 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.y-=line_height;
 			if (p.y < 0) p.y=0;
-			if (selectmode && !selection.exists()) selection.begin(cursorpos);
+			//if (selectmode && !selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
-			if (selectmode) {
-				if (selection.start > (int)cursorpos) selection.start=cursorpos;
-				else selection.end=cursorpos;
-			}
+			if (selectmode) selection.go(last_cursorpos-1,cursorpos);
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_DOWN) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.y+=line_height;
-			if (selectmode && !selection.exists()) selection.begin(cursorpos);
+			//if (selectmode && !selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
-			if (selectmode) {
-				if (selection.end < (int)cursorpos) selection.end=cursorpos;
-				else selection.start=cursorpos;
-			}
+			if (selectmode) selection.go(last_cursorpos,cursorpos);
 			calcCursorPosition();
 
-		} else if (event->key == KeyEvent::KEY_HOME) {
+		} else if (event->key == KeyEvent::KEY_HOME && !(key_modifier&KeyEvent::KEYMOD_LEFTCTRL)) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.x=0;
-			if (selectmode && selection.exists()) selection.begin(cursorpos);
+			//if (selectmode && selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
-			if (selectmode) selection.start=cursorpos;
+			if (selectmode) selection.go(last_cursorpos-1,cursorpos);
 			calcCursorPosition();
-		} else if (event->key == KeyEvent::KEY_END) {
+		} else if (event->key == KeyEvent::KEY_END && !(key_modifier&KeyEvent::KEYMOD_LEFTCTRL)) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.x=cache_line_width + 100;
-			if (selectmode && selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
-			if (selectmode) selection.end=cursorpos;
+			if (selectmode) selection.go(last_cursorpos,cursorpos);
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_BACKSPACE && cursorpos > 0) {
 			if (selection.exists()) {
@@ -495,7 +490,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			blinker=true;
 		}
 
-		if (key_modifier == KeyEvent::KEYMOD_LEFTCTRL) {
+		if (key_modifier & KeyEvent::KEYMOD_LEFTCTRL) {
 			//printf("key=%d\n", event->key);
 			if (event->key == KeyEvent::KEY_c) {
 				ppl7::String text;
@@ -516,13 +511,20 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 
 			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
 				cursorpos=0;
+				if(selectmode) selection.go(last_cursorpos-1,cursorpos);
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
 				cursorpos=myText.size();
+				if(selectmode) selection.go(last_cursorpos,cursorpos);
 				calcCursorPosition();
 			}
 		}
-		if (!selectmode) selection.clear();
+		if (!selectmode) {
+			if (event->key!=KeyEvent::KEY_LEFTCTRL && event->key!=KeyEvent::KEY_RIGHTCTRL) {
+				//ppl7::PrintDebug("selection.clear()\n");
+				selection.clear();
+			}
+		}
 	}
 	Frame::keyDownEvent(event);
 }
@@ -648,5 +650,14 @@ void TextEdit::Selection::update_left(int position)
 	//ppl7::PrintDebug("l: position=%d, start=%d, end=%d\n", position,start,end);
 }
 
+
+void TextEdit::Selection::go(int start,int end)
+{
+	if (start>end) {
+		for (int i=start;i>=end;i--) update_left(i);
+	} else if(start<end) {
+		for (int i=start;i<=end;i++) update_right(i);
+	}
+}
 
 }	// EOF namespace ppltk
