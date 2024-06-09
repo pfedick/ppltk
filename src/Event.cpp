@@ -133,6 +133,7 @@ String Event::name() const
 		case GameControllerButtonUp: return "GameControllerButtonUp";
 		case GameControllerDeviceAdded: return "GameControllerDeviceAdded";
 		case GameControllerDeviceRemoved: return "GameControllerDeviceRemoved";
+		case CurrentChanged: return "CurrentChanged";
 	}
 	throw UnknownEventException();
 }
