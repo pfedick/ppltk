@@ -82,6 +82,12 @@ MainWindow::MainWindow()
     fpsLabel=NULL;
     exitButton=NULL;
     testframe=NULL;
+    layout_menue=NULL;
+    tab=NULL;
+    testframe=NULL;
+    text=NULL;
+    smalltext=NULL;
+    input=NULL;
     Style.setStyle(ppltk::WidgetStyle::Dark);
     //Style.labelFont.setSize(20);
     wm=ppltk::GetWindowManager();
@@ -135,7 +141,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
     ppltk::Widget* w=new ppltk::Widget();
     tab->addTab(w, "zweites Widget");
-    smalltext=new ppltk::TextEdit(0, 40, 200, w->clientSize().height - 40);
+    smalltext=new ppltk::TextEdit(0, 40, 200, 400);
     smalltext->setText(debugText);
     w->addChild(smalltext);
 
@@ -192,12 +198,12 @@ void MainWindow::mouseClickEvent(ppltk::MouseEvent* event)
 
 void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
 {
-    tab->setSize(this->width() - 128, this->height() - 92);
-    menue->setWidth(this->width());
-    testframe->setSize(tab->clientSize());
-    text->setSize(testframe->clientSize().width, testframe->clientSize().height - 40);
-    text->setSize(200, testframe->clientSize().height - 40);
-    input->setSize(testframe->clientSize().width, 30);
+    if (tab) tab->setSize(this->width() - 128, this->height() - 92);
+    if (menue) menue->setWidth(this->width());
+    if (testframe) testframe->setSize(tab->clientSize());
+    if (text) text->setSize(testframe->clientSize().width, testframe->clientSize().height - 40);
+    //text->setSize(200, testframe->clientSize().height - 40);
+    if (input) input->setSize(testframe->clientSize().width, 30);
     event->accept();
 
 }

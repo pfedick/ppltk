@@ -492,33 +492,54 @@ void Widget::setPos(const Point& p)
 	parentMustRedraw();
 }
 
+void Widget::sendResizeEvent()
+{
+	ppltk::ResizeEvent ev;
+	ev.width=s.width;
+	ev.height=s.height;
+	ev.setWidget(this);
+	resizeEvent(&ev);
+}
+
 void Widget::setWidth(int width)
 {
-	s.width=width;
-	updateDrawbuffer();
-	parentMustRedraw();
+	if (width != s.width) {
+		s.width=width;
+		updateDrawbuffer();
+		parentMustRedraw();
+		sendResizeEvent();
+	}
 }
 
 void Widget::setHeight(int height)
 {
-	s.height=height;
-	updateDrawbuffer();
-	parentMustRedraw();
+	if (s.height != height) {
+		s.height=height;
+		updateDrawbuffer();
+		parentMustRedraw();
+		sendResizeEvent();
+	}
 }
 
 void Widget::setSize(int width, int height)
 {
-	s.width=width;
-	s.height=height;
-	updateDrawbuffer();
-	parentMustRedraw();
+	if (width != s.width || s.height != height) {
+		s.width=width;
+		s.height=height;
+		updateDrawbuffer();
+		parentMustRedraw();
+		sendResizeEvent();
+	}
 }
 
 void Widget::setSize(const Size& s)
 {
-	this->s=s;
-	updateDrawbuffer();
-	parentMustRedraw();
+	if (s != this->s) {
+		this->s=s;
+		updateDrawbuffer();
+		parentMustRedraw();
+		sendResizeEvent();
+	}
 }
 
 void Widget::setClientOffset(int left, int top, int right, int bottom)

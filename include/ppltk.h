@@ -508,6 +508,7 @@ private:
     String		myName;
     void updateDrawbuffer();
     void markWidgetsAboveForRedraw(Widget* widget);
+    void sendResizeEvent();
 
 public:
     Widget();
@@ -985,6 +986,7 @@ public:
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size minimumSizeHint() const override;
     void mouseDownEvent(MouseEvent* event) override;
+    //void resizeEvent(ResizeEvent* event) override;
 };
 
 class VerticalDivider : public Widget
@@ -1123,6 +1125,7 @@ public:
     void lostFocusEvent(ppltk::FocusEvent* event);
     void mouseMoveEvent(ppltk::MouseEvent* event);
     void mouseWheelEvent(ppltk::MouseEvent* event);
+    void resizeEvent(ResizeEvent* event) override;
 
 };
 
@@ -1185,6 +1188,7 @@ private:
     void invalidateCache();
     void rebuildCache(int width);
     void paintSelection(Drawable& draw);
+    void enableScrollbar(bool enable);
 
 
 public:
@@ -1210,16 +1214,17 @@ public:
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size minimumSizeHint() const override;
 
-    virtual void mouseDownEvent(MouseEvent* event);
-    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
-    virtual void mouseUpEvent(ppltk::MouseEvent* event);
-    virtual void gotFocusEvent(FocusEvent* event);
-    virtual void lostFocusEvent(FocusEvent* event);
-    virtual void textInputEvent(TextInputEvent* event);
-    virtual void keyDownEvent(KeyEvent* event);
-    virtual void keyUpEvent(KeyEvent* event);
-    virtual void timerEvent(Event* event);
-    virtual void mouseDblClickEvent(MouseEvent* event);
+    void mouseDownEvent(MouseEvent* event) override;
+    void mouseMoveEvent(ppltk::MouseEvent* event) override;
+    void mouseUpEvent(ppltk::MouseEvent* event) override;
+    void gotFocusEvent(FocusEvent* event) override;
+    void lostFocusEvent(FocusEvent* event) override;
+    void textInputEvent(TextInputEvent* event) override;
+    void keyDownEvent(KeyEvent* event) override;
+    void keyUpEvent(KeyEvent* event) override;
+    void timerEvent(Event* event) override;
+    void mouseDblClickEvent(MouseEvent* event) override;
+    void resizeEvent(ResizeEvent* event) override;
 };
 
 class CheckBox : public ppltk::Label

@@ -45,8 +45,8 @@ Scrollbar::Scrollbar(int x, int y, int width, int height) // @suppress("Class me
 	setClientOffset(0, 0, 0, 0);
 	//ppl7::grafix::Grafix *gfx=ppl7::grafix::GetGrafix();
 	ppltk::WindowManager* wm=ppltk::GetWindowManager();
-	up_button=new ppltk::Button(0, 0, width - 2, 25);
-	down_button=new ppltk::Button(0, height - 25, width - 2, 25);
+	up_button=new ppltk::Button(0, 0, width, 23);
+	down_button=new ppltk::Button(0, height - 23, width, 23);
 	up_button->setIcon(wm->ButtonSymbols.getDrawable(3));
 	down_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 	up_button->setEventHandler(this);
@@ -107,7 +107,7 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 	ppl7::grafix::Color shadow=style.buttonBackgroundColor * 0.4f;
 	ppl7::grafix::Color shade1=style.buttonBackgroundColor * 1.05f;
 	ppl7::grafix::Color shade2=style.buttonBackgroundColor * 0.85f;
-	ppl7::grafix::Drawable indicator=draw.getDrawable(0, 25, draw.width(), draw.height() - 26);
+	ppl7::grafix::Drawable indicator=draw.getDrawable(0, 24, draw.width(), draw.height() - 25);
 	int w=indicator.width() - 1;
 	//int h=indicator.height()-1;
 	ppl7::grafix::Rect r1=indicator.rect();
@@ -118,8 +118,8 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 		if (r1.y2 >= indicator.height()) r1.y2=indicator.height() - 1;
 	}
 	slider_pos=r1;
-	slider_pos.y1+=25;
-	slider_pos.y2+=25;
+	slider_pos.y1+=23;
+	slider_pos.y2+=23;
 
 	ppl7::grafix::Color scrollarea=style.windowBackgroundColor * 1.2f;
 	indicator.cls(scrollarea);
@@ -225,6 +225,13 @@ void Scrollbar::mouseWheelEvent(ppltk::MouseEvent* event)
 		valueChangedEvent(&ev, pos);
 
 	}
+}
+
+void Scrollbar::resizeEvent(ResizeEvent* event)
+{
+	//ppl7::PrintDebug("Scrollbar::resizeEvent\n");
+	Size s=clientSize();
+	down_button->setY(s.height - 23);
 }
 
 

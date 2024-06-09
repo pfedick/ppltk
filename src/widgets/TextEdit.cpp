@@ -63,6 +63,7 @@ TextEdit::TextEdit()
 	drag_started=false;
 	cache_is_valid=false;
 	vertical_scrollbar=NULL;
+	enableScrollbar(true);
 
 }
 
@@ -91,6 +92,7 @@ TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
 	drag_started=false;
 	cache_is_valid=false;
 	vertical_scrollbar=NULL;
+	enableScrollbar(true);
 }
 
 String TextEdit::widgetType() const
@@ -107,6 +109,25 @@ TextEdit::~TextEdit()
 		ppltk::GetWindowManager()->releaseMouse(this);
 	}
 	if (vertical_scrollbar) {
+		this->removeChild(vertical_scrollbar);
+		delete vertical_scrollbar;
+	}
+}
+
+void TextEdit::enableScrollbar(bool enable)
+{
+	invalidateCache();
+	cache_line_width=-1;
+	if (enable == true && vertical_scrollbar == NULL) {
+		Size s=clientSize();
+		vertical_scrollbar=new Scrollbar(s.width - 25, 0, 25, s.height);
+		vertical_scrollbar->setEventHandler(this);
+		vertical_scrollbar->setSize(50);
+		vertical_scrollbar->setVisibleItems(10);
+		vertical_scrollbar->setPosition(0);
+		addChild(vertical_scrollbar);
+
+	} else if (enable == false && vertical_scrollbar != NULL) {
 		this->removeChild(vertical_scrollbar);
 		delete vertical_scrollbar;
 	}
@@ -588,7 +609,7 @@ void TextEdit::calcCursorPosition()
 {
 	WideString text=myText, left;
 	Size s1;
-	if ((ssize_t)cursorpos < 0) cursorpos=0;
+	if ((int)cursorpos < 0) cursorpos=0;
 	if (cursorpos > text.size()) cursorpos=text.size();
 	cursorx=0;
 	cursory=0;
@@ -687,5 +708,16 @@ void TextEdit::Selection::go(int start, int end)
 		for (int i=start;i <= end;i++) update_right(i);
 	}
 }
+
+void TextEdit::resizeEvent(ResizeEvent* event)
+{
+	//ppl7::PrintDebug("TextEdit::resizeEvent\n");
+	if (vertical_scrollbar) {
+		Size s=clientSize();
+		vertical_scrollbar->setPos(s.width - 25, 0);
+		vertical_scrollbar->setHeight(s.height);
+	}
+}
+
 
 }	// EOF namespace ppltk
