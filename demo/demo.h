@@ -62,7 +62,7 @@ private:
     ppltk::Button* exitButton;
     ppltk::HBoxLayout* layout_menue;
 
-
+    ppltk::TabWidget* tab;
     ppltk::Frame* testframe;
     ppltk::TextEdit* text;
 

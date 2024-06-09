@@ -82,8 +82,8 @@ MainWindow::MainWindow()
     fpsLabel=NULL;
     exitButton=NULL;
     testframe=NULL;
-    ppltk::WidgetStyle s(ppltk::WidgetStyle::Dark);
-    Style=s;
+    Style.setStyle(ppltk::WidgetStyle::Dark);
+    //Style.labelFont.setSize(20);
     wm=ppltk::GetWindowManager();
     wm->setWidgetStyle(Style);
 
@@ -115,11 +115,26 @@ void MainWindow::create(int width, int height, bool fullscreen)
     layout_menue=new ppltk::HBoxLayout();
     menue->setLayout(layout_menue);
 
+    tab=new ppltk::TabWidget(64, 64, this->width() - 128, this->height() - 92);
+    addChild(tab);
 
-    testframe=new ppltk::Frame(64, 64, this->width() - 128, this->height() - 92);
-    addChild(testframe);
+    testframe=new ppltk::Frame(ppltk::Frame::BorderStyle::NoBorder);
+    testframe->setTransparent(true);
+    //addChild(testframe);
+    tab->addTab(testframe, "Text Input", gfx->Toolbar.getDrawable(68));
 
-    text=new ppltk::TextEdit(0, 40, testframe->clientSize().width, testframe->clientSize().height-40);
+    ppltk::Widget* w=new ppltk::Widget();
+    tab->addTab(w, "zweites Widget");
+    //tab->setTabEnabled(1, false);
+    //tab->setTabVisible(1, false);
+
+
+    w=new ppltk::Widget();
+    tab->addTab(w, "drittes Widget");
+
+    tab->setCurrentIndex(0);
+
+    text=new ppltk::TextEdit(0, 40, testframe->clientSize().width, testframe->clientSize().height - 40);
     text->setText("Dies ist ein Demo-Text, der über mehrere Zeilen geht.\n"
         "Hier die zweite Zeile, danach eine Leerzeile\n\n"
         "Und jetzt kommt ein etwas längerer Text ohne Zeilenumbruch. Dieser muss von selbst umbrechen, "
@@ -130,7 +145,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     testframe->addChild(text);
 
 
-    input=new ppltk::LineInput(0,0,testframe->clientSize().width,30,"Ein einzeiliger Test Text");
+    input=new ppltk::LineInput(0, 0, testframe->clientSize().width, 30, "Ein einzeiliger Test Text");
     testframe->addChild(input);
 
 
@@ -165,10 +180,10 @@ void MainWindow::mouseClickEvent(ppltk::MouseEvent* event)
 
 void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
 {
-    testframe->setSize(this->width() - 128, this->height() - 92);
+    tab->setSize(this->width() - 128, this->height() - 92);
     menue->setWidth(this->width());
-    testframe->setSize(this->width() - 128, this->height() - 92);
-    text->setSize(testframe->clientSize().width, testframe->clientSize().height-40);
+    testframe->setSize(tab->clientSize());
+    text->setSize(testframe->clientSize().width, testframe->clientSize().height - 40);
     input->setSize(testframe->clientSize().width, 30);
     event->accept();
 

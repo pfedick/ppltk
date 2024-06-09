@@ -41,6 +41,11 @@ using namespace ppl7::grafix;
 
 WidgetStyle::WidgetStyle(WidgetStyle::PredefinedStyle style)
 {
+	setStyle(style);
+}
+
+void WidgetStyle::setStyle(PredefinedStyle style)
+{
 	labelFont.setName("Default");
 	labelFont.setSize(12);
 	labelFont.setAntialias(true);
@@ -69,6 +74,9 @@ WidgetStyle::WidgetStyle(WidgetStyle::PredefinedStyle style)
 		sliderHighlightColor.setColor(61, 174, 233, 255);
 		sliderSelectedColor.setColor(61, 61, 55, 255);
 		buttonSymbolColor.setColor(26, 16, 16, 255);
+		tabNonSelectedBackgroundColor.setColor(200, 200, 200, 255);
+		tabDisabledFontColor.setColor(96, 96, 96, 255);
+
 	} else {
 		windowBackgroundColor.setColor(47, 47, 47, 255);
 		frameBackgroundColor.setColor(71, 71, 74, 255);
@@ -84,6 +92,9 @@ WidgetStyle::WidgetStyle(WidgetStyle::PredefinedStyle style)
 		sliderHighlightColor.setColor(61, 174, 233, 255);
 		sliderSelectedColor.setColor(210, 210, 205, 255);
 		buttonSymbolColor.setColor(255, 250, 250, 255);
+		tabNonSelectedBackgroundColor.setColor(61, 61, 64, 255);
+		tabDisabledFontColor.setColor(140, 140, 140, 255);
+
 	}
 }
 

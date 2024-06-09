@@ -64,12 +64,15 @@ using namespace ppl7::grafix;
 
 class WidgetStyle
 {
+private:
+
 public:
     enum PredefinedStyle {
         Light=0,
         Dark=1
     };
     WidgetStyle(PredefinedStyle style=Light);
+    void setStyle(PredefinedStyle style);
     Color	windowBackgroundColor;
     Color	frameBackgroundColor;
     Color	frameBorderColorLight;
@@ -88,6 +91,9 @@ public:
     Color	sliderHighlightColor;
     Color	sliderSelectedColor;
     Color	buttonSymbolColor;
+    Color   tabNonSelectedBackgroundColor;
+    Color   tabDisabledFontColor;
+
 };
 
 class Widget;
@@ -930,12 +936,18 @@ private:
         bool enabled;
         bool visible;
         Widget* widget;
+        int x1, x2;
         TabItem(const String& label, const Drawable& icon, Widget* widget);
     };
+    Font myFont;
     std::vector<TabItem> myTabs;
     int myIndex;
+    int tabHeight;
+    Widget* current_widget;
 
     void emmitCurrentChanged();
+    void updateCurrentWidget();
+    int drawTab(Drawable& draw, TabItem& tab, int x, const WidgetStyle& wstyle);
 
 public:
     TabWidget();
@@ -956,6 +968,9 @@ public:
     bool isTabVisible(int index) const;
     bool isTabEnabled(int index) const;
 
+    const Font& font() const;
+    void setFont(const Font& font);
+
     void setCurrentIndex(int index);
     void setCurrentWidget(Widget* widget);
     void setTabText(int index, const String& label);
@@ -968,7 +983,6 @@ public:
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size minimumSizeHint() const override;
     void mouseDownEvent(MouseEvent* event) override;
-
 };
 
 class VerticalDivider : public Widget
