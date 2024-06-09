@@ -47,6 +47,7 @@ Widget::Widget()
 	enabled=true;
 	needsredraw=true;
 	transparent=false;
+	depug_paint=false;
 	child_needsredraw=false;
 	topMost=false;
 	modal=false;
@@ -67,6 +68,7 @@ Widget::Widget(int x, int y, int width, int height)
 	enabled=true;
 	needsredraw=true;
 	transparent=false;
+	depug_paint=false;
 	child_needsredraw=false;
 	topMost=false;
 	modal=false;
@@ -98,6 +100,11 @@ void Widget::setLayout(Layout* layout)
 	myLayout=layout;
 	layout->myParent=this;
 	layout->isValid=false;
+}
+
+void Widget::setDebugPaint(bool debug)
+{
+	depug_paint=debug;
 }
 
 Layout* Widget::layout() const
@@ -640,6 +647,7 @@ void Widget::markWidgetsAboveForRedraw(Widget* widget)
 
 void Widget::paint(Drawable& draw)
 {
+	if (!depug_paint) return;
 	int step;
 	Color red(255, 0, 0, 255), white(255, 255, 255, 255);
 	int y2=draw.height() - 1;

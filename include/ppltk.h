@@ -504,6 +504,7 @@ private:
     bool		deleteRequested;
     bool		modal;
     bool        use_own_drawbuffer;
+    bool        depug_paint;
     String		myName;
     void updateDrawbuffer();
     void markWidgetsAboveForRedraw(Widget* widget);
@@ -562,6 +563,7 @@ public:
     void setTopmost(bool flag);
     void setClientOffset(int left, int top, int right, int bottom);
 
+    void setDebugPaint(bool debug);
 
     void setTransparent(bool flag);
     bool isTransparent() const;
