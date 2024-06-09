@@ -292,22 +292,25 @@ int TabWidget::drawTab(Drawable& draw, TabItem& tab, int x, const WidgetStyle& w
 	if (w < 20) w=20;
 
 	int y=0;
-	Color shade1=wstyle.buttonFontColor;
-	Color shade2=wstyle.frameBorderColorShadow * 0.5f;
+	ppl7::grafix::Color light=wstyle.frameBackgroundColor * 1.8f;
+	ppl7::grafix::Color shadow=wstyle.frameBackgroundColor * 0.4f;
+
+
+	Color shade1=wstyle.labelFontColor;
 	if (tab.widget == current_widget) {
 		draw.fillRect(x, 0, x + w, tabHeight, wstyle.frameBackgroundColor);
-		draw.line(x, 0, x + w, 0, wstyle.frameBorderColorLight);
-		draw.line(x, 0, x, tabHeight, wstyle.frameBorderColorLight);
-		draw.line(x + w, 0, x + w, tabHeight - 1, wstyle.frameBorderColorShadow);
+		draw.line(x, 0, x + w, 0, light);
+		draw.line(x, 0, x, tabHeight, light);
+		draw.line(x + w, 0, x + w, tabHeight - 1, shadow);
 	} else {
 		y=4;
 		shade1=wstyle.buttonFontColor * 0.8f;
 		draw.fillRect(x, 4, x + w, tabHeight - 1, wstyle.tabNonSelectedBackgroundColor);
-		draw.line(x, 4, x + w, 4, wstyle.frameBorderColorLight);
-		if (x == 0) draw.line(x, 4, x, tabHeight - 1, wstyle.frameBorderColorLight);
-		else draw.line(x, 5, x, tabHeight - 1, shade2);
-		draw.line(x + w, 4, x + w, tabHeight - 1, wstyle.frameBorderColorShadow);
-		draw.line(x, tabHeight, x + w, tabHeight, wstyle.frameBorderColorLight);
+		draw.line(x, 4, x + w, 4, light);
+		if (x == 0) draw.line(x, 4, x, tabHeight - 1, light);
+		else draw.line(x, 5, x, tabHeight - 1, shadow);
+		draw.line(x + w, 4, x + w, tabHeight - 1, shadow);
+		draw.line(x, tabHeight, x + w, tabHeight, light);
 	}
 
 	tab.x1=x;
@@ -347,17 +350,21 @@ void TabWidget::paint(Drawable& draw)
 	Drawable d=draw.getDrawable(0, tabHeight, draw.width(), draw.height());
 	int w=d.width() - 1;
 	int h=d.height() - 1;
+
+	ppl7::grafix::Color light=wstyle.frameBackgroundColor * 1.8f;
+	ppl7::grafix::Color shadow=wstyle.frameBackgroundColor * 0.4f;
+
 	d.cls(wstyle.frameBackgroundColor);
-	d.line(0, 0, 0, h, wstyle.frameBorderColorLight);
-	d.line(0, h, w, h, wstyle.frameBorderColorShadow);
-	d.line(w, 0, w, h, wstyle.frameBorderColorShadow);
+	d.line(0, 0, 0, h, light);
+	d.line(0, h, w, h, shadow);
+	d.line(w, 0, w, h, shadow);
 	std::vector<TabItem>::iterator it;
 	int x=0;
 	for (it=myTabs.begin();it != myTabs.end();++it) {
 		x+=drawTab(draw, *it, x, wstyle);
 
 	}
-	d.line(x, 0, w, 0, wstyle.frameBorderColorLight);
+	d.line(x, 0, w, 0, light);
 }
 
 String TabWidget::widgetType() const
