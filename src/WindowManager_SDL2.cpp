@@ -23,7 +23,7 @@
  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
@@ -968,10 +968,10 @@ void WindowManager_SDL2::DispatchKeyEvent(void* e)
 	kev.setWidget(keyFocusWidget);
 	kev.repeat=(bool)event->repeat;
 
-	if (event->keysym.sym>=SDLK_a && event->keysym.sym<=SDLK_z) {
-		kev.key=event->keysym.sym-SDLK_a+KeyEvent::KEY_a;
-	} else if (event->keysym.sym>=SDLK_0 && event->keysym.sym<=SDLK_z) {
-		kev.key=event->keysym.sym-SDLK_0+KeyEvent::KEY_0;
+	if (event->keysym.sym >= SDLK_a && event->keysym.sym <= SDLK_z) {
+		kev.key=event->keysym.sym - SDLK_a + KeyEvent::KEY_a;
+	} else if (event->keysym.sym >= SDLK_0 && event->keysym.sym <= SDLK_z) {
+		kev.key=event->keysym.sym - SDLK_0 + KeyEvent::KEY_0;
 	} else {
 		switch (event->keysym.sym) {
 			case SDLK_UNKNOWN: kev.key=KeyEvent::KEY_UNKNOWN; break;
