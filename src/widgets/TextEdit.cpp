@@ -62,6 +62,7 @@ TextEdit::TextEdit()
 	timerId=0;
 	drag_started=false;
 	cache_is_valid=false;
+	vertical_scrollbar=NULL;
 
 }
 
@@ -89,6 +90,7 @@ TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
 	timerId=0;
 	drag_started=false;
 	cache_is_valid=false;
+	vertical_scrollbar=NULL;
 }
 
 String TextEdit::widgetType() const
@@ -103,6 +105,10 @@ TextEdit::~TextEdit()
 	if (drag_started) {
 		drag_started=false;
 		ppltk::GetWindowManager()->releaseMouse(this);
+	}
+	if (vertical_scrollbar) {
+		this->removeChild(vertical_scrollbar);
+		delete vertical_scrollbar;
 	}
 }
 
@@ -267,10 +273,10 @@ void TextEdit::rebuildCache(int width)
 void TextEdit::paintSelection(Drawable& draw)
 {
 	const WidgetStyle& style=GetWidgetStyle();
-	for (int i=selection.start;i<=selection.end;i++) {
+	for (int i=selection.start;i <= selection.end;i++) {
 		std::map<size_t, CacheItem>::const_iterator it=position_cache.find(i);
 		if (it != position_cache.end()) {
-			draw.fillRect(it->second.p.x, it->second.p.y, it->second.p.x+it->second.size.width, it->second.p.y+it->second.size.height,
+			draw.fillRect(it->second.p.x, it->second.p.y, it->second.p.x + it->second.size.width, it->second.p.y + it->second.size.height,
 				style.inputSelectedBackgroundColor);
 		}
 	}
@@ -336,10 +342,10 @@ void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 		cursorpos=calcPosition(event->p);
 		if ((int)cursorpos < drag_start_position) {
 			selection.start=cursorpos;
-			selection.end=drag_start_position-1;
+			selection.end=drag_start_position - 1;
 		} else if ((int)cursorpos > drag_start_position) {
 			selection.start=drag_start_position;
-			selection.end=cursorpos-1;
+			selection.end=cursorpos - 1;
 		}
 		calcCursorPosition();
 		needsRedraw();
@@ -389,7 +395,7 @@ void TextEdit::textInputEvent(TextInputEvent* event)
 	deleteSelection();
 	left=myText.left(cursorpos);
 	right=myText.mid(cursorpos);
-	myText=left+event->text + right;
+	myText=left + event->text + right;
 	invalidateCache();
 	cursorpos++;
 	calcCursorPosition();
@@ -427,7 +433,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			ev.text.set(L"\n");
 			textInputEvent(&ev);
 		}
-		
+
 		if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
 			cursorpos--;
 			if (selectmode) selection.update_left(cursorpos);
@@ -438,36 +444,36 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_UP) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-			if (cursorpos>=myText.size()) p=getDrawStartPositionOfChar(cursorpos-1);
+			if (cursorpos >= myText.size()) p=getDrawStartPositionOfChar(cursorpos - 1);
 			p.y-=line_height;
 			if (p.y < 0) p.y=0;
 			//if (selectmode && !selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
-			if (selectmode) selection.go(last_cursorpos-1,cursorpos);
+			if (selectmode) selection.go(last_cursorpos - 1, cursorpos);
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_DOWN) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
-			if (cursorpos<myText.size()) {
+			if (cursorpos < myText.size()) {
 				p.y+=line_height;
 				//if (selectmode && !selection.exists()) selection.begin(cursorpos);
 				cursorpos=calcPosition(p);
-				if (cursorpos>myText.size()) cursorpos=myText.size();
-				if (selectmode) selection.go(last_cursorpos,cursorpos);
+				if (cursorpos > myText.size()) cursorpos=myText.size();
+				if (selectmode) selection.go(last_cursorpos, cursorpos);
 				calcCursorPosition();
 			}
 
-		} else if (event->key == KeyEvent::KEY_HOME && !(key_modifier&KeyEvent::KEYMOD_LEFTCTRL)) {
+		} else if (event->key == KeyEvent::KEY_HOME && !(key_modifier & KeyEvent::KEYMOD_LEFTCTRL)) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.x=0;
 			//if (selectmode && selection.exists()) selection.begin(cursorpos);
 			cursorpos=calcPosition(p);
-			if (selectmode) selection.go(last_cursorpos-1,cursorpos);
+			if (selectmode) selection.go(last_cursorpos - 1, cursorpos);
 			calcCursorPosition();
-		} else if (event->key == KeyEvent::KEY_END && !(key_modifier&KeyEvent::KEYMOD_LEFTCTRL)) {
+		} else if (event->key == KeyEvent::KEY_END && !(key_modifier & KeyEvent::KEYMOD_LEFTCTRL)) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			p.x=cache_line_width + 100;
 			cursorpos=calcPosition(p);
-			if (selectmode) selection.go(last_cursorpos,cursorpos);
+			if (selectmode) selection.go(last_cursorpos, cursorpos);
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_BACKSPACE && cursorpos > 0) {
 			if (selection.exists()) {
@@ -515,22 +521,22 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			} else if (event->key == KeyEvent::KEY_a) {
 				//ppl7::PrintDebug("select all\n");
 				selection.start=0;
-				selection.end=(int)myText.size()-1;
+				selection.end=(int)myText.size() - 1;
 				needsRedraw();
 				selectmode=true;
 
 			} else if (event->key == KeyEvent::KEY_HOME && cursorpos > 0) {
 				cursorpos=0;
-				if(selectmode) selection.go(last_cursorpos-1,cursorpos);
+				if (selectmode) selection.go(last_cursorpos - 1, cursorpos);
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_END && cursorpos < myText.size()) {
 				cursorpos=myText.size();
-				if(selectmode) selection.go(last_cursorpos,cursorpos);
+				if (selectmode) selection.go(last_cursorpos, cursorpos);
 				calcCursorPosition();
 			}
 		}
 		if (!selectmode) {
-			if (event->key!=KeyEvent::KEY_LEFTCTRL && event->key!=KeyEvent::KEY_RIGHTCTRL) {
+			if (event->key != KeyEvent::KEY_LEFTCTRL && event->key != KeyEvent::KEY_RIGHTCTRL) {
 				//ppl7::PrintDebug("selection.clear()\n");
 				selection.clear();
 			}
@@ -562,14 +568,14 @@ void TextEdit::mouseDblClickEvent(MouseEvent* event)
 	if (myText.notEmpty()) {
 		cursorpos=calcPosition(event->p);
 		selection.begin(cursorpos);
-		for (int i=cursorpos;i>=0;i--) {
+		for (int i=cursorpos;i >= 0;i--) {
 			wchar_t c=myText[i];
-			if (c=='\n' || c==' ' || c=='.' || c==',') break;
+			if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
 			selection.start=i;
 		}
-		for (int i=cursorpos;i<(int)myText.size();i++) {
+		for (int i=cursorpos;i < (int)myText.size();i++) {
 			wchar_t c=myText[i];
-			if (c=='\n' || c==' ' || c=='.' || c==',') break;
+			if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
 			selection.end=i;
 
 		}
@@ -614,7 +620,7 @@ int TextEdit::calcPosition(const ppl7::grafix::Point& p)
 		if (it->second.line == l) {
 			r=it->first;
 			if (it->second.p.x <= p.x && (it->second.p.x + it->second.size.width) > p.x) return it->first;
-			if (r==((int)position_cache.size()-1)) return (int)position_cache.size();
+			if (r == ((int)position_cache.size() - 1)) return (int)position_cache.size();
 		}
 	}
 	if (p.y >= mx_y + line_height) r=position_cache.size() + 1;
@@ -655,30 +661,30 @@ void TextEdit::Selection::begin(int position)
 
 void TextEdit::Selection::update_right(int position)
 {
-	if (start ==-1 || end == -1) start=end=position-1;
-	else if (position==start+1 && start==end) clear();
-	else if (position<=end) start=position;
-	else end=position-1;
+	if (start == -1 || end == -1) start=end=position - 1;
+	else if (position == start + 1 && start == end) clear();
+	else if (position <= end) start=position;
+	else end=position - 1;
 	//ppl7::PrintDebug("r: position=%d, start=%d, end=%d\n", position,start,end);
 
 }
 
 void TextEdit::Selection::update_left(int position)
 {
-	if (start ==-1 || end == -1) start=end=position;
-	else if (position==start && position==end) clear();
-	else if (position>=start) end=position-1;
+	if (start == -1 || end == -1) start=end=position;
+	else if (position == start && position == end) clear();
+	else if (position >= start) end=position - 1;
 	else start=position;
 	//ppl7::PrintDebug("l: position=%d, start=%d, end=%d\n", position,start,end);
 }
 
 
-void TextEdit::Selection::go(int start,int end)
+void TextEdit::Selection::go(int start, int end)
 {
-	if (start>end) {
-		for (int i=start;i>=end;i--) update_left(i);
-	} else if(start<end) {
-		for (int i=start;i<=end;i++) update_right(i);
+	if (start > end) {
+		for (int i=start;i >= end;i--) update_left(i);
+	} else if (start < end) {
+		for (int i=start;i <= end;i++) update_right(i);
 	}
 }
 

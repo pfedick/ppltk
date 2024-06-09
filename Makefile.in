@@ -59,6 +59,7 @@ OBJECTS = 	compile/WindowManager.o \
 	compile/widget_SpinBox.o \
 	compile/widget_Surface.o \
 	compile/widget_TextEdit.o \
+	compile/widget_TabWidget.o \
 	compile/layout_Layout.o \
 	compile/layout_BoxLayout.o \
 	compile/layout_HBoxLayout.o \
@@ -171,6 +172,10 @@ compile/widget_Surface.o: src/widgets/Surface.cpp Makefile include/ppltk.h
 compile/widget_TextEdit.o: src/widgets/TextEdit.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/widget_TextEdit.o -c src/widgets/TextEdit.cpp $(CFLAGS)
+
+compile/widget_TabWidget.o: src/widgets/TabWidget.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/widget_TabWidget.o -c src/widgets/TabWidget.cpp $(CFLAGS)
 
 ### Layout ############################################################
 

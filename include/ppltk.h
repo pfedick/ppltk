@@ -42,6 +42,7 @@
 
 
 #include <list>
+#include <vector>
 
 
 namespace ppltk {
@@ -122,7 +123,8 @@ public:
         GameControllerButtonDown,
         GameControllerButtonUp,
         GameControllerDeviceAdded,
-        GameControllerDeviceRemoved
+        GameControllerDeviceRemoved,
+        CurrentChanged
     };
 private:
     Type t;
@@ -381,6 +383,7 @@ public:
     virtual void toggledEvent(Event* event, bool checked);
     virtual void textChangedEvent(Event* event, const ppl7::String& text);
     virtual void selectionChangedEvent(Event* event);
+    virtual void currentChanged(Event* event, int index);
 
     virtual void gameControllerAxisMotionEvent(GameControllerAxisEvent* event);
     virtual void gameControllerButtonDownEvent(GameControllerButtonEvent* event);
@@ -917,6 +920,57 @@ public:
 
 };
 
+class TabWidget : public Widget
+{
+private:
+    class TabItem {
+    public:
+        String label;
+        Image icon;
+        bool enabled;
+        bool visible;
+        Widget* widget;
+        TabItem(const String& label, const Drawable& icon, Widget* widget);
+    };
+    std::vector<TabItem> myTabs;
+    int myIndex;
+
+    void emmitCurrentChanged();
+
+public:
+    TabWidget();
+    TabWidget(int x, int y, int width, int height);
+    ~TabWidget();
+
+    void clear();
+    void removeTab(int index);
+    int indexOf(Widget* widget) const;
+
+    int addTab(Widget* page, const String& label, const Drawable& icon=Drawable());
+    int insertTab(int index, Widget* page, const String& label, const Drawable& icon=Drawable());
+    int count() const;
+    int currentIndex() const;
+    Widget* currentWidget() const;
+    const String& tabText(int index) const;
+    const Drawable& tabIcon(int index) const;
+    bool isTabVisible(int index) const;
+    bool isTabEnabled(int index) const;
+
+    void setCurrentIndex(int index);
+    void setCurrentWidget(Widget* widget);
+    void setTabText(int index, const String& label);
+    void setTabIcon(int index, const Drawable& icon);
+    void setTabVisible(int index, bool visible);
+    void setTabEnabled(int index, bool enabled);
+
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    ppl7::grafix::Size sizeHint() const override;
+    ppl7::grafix::Size minimumSizeHint() const override;
+    void mouseDownEvent(MouseEvent* event) override;
+
+};
+
 class VerticalDivider : public Widget
 {
 public:
@@ -1070,16 +1124,16 @@ private:
         void begin(int position);
         void update_right(int position);
         void update_left(int position);
-        void go(int start,int end);
+        void go(int start, int end);
     };
 
     class CacheItem
     {
-        public:
-            wchar_t letter;
-            ppl7::grafix::Point p;
-            ppl7::grafix::Size size;
-            int line;
+    public:
+        wchar_t letter;
+        ppl7::grafix::Point p;
+        ppl7::grafix::Size size;
+        int line;
     };
 
     ppl7::WideString myText;
@@ -1087,8 +1141,9 @@ private:
     ppl7::grafix::Font myFont;
     ppl7::grafix::Color myColor;
     ppl7::WideString placeholder;
+    Scrollbar* vertical_scrollbar;
 
-    std::map<size_t,CacheItem> position_cache;
+    std::map<size_t, CacheItem> position_cache;
     bool cache_is_valid;
 
     size_t	cursorpos;
@@ -1106,11 +1161,11 @@ private:
     InputValidator* validator;
 
     void calcCursorPosition();
-    int calcPosition(const ppl7::grafix::Point &p);
+    int calcPosition(const ppl7::grafix::Point& p);
     ppl7::grafix::Point getDrawStartPositionOfChar(size_t pos);
     void validateAndSendEvent(const WideString& text);
     void deleteSelection();
-    void addToCache(const ppl7::WideString &word, int x, int y, int line);
+    void addToCache(const ppl7::WideString& word, int x, int y, int line);
     void invalidateCache();
     void rebuildCache(int width);
     void paintSelection(Drawable& draw);

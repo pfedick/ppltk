@@ -468,4 +468,11 @@ void EventHandler::gameControllerDeviceRemoved(GameControllerEvent* event)
 	if (handler) handler->gameControllerDeviceRemoved(event);
 }
 
+void EventHandler::currentChanged(Event* event, int index)
+{
+	if (handler) handler->currentChanged(event, index);
+}
+
+
+
 }	// EOF namespace ppltk
