@@ -99,6 +99,16 @@ void MainWindow::create(int width, int height, bool fullscreen)
 {
     setSize(width, height);
     setBackgroundColor(ppl7::grafix::Color(92, 92, 92, 92));
+
+    ppl7::String debugText;
+    debugText.set("Dies ist ein Demo-Text, der über mehrere Zeilen geht.\n"
+        "Hier die zweite Zeile, danach eine Leerzeile\n\n"
+        "Und jetzt kommt ein etwas längerer Text ohne Zeilenumbruch. Dieser muss von selbst umbrechen, "
+        "insbesondere auch, wenn das Fenster verkleinert oder vergrößert wird. Mal schauen, wie gut das "
+        "klappt, wie man es rendert, und wie man da drin navigieren kann. Ok, das sollte jetzt lang "
+        "genug sein.");
+
+
     int flags=ppltk::Window::DefaultWindow;
     flags|=ppltk::Window::Resizeable;
 
@@ -118,13 +128,18 @@ void MainWindow::create(int width, int height, bool fullscreen)
     tab=new ppltk::TabWidget(64, 64, this->width() - 128, this->height() - 92);
     addChild(tab);
 
-    testframe=new ppltk::Frame(ppltk::Frame::BorderStyle::NoBorder);
-    testframe->setTransparent(true);
+    testframe=new ppltk::Widget();
+    //testframe->setTransparent(true);
     //addChild(testframe);
     tab->addTab(testframe, "Text Input", gfx->Toolbar.getDrawable(68));
 
     ppltk::Widget* w=new ppltk::Widget();
     tab->addTab(w, "zweites Widget");
+    smalltext=new ppltk::TextEdit(0, 40, 200, w->clientSize().height - 40);
+    smalltext->setText(debugText);
+    w->addChild(smalltext);
+
+
     //tab->setTabEnabled(1, false);
     //tab->setTabVisible(1, false);
 
@@ -134,13 +149,10 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
     tab->setCurrentIndex(0);
 
+
     text=new ppltk::TextEdit(0, 40, testframe->clientSize().width, testframe->clientSize().height - 40);
-    text->setText("Dies ist ein Demo-Text, der über mehrere Zeilen geht.\n"
-        "Hier die zweite Zeile, danach eine Leerzeile\n\n"
-        "Und jetzt kommt ein etwas längerer Text ohne Zeilenumbruch. Dieser muss von selbst umbrechen, "
-        "insbesondere auch, wenn das Fenster verkleinert oder vergrößert wird. Mal schauen, wie gut das "
-        "klappt, wie man es rendert, und wie man da drin navigieren kann. Ok, das sollte jetzt lang "
-        "genug sein.");
+
+    text->setText(debugText);
     text->setEventHandler(this);
     testframe->addChild(text);
 
@@ -184,6 +196,7 @@ void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
     menue->setWidth(this->width());
     testframe->setSize(tab->clientSize());
     text->setSize(testframe->clientSize().width, testframe->clientSize().height - 40);
+    text->setSize(200, testframe->clientSize().height - 40);
     input->setSize(testframe->clientSize().width, 30);
     event->accept();
 

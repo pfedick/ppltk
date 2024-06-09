@@ -63,8 +63,9 @@ private:
     ppltk::HBoxLayout* layout_menue;
 
     ppltk::TabWidget* tab;
-    ppltk::Frame* testframe;
+    ppltk::Widget* testframe;
     ppltk::TextEdit* text;
+    ppltk::TextEdit* smalltext;
 
     ppltk::LineInput* input;
 
