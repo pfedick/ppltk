@@ -160,33 +160,6 @@ public:
 
 };
 
-class MouseState
-{
-public:
-    MouseState();
-    enum MouseButton {
-        Left=1,
-        Middle=2,
-        Right=4,
-        WheelUp=8,
-        WheelDown=16,
-        X1=32,
-        X2=64
-    };
-    Point p;
-    Point wheel;
-    MouseButton buttonMask;
-    MouseButton button;
-};
-
-class MouseEvent : public Event, public MouseState
-{
-private:
-
-public:
-};
-
-
 class KeyEvent : public Event
 {
 public:
@@ -304,6 +277,34 @@ class TextInputEvent : public Event
 {
 public:
     WideString text;
+};
+
+class MouseState
+{
+public:
+    MouseState();
+    enum MouseButton {
+        Left=1,
+        Middle=2,
+        Right=4,
+        WheelUp=8,
+        WheelDown=16,
+        X1=32,
+        X2=64
+    };
+    Point p;
+    Point wheel;
+    MouseButton buttonMask;
+    MouseButton button;
+    int keyModifier;
+    
+};
+
+class MouseEvent : public Event, public MouseState
+{
+private:
+
+public:
 };
 
 

@@ -301,6 +301,23 @@ static void sdlPresentScreen(void* privatedata)
 	SDL_RenderPresent(priv->renderer);
 }
 
+static int TranslateKeyModifierFromSDL(int sdl_key_modifier)
+{
+	int modifier=KeyEvent::KEYMOD_NONE;
+	if (sdl_key_modifier & KMOD_LSHIFT) modifier|=KeyEvent::KEYMOD_LEFTSHIFT;
+	if (sdl_key_modifier & KMOD_RSHIFT) modifier|=KeyEvent::KEYMOD_RIGHTSHIFT;
+	if (sdl_key_modifier & KMOD_LCTRL) modifier|=KeyEvent::KEYMOD_LEFTCTRL;
+	if (sdl_key_modifier & KMOD_RCTRL) modifier|=KeyEvent::KEYMOD_RIGHTCTRL;
+	if (sdl_key_modifier & KMOD_LALT) modifier|=KeyEvent::KEYMOD_LEFTALT;
+	if (sdl_key_modifier & KMOD_RALT) modifier|=KeyEvent::KEYMOD_RIGHTALT;
+	if (sdl_key_modifier & KMOD_LGUI) modifier|=KeyEvent::KEYMOD_LEFTGUI;
+	if (sdl_key_modifier & KMOD_RGUI) modifier|=KeyEvent::KEYMOD_RIGHTGUI;
+	if (sdl_key_modifier & KMOD_NUM) modifier|=KeyEvent::KEYMOD_NUM;
+	if (sdl_key_modifier & KMOD_CAPS) modifier|=KeyEvent::KEYMOD_CAPS;
+	if (sdl_key_modifier & KMOD_MODE) modifier|=KeyEvent::KEYMOD_MODE;
+	return modifier;
+}
+
 static void getButtonMask(MouseState& ev)
 {
 	uint8_t state=SDL_GetMouseState(NULL, NULL);
@@ -311,6 +328,20 @@ static void getButtonMask(MouseState& ev)
 	if (state & 16) ev.buttonMask=(MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::WheelDown);
 	if (state & 32) ev.buttonMask=(MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X1);
 	if (state & 64) ev.buttonMask=(MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X2);
+
+	const Uint8* kstate=SDL_GetKeyboardState(NULL);
+	ev.keyModifier=0;
+	if (kstate[SDL_SCANCODE_LCTRL]) ev.keyModifier|=KeyEvent::KEYMOD_LEFTCTRL;
+	if (kstate[SDL_SCANCODE_RCTRL]) ev.keyModifier|=KeyEvent::KEYMOD_RIGHTCTRL;
+	if (kstate[SDL_SCANCODE_LSHIFT]) ev.keyModifier|=KeyEvent::KEYMOD_LEFTSHIFT;
+	if (kstate[SDL_SCANCODE_RSHIFT]) ev.keyModifier|=KeyEvent::KEYMOD_RIGHTSHIFT;
+	if (kstate[SDL_SCANCODE_LALT]) ev.keyModifier|=KeyEvent::KEYMOD_LEFTALT;
+	if (kstate[SDL_SCANCODE_RALT]) ev.keyModifier|=KeyEvent::KEYMOD_RIGHTALT;
+	if (kstate[SDL_SCANCODE_LGUI]) ev.keyModifier|=KeyEvent::KEYMOD_LEFTGUI;
+	if (kstate[SDL_SCANCODE_RGUI]) ev.keyModifier|=KeyEvent::KEYMOD_RIGHTGUI;
+	if (kstate[SDL_SCANCODE_MODE]) ev.keyModifier|=KeyEvent::KEYMOD_MODE;
+	if (kstate[SDL_SCANCODE_NUMLOCKCLEAR]) ev.keyModifier|=KeyEvent::KEYMOD_NUM;
+	if (kstate[SDL_SCANCODE_CAPSLOCK]) ev.keyModifier|=KeyEvent::KEYMOD_CAPS;
 }
 
 
@@ -1020,19 +1051,7 @@ void WindowManager_SDL2::DispatchKeyEvent(void* e)
 			default: kev.key=KeyEvent::KEY_UNKNOWN; break;
 		}
 	}
-	kev.modifier=KeyEvent::KEYMOD_NONE;
-	if (event->keysym.mod & KMOD_LSHIFT) kev.modifier|=KeyEvent::KEYMOD_LEFTSHIFT;
-	if (event->keysym.mod & KMOD_RSHIFT) kev.modifier|=KeyEvent::KEYMOD_RIGHTSHIFT;
-	if (event->keysym.mod & KMOD_LCTRL) kev.modifier|=KeyEvent::KEYMOD_LEFTCTRL;
-	if (event->keysym.mod & KMOD_RCTRL) kev.modifier|=KeyEvent::KEYMOD_RIGHTCTRL;
-	if (event->keysym.mod & KMOD_LALT) kev.modifier|=KeyEvent::KEYMOD_LEFTALT;
-	if (event->keysym.mod & KMOD_RALT) kev.modifier|=KeyEvent::KEYMOD_RIGHTALT;
-	if (event->keysym.mod & KMOD_LGUI) kev.modifier|=KeyEvent::KEYMOD_LEFTGUI;
-	if (event->keysym.mod & KMOD_RGUI) kev.modifier|=KeyEvent::KEYMOD_RIGHTGUI;
-	if (event->keysym.mod & KMOD_NUM) kev.modifier|=KeyEvent::KEYMOD_NUM;
-	if (event->keysym.mod & KMOD_CAPS) kev.modifier|=KeyEvent::KEYMOD_CAPS;
-	if (event->keysym.mod & KMOD_MODE) kev.modifier|=KeyEvent::KEYMOD_MODE;
-
+	kev.modifier=TranslateKeyModifierFromSDL(event->keysym.mod);
 
 	if (kev.key == KeyEvent::KEY_UNKNOWN) return;
 
