@@ -1217,6 +1217,7 @@ public:
     void mouseDownEvent(MouseEvent* event) override;
     void mouseMoveEvent(ppltk::MouseEvent* event) override;
     void mouseUpEvent(ppltk::MouseEvent* event) override;
+    void mouseWheelEvent(ppltk::MouseEvent* event);
     void gotFocusEvent(FocusEvent* event) override;
     void lostFocusEvent(FocusEvent* event) override;
     void textInputEvent(TextInputEvent* event) override;

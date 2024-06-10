@@ -333,6 +333,7 @@ void TextEdit::paint(Drawable& draw)
 
 void TextEdit::mouseDownEvent(MouseEvent* event)
 {
+	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
 	//printf ("TextEdit::mouseDownEvent\n");
 	GetWindowManager()->setKeyboardFocus(this);
 	cursorpos=calcPosition(event->p);
@@ -359,6 +360,7 @@ void TextEdit::mouseDownEvent(MouseEvent* event)
 
 void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 {
+	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
 		cursorpos=calcPosition(event->p);
 		if ((int)cursorpos < drag_start_position) {
@@ -378,11 +380,18 @@ void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 
 void TextEdit::mouseUpEvent(ppltk::MouseEvent* event)
 {
+	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
 	if (drag_started) {
 		drag_started=false;
 		ppltk::GetWindowManager()->releaseMouse(this);
 	}
 }
+
+void TextEdit::mouseWheelEvent(ppltk::MouseEvent* event)
+{ 
+	if (vertical_scrollbar) vertical_scrollbar->mouseWheelEvent(event);
+}
+
 
 void TextEdit::gotFocusEvent(FocusEvent* event)
 {
@@ -584,6 +593,7 @@ void TextEdit::timerEvent(Event* event)
 
 void TextEdit::mouseDblClickEvent(MouseEvent* event)
 {
+	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
 	GetWindowManager()->setKeyboardFocus(this);
 	selection.clear();
 	if (myText.notEmpty()) {

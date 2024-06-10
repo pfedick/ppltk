@@ -153,6 +153,11 @@ void MainWindow::create(int width, int height, bool fullscreen)
     w=new ppltk::Widget();
     tab->addTab(w, "drittes Widget");
 
+    ppltk::Scrollbar *scroll=new ppltk::Scrollbar(0,0,25,500);
+    scroll->setSize(100);
+    scroll->setVisibleItems(30);
+    w->addChild(scroll);
+
     tab->setCurrentIndex(0);
 
 
