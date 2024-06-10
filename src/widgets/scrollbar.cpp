@@ -38,6 +38,8 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
+
+
 Scrollbar::Scrollbar(int x, int y, int width, int height) // @suppress("Class members should be properly initialized")
 	: ppltk::Widget()
 {
@@ -111,11 +113,21 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 	int w=indicator.width() - 1;
 	//int h=indicator.height()-1;
 	ppl7::grafix::Rect r1=indicator.rect();
+
 	if (visibleItems > 0 && visibleItems < size) {
-		float pxi=indicator.height() / size;
-		r1.y1=(int)((float)pos * pxi);
-		r1.y2=r1.y1 + visibleItems * pxi;	// is this correct???
-		if (r1.y2 >= indicator.height()) r1.y2=indicator.height() - 1;
+		float pxi=(float)indicator.height() / (float)size;
+		int visible=pxi*visibleItems;
+		if (visible<25) visible=25;
+		int unvisible=indicator.height()-visible;
+		r1.y1=pos*unvisible/(size-visibleItems);
+		r1.y2=r1.y1+visible;
+		/*
+		ppl7::PrintDebug("height: %d, pxi=%0.3f, size=%d, visibleItems=%d, visible=%d, unvisible=%d, y1=%d, y2=%d\n",
+			indicator.height(),pxi,size,visibleItems, visible, unvisible,r1.y1,r1.y2);
+		*/
+		if (r1.y2 >= indicator.height()-1) r1.y2=indicator.height() - 2;
+		
+		
 	}
 	slider_pos=r1;
 	slider_pos.y1+=23;
@@ -220,7 +232,7 @@ void Scrollbar::mouseMoveEvent(ppltk::MouseEvent* event)
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
 		if (drag_started) {
 			int draw_range=height() - 46;
-			int64_t v=(event->p.y - drag_offset) * size / draw_range;
+			int64_t v=(event->p.y- drag_offset) * size / draw_range;
 			if (v < 0) v=0;
 			if (v >= size - visibleItems) v=size - visibleItems;
 			pos=v;

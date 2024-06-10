@@ -158,7 +158,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     scroll->setVisibleItems(25);
     w->addChild(scroll);
 
-    tab->setCurrentIndex(0);
+    tab->setCurrentIndex(2);
 
 
     text=new ppltk::TextEdit(0, 40, testframe->clientSize().width, testframe->clientSize().height - 40);
