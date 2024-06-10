@@ -155,7 +155,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
     ppltk::Scrollbar *scroll=new ppltk::Scrollbar(0,0,25,500);
     scroll->setSize(100);
-    scroll->setVisibleItems(30);
+    scroll->setVisibleItems(25);
     w->addChild(scroll);
 
     tab->setCurrentIndex(0);

@@ -112,9 +112,9 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 	//int h=indicator.height()-1;
 	ppl7::grafix::Rect r1=indicator.rect();
 	if (visibleItems > 0 && visibleItems < size) {
-		int pxi=indicator.height() / size;
-		r1.y1=pos * pxi;
-		r1.y2=r1.y1 + visibleItems * pxi;
+		float pxi=indicator.height() / size;
+		r1.y1=(int)((float)pos * pxi);
+		r1.y2=r1.y1 + visibleItems * pxi;	// is this correct???
 		if (r1.y2 >= indicator.height()) r1.y2=indicator.height() - 1;
 	}
 	slider_pos=r1;
@@ -136,20 +136,38 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 {
 	//printf("Scrollbar::mouseDownEvent\n");
-	if (event->widget() == up_button && pos > 0) {
-		pos--;
-		needsRedraw();
-		ppltk::Event ev(ppltk::Event::ValueChanged);
-		ev.setWidget(this);
-		valueChangedEvent(&ev, pos);
+	if (event->widget() == up_button) {
+		if (pos>0) {
+			int d=1;
+			if (event->button==MouseState::Right) {
+				d=visibleItems-1;
+				if (d<1)d=1;
+			}
+			pos-=d;
+			if (pos<0) pos=0;
+			//ppl7::PrintDebug("pos=%d\n",pos);
+			needsRedraw();
+			ppltk::Event ev(ppltk::Event::ValueChanged);
+			ev.setWidget(this);
+			valueChangedEvent(&ev, pos);
+		}
 		return;
 
-	} else if (event->widget() == down_button && pos < size - 1) {
-		pos++;
-		needsRedraw();
-		ppltk::Event ev(ppltk::Event::ValueChanged);
-		ev.setWidget(this);
-		valueChangedEvent(&ev, pos);
+	} else if (event->widget() == down_button) {
+		if (pos < size - visibleItems) {
+			int d=1;
+			if (event->button==MouseState::Right) {
+				d=visibleItems-1;
+				if (d<1)d=1;
+			}
+			pos+=d;
+			if (pos>=size-visibleItems) pos=size-visibleItems;
+			//ppl7::PrintDebug("pos=%d\n",pos);
+			needsRedraw();
+			ppltk::Event ev(ppltk::Event::ValueChanged);
+			ev.setWidget(this);
+			valueChangedEvent(&ev, pos);
+		}
 		return;
 	}
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
@@ -168,11 +186,11 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			ppltk::Event ev(ppltk::Event::ValueChanged);
 			ev.setWidget(this);
 			valueChangedEvent(&ev, pos);
-		} else if (event->p.y > slider_pos.y2 && pos < size - 1) {
+		} else if (event->p.y > slider_pos.y2 && pos < size - visibleItems) {
 			int d=visibleItems-1;
 			if (d<1) d=1;
 			pos+=d;
-			if (pos>=size) pos=size-1;
+			if (pos>=size) pos=size-visibleItems;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
 			ev.setWidget(this);
@@ -201,10 +219,10 @@ void Scrollbar::mouseMoveEvent(ppltk::MouseEvent* event)
 {
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
 		if (drag_started) {
-			int draw_range=height() - 50;
+			int draw_range=height() - 46;
 			int64_t v=(event->p.y - drag_offset) * size / draw_range;
 			if (v < 0) v=0;
-			if (v > size - 1) v=size - 1;
+			if (v >= size - visibleItems) v=size - visibleItems;
 			pos=v;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
@@ -228,7 +246,7 @@ void Scrollbar::mouseWheelEvent(ppltk::MouseEvent* event)
 
 	if (event->wheel.y < 0 && pos < size - 1) {
 		pos+=d;
-		if (pos>=size) pos=size-1;
+		if (pos>=size-visibleItems) pos=size-visibleItems;
 		needsRedraw();
 		ppltk::Event ev(ppltk::Event::ValueChanged);
 		ev.setWidget(this);
