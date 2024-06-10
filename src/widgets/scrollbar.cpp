@@ -160,13 +160,19 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			drag_start_pos=event->p;
 			ppltk::GetWindowManager()->grabMouse(this);
 		} else if (event->p.y < slider_pos.y1 && pos>0) {
-			pos--;
+			int d=visibleItems-1;
+			if (d<1) d=1;
+			pos-=d;
+			if (pos<0) pos=0;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
 			ev.setWidget(this);
 			valueChangedEvent(&ev, pos);
 		} else if (event->p.y > slider_pos.y2 && pos < size - 1) {
-			pos++;
+			int d=visibleItems-1;
+			if (d<1) d=1;
+			pos+=d;
+			if (pos>=size) pos=size-1;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
 			ev.setWidget(this);
@@ -214,14 +220,22 @@ void Scrollbar::mouseMoveEvent(ppltk::MouseEvent* event)
 
 void Scrollbar::mouseWheelEvent(ppltk::MouseEvent* event)
 {
+	int d=1;
+	if (event->keyModifier&KeyEvent::KEYMOD_LEFTALT) { //TODO
+		d=visibleItems-1;
+		if (d<1) d=1;
+	}
+
 	if (event->wheel.y < 0 && pos < size - 1) {
-		pos++;
+		pos+=d;
+		if (pos>=size) pos=size-1;
 		needsRedraw();
 		ppltk::Event ev(ppltk::Event::ValueChanged);
 		ev.setWidget(this);
 		valueChangedEvent(&ev, pos);
 	} else if (event->wheel.y > 0 && pos > 0) {
-		pos--;
+		pos-=d;
+		if (pos<0) pos=0;
 		needsRedraw();
 		ppltk::Event ev(ppltk::Event::ValueChanged);
 		ev.setWidget(this);
