@@ -186,7 +186,6 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 		//printf("HorizontalSlider::mouseDownEvent: %d, %d\n", event->p.x, event->p.y);
 		if (event->p.inside(slider_pos)) {
 			drag_started=true;
-			drag_offset=event->p.y - slider_pos.y1;
 			drag_start_pos=event->p;
 			ppltk::GetWindowManager()->grabMouse(this);
 		} else if (event->p.y < slider_pos.y1 && pos>0) {
@@ -232,7 +231,7 @@ void Scrollbar::mouseMoveEvent(ppltk::MouseEvent* event)
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
 		if (drag_started) {
 			int draw_range=height() - 46;
-			int64_t v=(event->p.y- drag_offset) * size / draw_range;
+			int64_t v=(event->p.y- drag_start_pos.y) * size / draw_range;
 			if (v < 0) v=0;
 			if (v >= size - visibleItems) v=size - visibleItems;
 			pos=v;

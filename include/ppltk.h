@@ -1137,7 +1137,6 @@ private:
 
     ppl7::grafix::Rect slider_pos;
     bool drag_started;
-    int drag_offset;
     ppl7::grafix::Point drag_start_pos;
 
 public:
