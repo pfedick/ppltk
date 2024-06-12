@@ -55,7 +55,10 @@ TextEdit::TextEdit()
 	cursorx=0;
 	cursory=0;
 	line_height=0;
+	total_lines=0;
+	current_line=0;
 	cache_line_width=0;
+	visible_lines=0;
 	cursorwidth=2;
 	blinker=false;
 	overwrite=false;
@@ -63,7 +66,7 @@ TextEdit::TextEdit()
 	drag_started=false;
 	cache_is_valid=false;
 	vertical_scrollbar=NULL;
-	enableScrollbar(true);
+	//enableScrollbar(true);
 
 }
 
@@ -83,6 +86,9 @@ TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
 	}
 	cursorpos=0;
 	cursorx=0;
+	total_lines=0;
+	current_line=0;
+	visible_lines=0;
 	line_height=0;
 	cache_line_width=0;
 	cursorwidth=2;
@@ -92,7 +98,7 @@ TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
 	drag_started=false;
 	cache_is_valid=false;
 	vertical_scrollbar=NULL;
-	enableScrollbar(true);
+	//enableScrollbar(true);
 }
 
 String TextEdit::widgetType() const
@@ -116,21 +122,28 @@ TextEdit::~TextEdit()
 
 void TextEdit::enableScrollbar(bool enable)
 {
-	invalidateCache();
-	cache_line_width=-1;
 	if (enable == true && vertical_scrollbar == NULL) {
 		Size s=clientSize();
 		vertical_scrollbar=new Scrollbar(s.width - 25, 0, 25, s.height);
 		vertical_scrollbar->setEventHandler(this);
-		vertical_scrollbar->setSize(50);
-		vertical_scrollbar->setVisibleItems(10);
-		vertical_scrollbar->setPosition(0);
+		vertical_scrollbar->setSize(total_lines);
+		vertical_scrollbar->setVisibleItems(visible_lines);
+		vertical_scrollbar->setPosition(current_line);
 		addChild(vertical_scrollbar);
 
 	} else if (enable == false && vertical_scrollbar != NULL) {
 		this->removeChild(vertical_scrollbar);
 		delete vertical_scrollbar;
+		vertical_scrollbar=NULL;
 	}
+}
+
+void TextEdit::updateScrollbar()
+{
+	if (!vertical_scrollbar) return;
+	vertical_scrollbar->setSize(total_lines);
+	vertical_scrollbar->setVisibleItems(visible_lines);
+	vertical_scrollbar->setPosition(current_line);
 }
 
 void TextEdit::invalidateCache()
@@ -286,6 +299,7 @@ void TextEdit::rebuildCache(int width)
 		}
 	}
 	cache_line_width=width;
+	total_lines=line;
 	cache_is_valid=true;
 	calcCursorPosition();
 }
@@ -313,9 +327,27 @@ void TextEdit::paint(Drawable& draw)
 	Frame::setBackgroundColor(saveBackgroundColor);
 
 	Drawable d=clientDrawable(draw);
-	if (d.width() != cache_line_width) invalidateCache();
+	int w=d.width();
+	if (vertical_scrollbar) w-=vertical_scrollbar->width();
+	if (w != cache_line_width) invalidateCache();
 
-	if (!cache_is_valid) rebuildCache(d.width());
+	if (!cache_is_valid) rebuildCache(w);
+	
+	visible_lines=d.height()/line_height;
+	if (visible_lines*line_height<d.height()) visible_lines--;
+	//ppl7::PrintDebug("total-lines: %d, visible-lines: %d\n", total_lines, visible_lines);
+	
+	if (visible_lines<total_lines) {
+		if (!vertical_scrollbar) {
+			enableScrollbar(true);
+			w=d.width()-vertical_scrollbar->width();
+			rebuildCache(w);
+		}
+		updateScrollbar();
+
+	} else enableScrollbar(false);
+	
+	
 
 	if (selection.exists()) paintSelection(d);
 	myFont.setColor(myColor);

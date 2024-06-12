@@ -1205,6 +1205,9 @@ private:
     bool	overwrite;
     int		drag_start_position;
     int		timerId;
+    int     total_lines;
+    int     current_line;
+    int     visible_lines;
     InputValidator* validator;
 
     void calcCursorPosition();
@@ -1217,6 +1220,7 @@ private:
     void rebuildCache(int width);
     void paintSelection(Drawable& draw);
     void enableScrollbar(bool enable);
+    void updateScrollbar();
 
 
 public:
