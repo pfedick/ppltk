@@ -297,7 +297,7 @@ public:
     MouseButton buttonMask;
     MouseButton button;
     int keyModifier;
-    
+
 };
 
 class MouseEvent : public Event, public MouseState
@@ -1103,34 +1103,34 @@ class Scrollbar : public ppltk::Widget
 private:
     class Slider : public Widget
     {
-        private:
-            int size;
-            int pos;
-            int visibleItems;
+    private:
+        int size;
+        int pos;
+        int visibleItems;
 
-            ppl7::grafix::Rect slider_pos;
-            bool drag_started;
-            int drag_offset;
-            ppl7::grafix::Point drag_start_pos;
-        public:
-            Slider(int x, int y, int width, int height);
-            ~Slider();
-            void setSize(int size);
-            void setPosition(int position);
-            void setVisibleItems(int items);
-            int position() const;
-            virtual ppl7::String widgetType() const override;
-            virtual void paint(ppl7::grafix::Drawable& draw) override;
-            void mouseDownEvent(ppltk::MouseEvent* event) override;
-            void mouseUpEvent(ppltk::MouseEvent* event) override;
-            void lostFocusEvent(ppltk::FocusEvent* event) override;
-            void mouseMoveEvent(ppltk::MouseEvent* event) override;
-            void mouseWheelEvent(ppltk::MouseEvent* event) override;
+        ppl7::grafix::Rect slider_pos;
+        bool drag_started;
+        int drag_offset;
+        ppl7::grafix::Point drag_start_pos;
+    public:
+        Slider(int x, int y, int width, int height);
+        ~Slider();
+        void setSize(int size);
+        void setPosition(int position);
+        void setVisibleItems(int items);
+        int position() const;
+        virtual ppl7::String widgetType() const override;
+        virtual void paint(ppl7::grafix::Drawable& draw) override;
+        void mouseDownEvent(ppltk::MouseEvent* event) override;
+        void mouseUpEvent(ppltk::MouseEvent* event) override;
+        void lostFocusEvent(ppltk::FocusEvent* event) override;
+        void mouseMoveEvent(ppltk::MouseEvent* event) override;
+        void mouseWheelEvent(ppltk::MouseEvent* event) override;
 
     };
     ppltk::Button* up_button;
     ppltk::Button* down_button;
-    Scrollbar::Slider *slider;
+    Scrollbar::Slider* slider;
     int size;
     int pos;
     int visibleItems;
@@ -1208,6 +1208,7 @@ private:
     int     total_lines;
     int     current_line;
     int     visible_lines;
+    int     first_cursor_up_down_x;
     InputValidator* validator;
 
     void calcCursorPosition();
@@ -1221,6 +1222,7 @@ private:
     void paintSelection(Drawable& draw);
     void enableScrollbar(bool enable);
     void updateScrollbar();
+    void moveScrollbarToCursor();
 
 
 public:
@@ -1258,6 +1260,7 @@ public:
     void timerEvent(Event* event) override;
     void mouseDblClickEvent(MouseEvent* event) override;
     void resizeEvent(ResizeEvent* event) override;
+    void valueChangedEvent(ppltk::Event* event, int value) override;
 };
 
 class CheckBox : public ppltk::Label

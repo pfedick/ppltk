@@ -66,8 +66,7 @@ TextEdit::TextEdit()
 	drag_started=false;
 	cache_is_valid=false;
 	vertical_scrollbar=NULL;
-	//enableScrollbar(true);
-
+	first_cursor_up_down_x=-1;
 }
 
 TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
@@ -98,7 +97,7 @@ TextEdit::TextEdit(int x, int y, int width, int height, const String& text)
 	drag_started=false;
 	cache_is_valid=false;
 	vertical_scrollbar=NULL;
-	//enableScrollbar(true);
+	first_cursor_up_down_x=-1;
 }
 
 String TextEdit::widgetType() const
@@ -124,7 +123,7 @@ void TextEdit::enableScrollbar(bool enable)
 {
 	if (enable == true && vertical_scrollbar == NULL) {
 		Size s=clientSize();
-		vertical_scrollbar=new Scrollbar(s.width - 25, 0, 25, s.height);
+		vertical_scrollbar=new Scrollbar(s.width - 19, 0, 19, s.height);
 		vertical_scrollbar->setEventHandler(this);
 		vertical_scrollbar->setSize(total_lines);
 		vertical_scrollbar->setVisibleItems(visible_lines);
@@ -143,7 +142,14 @@ void TextEdit::updateScrollbar()
 	if (!vertical_scrollbar) return;
 	vertical_scrollbar->setSize(total_lines);
 	vertical_scrollbar->setVisibleItems(visible_lines);
-	vertical_scrollbar->setPosition(current_line);
+}
+
+void TextEdit::moveScrollbarToCursor()
+{
+	if (!vertical_scrollbar) return;
+	int sline=vertical_scrollbar->position();
+	if (current_line < sline)  vertical_scrollbar->setPosition(current_line);
+	else if (current_line > sline + visible_lines) vertical_scrollbar->setPosition(current_line - visible_lines);
 }
 
 void TextEdit::invalidateCache()
@@ -307,11 +313,16 @@ void TextEdit::rebuildCache(int width)
 
 void TextEdit::paintSelection(Drawable& draw)
 {
+	int start_y=0;
+	if (vertical_scrollbar) start_y=vertical_scrollbar->position() * line_height;
+	//int end_line=start_line + visible_lines + 1;
+
+
 	const WidgetStyle& style=GetWidgetStyle();
 	for (int i=selection.start;i <= selection.end;i++) {
 		std::map<size_t, CacheItem>::const_iterator it=position_cache.find(i);
 		if (it != position_cache.end()) {
-			draw.fillRect(it->second.p.x, it->second.p.y, it->second.p.x + it->second.size.width, it->second.p.y + it->second.size.height,
+			draw.fillRect(it->second.p.x, it->second.p.y - start_y, it->second.p.x + it->second.size.width, it->second.p.y - start_y + it->second.size.height,
 				style.inputSelectedBackgroundColor);
 		}
 	}
@@ -332,43 +343,49 @@ void TextEdit::paint(Drawable& draw)
 	if (w != cache_line_width) invalidateCache();
 
 	if (!cache_is_valid) rebuildCache(w);
-	
-	visible_lines=d.height()/line_height;
-	if (visible_lines*line_height<d.height()) visible_lines--;
+
+	visible_lines=d.height() / line_height;
+	if (visible_lines * line_height < d.height()) visible_lines--;
 	//ppl7::PrintDebug("total-lines: %d, visible-lines: %d\n", total_lines, visible_lines);
-	
-	if (visible_lines<total_lines) {
+
+	if (visible_lines < total_lines) {
 		if (!vertical_scrollbar) {
 			enableScrollbar(true);
-			w=d.width()-vertical_scrollbar->width();
+			w=d.width() - vertical_scrollbar->width();
 			rebuildCache(w);
 		}
 		updateScrollbar();
 
 	} else enableScrollbar(false);
-	
-	
 
 	if (selection.exists()) paintSelection(d);
 	myFont.setColor(myColor);
 	myFont.setOrientation(Font::TOP);
 	WideString letter;
 	std::map<size_t, CacheItem>::const_iterator it;
+	int start_line=0;
+	if (vertical_scrollbar) start_line=vertical_scrollbar->position();
+	int end_line=start_line + visible_lines + 1;
+	int start_y=start_line * line_height;
 	for (it=position_cache.begin();it != position_cache.end();++it) {
-		if (it->second.letter != '\n') {
+		if (it->second.letter != '\n' && it->second.line >= start_line && it->second.line < end_line) {
 			letter.set(it->second.letter);
-			d.print(myFont, it->second.p.x, it->second.p.y, letter);
+			d.print(myFont, it->second.p.x, it->second.p.y - start_y, letter);
 		}
 	}
-	if (blinker) d.fillRect(cursorx, cursory, cursorx + cursorwidth, cursory + line_height, myColor);
+	//if (vertical_scrollbar) ppl7::PrintDebug("line: %d, scrollbar-pos: %d\n", current_line, vertical_scrollbar->position());
+	if (blinker) d.fillRect(cursorx, cursory - start_line * line_height, cursorx + cursorwidth, cursory + line_height - start_line * line_height, myColor);
 }
 
 void TextEdit::mouseDownEvent(MouseEvent* event)
 {
-	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
+	if (vertical_scrollbar != NULL && event->p.x >= vertical_scrollbar->x()) return;
 	//printf ("TextEdit::mouseDownEvent\n");
 	GetWindowManager()->setKeyboardFocus(this);
-	cursorpos=calcPosition(event->p);
+	ppl7::grafix::Point p=event->p;
+	if (vertical_scrollbar) p.y+=vertical_scrollbar->position() * line_height;
+
+	cursorpos=calcPosition(p);
 	selection.clear();
 	blinker=true;
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
@@ -385,16 +402,19 @@ void TextEdit::mouseDownEvent(MouseEvent* event)
 
 	}
 	calcCursorPosition();
+	moveScrollbarToCursor();
 	needsRedraw();
-
 }
 
 
 void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 {
-	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
+	if (vertical_scrollbar != NULL && event->p.x >= vertical_scrollbar->x()) return;
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
-		cursorpos=calcPosition(event->p);
+		ppl7::grafix::Point p=event->p;
+		if (vertical_scrollbar) p.y+=vertical_scrollbar->position() * line_height;
+
+		cursorpos=calcPosition(p);
 		if ((int)cursorpos < drag_start_position) {
 			selection.start=cursorpos;
 			selection.end=drag_start_position - 1;
@@ -403,6 +423,7 @@ void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 			selection.end=cursorpos - 1;
 		}
 		calcCursorPosition();
+		moveScrollbarToCursor();
 		needsRedraw();
 	} else if (drag_started) {
 		drag_started=false;
@@ -412,7 +433,7 @@ void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 
 void TextEdit::mouseUpEvent(ppltk::MouseEvent* event)
 {
-	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
+	if (vertical_scrollbar != NULL && event->p.x >= vertical_scrollbar->x()) return;
 	if (drag_started) {
 		drag_started=false;
 		ppltk::GetWindowManager()->releaseMouse(this);
@@ -420,7 +441,7 @@ void TextEdit::mouseUpEvent(ppltk::MouseEvent* event)
 }
 
 void TextEdit::mouseWheelEvent(ppltk::MouseEvent* event)
-{ 
+{
 	if (vertical_scrollbar) vertical_scrollbar->mouseWheelEvent(event);
 }
 
@@ -461,6 +482,7 @@ void TextEdit::textInputEvent(TextInputEvent* event)
 	invalidateCache();
 	cursorpos++;
 	calcCursorPosition();
+	moveScrollbarToCursor();
 	selection.clear();
 	validateAndSendEvent(myText);
 	if (validator) {
@@ -475,6 +497,7 @@ void TextEdit::deleteSelection()
 		myText=new_text;
 		cursorpos=selection.start;
 		calcCursorPosition();
+		moveScrollbarToCursor();
 		selection.clear();
 	}
 }
@@ -490,13 +513,12 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 		bool selectmode=(key_modifier & (KeyEvent::KEYMOD_LEFTSHIFT | KeyEvent::KEYMOD_RIGHTSHIFT));
 		//ppl7::PrintDebug("%d\n",selectmode);
 
+		if (event->key != KeyEvent::KEY_UP && event->key != KeyEvent::KEY_DOWN) first_cursor_up_down_x=-1;
 		if (event->key == KeyEvent::KEY_ENTER || event->key == KeyEvent::KEY_RETURN) {
 			TextInputEvent ev;
 			ev.text.set(L"\n");
 			textInputEvent(&ev);
-		}
-
-		if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
+		} else if (event->key == KeyEvent::KEY_LEFT && cursorpos > 0) {
 			cursorpos--;
 			if (selectmode) selection.update_left(cursorpos);
 			calcCursorPosition();
@@ -507,18 +529,19 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 		} else if (event->key == KeyEvent::KEY_UP) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			if (cursorpos >= myText.size()) p=getDrawStartPositionOfChar(cursorpos - 1);
+			if (first_cursor_up_down_x < 0)first_cursor_up_down_x=p.x;
 			p.y-=line_height;
 			if (p.y < 0) p.y=0;
 			//if (selectmode && !selection.exists()) selection.begin(cursorpos);
-			cursorpos=calcPosition(p);
+			cursorpos=calcPosition(ppl7::grafix::Point(first_cursor_up_down_x, p.y));
 			if (selectmode) selection.go(last_cursorpos - 1, cursorpos);
 			calcCursorPosition();
 		} else if (event->key == KeyEvent::KEY_DOWN) {
 			ppl7::grafix::Point p=getDrawStartPositionOfChar(cursorpos);
 			if (cursorpos < myText.size()) {
+				if (first_cursor_up_down_x < 0)first_cursor_up_down_x=p.x;
 				p.y+=line_height;
-				//if (selectmode && !selection.exists()) selection.begin(cursorpos);
-				cursorpos=calcPosition(p);
+				cursorpos=calcPosition(ppl7::grafix::Point(first_cursor_up_down_x, p.y));
 				if (cursorpos > myText.size()) cursorpos=myText.size();
 				if (selectmode) selection.go(last_cursorpos, cursorpos);
 				calcCursorPosition();
@@ -603,6 +626,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				selection.clear();
 			}
 		}
+		moveScrollbarToCursor();
 	}
 	Frame::keyDownEvent(event);
 }
@@ -625,11 +649,14 @@ void TextEdit::timerEvent(Event* event)
 
 void TextEdit::mouseDblClickEvent(MouseEvent* event)
 {
-	if (vertical_scrollbar!=NULL && event->p.x>=vertical_scrollbar->x()) return;
+	if (vertical_scrollbar != NULL && event->p.x >= vertical_scrollbar->x()) return;
 	GetWindowManager()->setKeyboardFocus(this);
 	selection.clear();
 	if (myText.notEmpty()) {
-		cursorpos=calcPosition(event->p);
+		ppl7::grafix::Point p=event->p;
+		if (vertical_scrollbar) p.y+=vertical_scrollbar->position() * line_height;
+
+		cursorpos=calcPosition(p);
 		selection.begin(cursorpos);
 		for (int i=cursorpos;i >= 0;i--) {
 			wchar_t c=myText[i];
@@ -643,6 +670,7 @@ void TextEdit::mouseDblClickEvent(MouseEvent* event)
 
 		}
 		needsRedraw();
+		moveScrollbarToCursor();
 	}
 }
 
@@ -655,11 +683,13 @@ void TextEdit::calcCursorPosition()
 	if (cursorpos > text.size()) cursorpos=text.size();
 	cursorx=0;
 	cursory=0;
+	current_line=0;
 	if (cursorpos > 0 && cursorpos >= position_cache.size()) {
 		std::map<size_t, CacheItem>::const_iterator it=position_cache.find(cursorpos - 1);
 		if (it != position_cache.end()) {
 			cursorx=it->second.p.x + it->second.size.width;
 			cursory=it->second.p.y;
+			current_line=it->second.line;
 
 		}
 	} else if (cursorpos > 0) {
@@ -667,6 +697,7 @@ void TextEdit::calcCursorPosition()
 		if (it != position_cache.end()) {
 			cursorx=it->second.p.x;
 			cursory=it->second.p.y;
+			current_line=it->second.line;
 		}
 	}
 	needsRedraw();
@@ -761,5 +792,14 @@ void TextEdit::resizeEvent(ResizeEvent* event)
 	}
 }
 
+void TextEdit::valueChangedEvent(ppltk::Event* event, int value)
+{
+	if (vertical_scrollbar != NULL && event->widget() == vertical_scrollbar) {
+		//ppl7::PrintDebug("TextEdit::valueChangedEvent\n");
+		needsRedraw();
+		return;
+	}
+	Frame::valueChangedEvent(event, value);
+}
 
 }	// EOF namespace ppltk
