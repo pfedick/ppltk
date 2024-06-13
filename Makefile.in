@@ -34,7 +34,7 @@ INCLUDE	= -I include
 CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@ @SDL2_CFLAGS@
 LIB		= @LIBPPL7_LIBS@  @SDL2_LIBS@ -lstdc++
 LIBDEP	:= @LIBPPL7@
-LIBNAME = ppltk
+LIBNAME = libppltk
 PROGRAM	= ppltk
 
 
