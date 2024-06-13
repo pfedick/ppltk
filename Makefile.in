@@ -34,6 +34,7 @@ INCLUDE	= -I include
 CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@ @SDL2_CFLAGS@
 LIB		= @LIBPPL7_LIBS@  @SDL2_LIBS@ -lstdc++
 LIBDEP	:= @LIBPPL7@
+LIBNAME = ppltk
 PROGRAM	= ppltk
 
 
@@ -68,11 +69,17 @@ OBJECTS = 	compile/WindowManager.o \
 	compile/layout_Margins.o
 
 
+compile/$(LIBNAME).a: $(OBJECTS)
+	- @mkdir -p compile
+	ar -r compile/$(LIBNAME).a $(OBJECTS)
+
+demo: $(PROGRAM)
+
 $(PROGRAM): $(OBJECTS) compile/main.o $(LIBDEP)
 	$(CC) -o $(PROGRAM) $(OBJECTS) compile/main.o $(CFLAGS) $(LIB)
 	-chmod 755 $(PROGRAM)
 
-all: $(PROGRAM)
+all: compile/$(LIBNAME).a $(PROGRAM)
 
 clean:
 	-rm -rf *.o $(PROGRAM) *.core compile
