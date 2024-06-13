@@ -1101,42 +1101,15 @@ public:
 class Scrollbar : public ppltk::Widget
 {
 private:
-    class Slider : public Widget
-    {
-    private:
-        int size;
-        int pos;
-        int visibleItems;
-
-        ppl7::grafix::Rect slider_pos;
-        bool drag_started;
-        int drag_offset;
-        ppl7::grafix::Point drag_start_pos;
-    public:
-        Slider(int x, int y, int width, int height);
-        ~Slider();
-        void setSize(int size);
-        void setPosition(int position);
-        void setVisibleItems(int items);
-        int position() const;
-        virtual ppl7::String widgetType() const override;
-        virtual void paint(ppl7::grafix::Drawable& draw) override;
-        void mouseDownEvent(ppltk::MouseEvent* event) override;
-        void mouseUpEvent(ppltk::MouseEvent* event) override;
-        void lostFocusEvent(ppltk::FocusEvent* event) override;
-        void mouseMoveEvent(ppltk::MouseEvent* event) override;
-        void mouseWheelEvent(ppltk::MouseEvent* event) override;
-
-    };
     ppltk::Button* up_button;
     ppltk::Button* down_button;
-    Scrollbar::Slider* slider;
     int size;
     int pos;
     int visibleItems;
 
     ppl7::grafix::Rect slider_pos;
     bool drag_started;
+    int drag_offset;
     ppl7::grafix::Point drag_start_pos;
 
 public:
