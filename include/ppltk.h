@@ -1084,16 +1084,16 @@ public:
     ppl7::grafix::Size minimumSizeHint() const override;
 
 
-    virtual void mouseDownEvent(MouseEvent* event);
-    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
-    virtual void mouseUpEvent(ppltk::MouseEvent* event);
-    virtual void gotFocusEvent(FocusEvent* event);
-    virtual void lostFocusEvent(FocusEvent* event);
-    virtual void textInputEvent(TextInputEvent* event);
-    virtual void keyDownEvent(KeyEvent* event);
-    virtual void keyUpEvent(KeyEvent* event);
-    virtual void timerEvent(Event* event);
-    virtual void mouseDblClickEvent(MouseEvent* event);
+    virtual void mouseDownEvent(MouseEvent* event) override;
+    virtual void mouseMoveEvent(ppltk::MouseEvent* event) override;
+    virtual void mouseUpEvent(ppltk::MouseEvent* event) override;
+    virtual void gotFocusEvent(FocusEvent* event) override;
+    virtual void lostFocusEvent(FocusEvent* event) override;
+    virtual void textInputEvent(TextInputEvent* event) override;
+    virtual void keyDownEvent(KeyEvent* event) override;
+    virtual void keyUpEvent(KeyEvent* event) override;
+    virtual void timerEvent(Event* event) override;
+    void mouseDblClickEvent(MouseEvent* event) override;
 
 };
 
@@ -1275,9 +1275,9 @@ public:
     bool checked() const;
     void setChecked(bool checked);
 
-    virtual ppl7::String widgetType() const;
-    virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppltk::MouseEvent* event);
+    ppl7::String widgetType() const override;
+    void paint(ppl7::grafix::Drawable& draw) override;
+    void mouseDownEvent(ppltk::MouseEvent* event) override;
 };
 
 class RadioButton : public ppltk::Label
@@ -1291,9 +1291,9 @@ public:
     ~RadioButton();
     bool checked() const;
     void setChecked(bool checked);
-    virtual ppl7::String widgetType() const;
-    virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppltk::MouseEvent* event);
+    ppl7::String widgetType() const override;
+    void paint(ppl7::grafix::Drawable& draw) override;
+    void mouseDownEvent(ppltk::MouseEvent* event) override;
 };
 
 class ListWidget : public ppltk::Frame
@@ -1332,13 +1332,13 @@ public:
     void remove(size_t index);
     void remove(const ppl7::String& identifier);
 
-    virtual ppl7::String widgetType() const;
-    virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void valueChangedEvent(ppltk::Event* event, int value);
-    virtual void mouseDownEvent(ppltk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
-    virtual void lostFocusEvent(ppltk::FocusEvent* event);
-    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
+    ppl7::String widgetType() const override;
+    void paint(ppl7::grafix::Drawable& draw) override;
+    void valueChangedEvent(ppltk::Event* event, int value) override;
+    void mouseDownEvent(ppltk::MouseEvent* event) override;
+    void mouseWheelEvent(ppltk::MouseEvent* event) override;
+    void lostFocusEvent(ppltk::FocusEvent* event) override;
+    void mouseMoveEvent(ppltk::MouseEvent* event) override;
 };
 
 class ComboBox : public ppltk::Widget
@@ -1376,12 +1376,12 @@ public:
 
     void add(const ppl7::String& text, const ppl7::String& identifier=ppl7::String());
 
-    virtual ppl7::String widgetType() const;
-    virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppltk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
-    virtual void valueChangedEvent(ppltk::Event* event, int value);
-    virtual void lostFocusEvent(ppltk::FocusEvent* event);
+    ppl7::String widgetType() const override;
+    void paint(ppl7::grafix::Drawable& draw) override;
+    void mouseDownEvent(ppltk::MouseEvent* event) override;
+    void mouseWheelEvent(ppltk::MouseEvent* event) override;
+    void valueChangedEvent(ppltk::Event* event, int value) override;
+    void lostFocusEvent(ppltk::FocusEvent* event) override;
 };
 
 class AbstractSpinBox : public Widget
@@ -1417,17 +1417,15 @@ public:
 
     //virtual bool validateText(const ppl7::WideString& text)=0;
 
-    virtual String widgetType() const;
-    virtual void paint(Drawable& draw);
-
-
-    virtual void mouseDownEvent(MouseEvent* event);
-    virtual void gotFocusEvent(FocusEvent* event);
-    virtual void lostFocusEvent(FocusEvent* event);
-    virtual void textInputEvent(TextInputEvent* event);
-    virtual void keyDownEvent(KeyEvent* event);
-    virtual void keyUpEvent(KeyEvent* event);
-    virtual void textChangedEvent(Event* event, const String& text);
+    String widgetType() const override;
+    void paint(Drawable& draw) override;
+    void mouseDownEvent(MouseEvent* event) override;
+    void gotFocusEvent(FocusEvent* event) override;
+    void lostFocusEvent(FocusEvent* event) override;
+    void textInputEvent(TextInputEvent* event) override;
+    void keyDownEvent(KeyEvent* event) override;
+    void keyUpEvent(KeyEvent* event) override;
+    void textChangedEvent(Event* event, const String& text) override;
 
     virtual void stepUp()=0;
     virtual void stepDown()=0;
@@ -1456,12 +1454,12 @@ public:
     void setStepSize(int64_t value);
     int64_t stepSize() const;
 
-    void stepUp();
-    void stepDown();
+    void stepUp() override;
+    void stepDown() override;
 
     bool validateText(const ppl7::WideString& text);
     bool validateInput(const ppl7::WideString& text);
-    virtual void textChangedEvent(Event* event, const String& text);
+    void textChangedEvent(Event* event, const String& text) override;
 };
 
 class DoubleSpinBox : public AbstractSpinBox, public InputValidator
@@ -1489,13 +1487,13 @@ public:
     void setDecimals(int decimals);
     int decimals() const;
 
-    void stepUp();
-    void stepDown();
+    void stepUp() override;
+    void stepDown() override;
 
 
     bool validateText(const ppl7::WideString& text);
     bool validateInput(const ppl7::WideString& text);
-    virtual void textChangedEvent(Event* event, const String& text);
+    void textChangedEvent(Event* event, const String& text) override;
 
 };
 
@@ -1575,12 +1573,12 @@ public:
     ~HorizontalSlider();
     void enableSpinBox(bool enabled, int64_t stepsize=1, int width=100);
 
-    virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppltk::MouseEvent* event);
-    virtual void mouseUpEvent(ppltk::MouseEvent* event);
-    virtual void lostFocusEvent(ppltk::FocusEvent* event);
-    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
+    void paint(ppl7::grafix::Drawable& draw) override;
+    void mouseDownEvent(ppltk::MouseEvent* event) override;
+    void mouseUpEvent(ppltk::MouseEvent* event) override;
+    void lostFocusEvent(ppltk::FocusEvent* event) override;
+    void mouseMoveEvent(ppltk::MouseEvent* event) override;
+    void mouseWheelEvent(ppltk::MouseEvent* event) override;
 
 
 
@@ -1604,12 +1602,12 @@ public:
     ~DoubleHorizontalSlider();
     void enableSpinBox(bool enabled, double stepsize=0.1f, int decimals=2, int width=100);
 
-    virtual void paint(ppl7::grafix::Drawable& draw);
-    virtual void mouseDownEvent(ppltk::MouseEvent* event);
-    virtual void mouseUpEvent(ppltk::MouseEvent* event);
-    virtual void lostFocusEvent(ppltk::FocusEvent* event);
-    virtual void mouseMoveEvent(ppltk::MouseEvent* event);
-    virtual void mouseWheelEvent(ppltk::MouseEvent* event);
+    void paint(ppl7::grafix::Drawable& draw) override;
+    void mouseDownEvent(ppltk::MouseEvent* event) override;
+    void mouseUpEvent(ppltk::MouseEvent* event) override;
+    void lostFocusEvent(ppltk::FocusEvent* event) override;
+    void mouseMoveEvent(ppltk::MouseEvent* event) override;
+    void mouseWheelEvent(ppltk::MouseEvent* event) override;
 
 
 };
