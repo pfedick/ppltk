@@ -380,6 +380,7 @@ void TextEdit::paint(Drawable& draw)
 void TextEdit::mouseDownEvent(MouseEvent* event)
 {
 	if (vertical_scrollbar != NULL && event->p.x >= vertical_scrollbar->x()) return;
+	first_cursor_up_down_x=-1;
 	//printf ("TextEdit::mouseDownEvent\n");
 	GetWindowManager()->setKeyboardFocus(this);
 	ppl7::grafix::Point p=event->p;
@@ -410,6 +411,7 @@ void TextEdit::mouseDownEvent(MouseEvent* event)
 void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 {
 	if (vertical_scrollbar != NULL && event->p.x >= vertical_scrollbar->x()) return;
+	first_cursor_up_down_x=-1;
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
 		ppl7::grafix::Point p=event->p;
 		if (vertical_scrollbar) p.y+=vertical_scrollbar->position() * line_height;
@@ -434,6 +436,7 @@ void TextEdit::mouseMoveEvent(ppltk::MouseEvent* event)
 void TextEdit::mouseUpEvent(ppltk::MouseEvent* event)
 {
 	if (vertical_scrollbar != NULL && event->p.x >= vertical_scrollbar->x()) return;
+	first_cursor_up_down_x=-1;
 	if (drag_started) {
 		drag_started=false;
 		ppltk::GetWindowManager()->releaseMouse(this);
