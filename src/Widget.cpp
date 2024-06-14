@@ -63,6 +63,7 @@ Widget::Widget()
 Widget::Widget(int x, int y, int width, int height)
 {
 	parent=NULL;
+	myLayout=NULL;
 	lockcount=0;
 	visible=true;
 	enabled=true;
