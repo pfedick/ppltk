@@ -790,7 +790,7 @@ void TextEdit::resizeEvent(ResizeEvent* event)
 	//ppl7::PrintDebug("TextEdit::resizeEvent\n");
 	if (vertical_scrollbar) {
 		Size s=clientSize();
-		vertical_scrollbar->setPos(s.width - 25, 0);
+		vertical_scrollbar->setPos(s.width - 19, 0);
 		vertical_scrollbar->setHeight(s.height);
 	}
 }
