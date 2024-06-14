@@ -221,6 +221,8 @@ void ListWidget::mouseDownEvent(ppltk::MouseEvent* event)
 
 void ListWidget::mouseWheelEvent(ppltk::MouseEvent* event)
 {
+	scrollbar->mouseWheelEvent(event);
+	/*
 	if (event->wheel.y < 0) {
 		scrollbar->setPosition(scrollbar->position() + 1);
 		this->needsRedraw();
@@ -228,6 +230,7 @@ void ListWidget::mouseWheelEvent(ppltk::MouseEvent* event)
 		scrollbar->setPosition(scrollbar->position() - 1);
 		this->needsRedraw();
 	}
+	*/
 }
 
 void ListWidget::mouseMoveEvent(ppltk::MouseEvent* event)
