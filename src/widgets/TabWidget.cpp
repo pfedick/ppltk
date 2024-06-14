@@ -416,4 +416,12 @@ void TabWidget::mouseDownEvent(MouseEvent* event)
 	}
 }
 
+void TabWidget::resizeEvent(ResizeEvent* event)
+{
+	std::vector<TabItem>::iterator it;
+	for (it=myTabs.begin();it != myTabs.end();++it) {
+		it->widget->setSize(clientSize());
+	}
+}
+
 }	// EOF namespace ppltk

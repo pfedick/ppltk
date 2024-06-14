@@ -205,7 +205,7 @@ void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
 {
     if (tab) tab->setSize(this->width() - 128, this->height() - 92);
     if (menue) menue->setWidth(this->width());
-    if (testframe) testframe->setSize(tab->clientSize());
+    //if (testframe) testframe->setSize(tab->clientSize());
     if (text) text->setSize(testframe->clientSize().width, testframe->clientSize().height - 40);
     //text->setSize(200, testframe->clientSize().height - 40);
     if (input) input->setSize(testframe->clientSize().width, 30);

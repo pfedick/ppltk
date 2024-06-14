@@ -990,7 +990,7 @@ public:
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size minimumSizeHint() const override;
     void mouseDownEvent(MouseEvent* event) override;
-    //void resizeEvent(ResizeEvent* event) override;
+    void resizeEvent(ResizeEvent* event) override;
 };
 
 class VerticalDivider : public Widget
