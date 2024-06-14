@@ -165,6 +165,7 @@ void WindowManager::deferedDeleteWidgets(Widget* widget)
 			deferedDeleteWidgets(child);
 			if (child->deleteRequested) {
 				delete (child);
+				//widget->needsRedraw();
 				it=widget->childs.end();
 				match=true;
 			}
@@ -176,14 +177,14 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 {
 	Widget* w;
 	//printf("WindowManager::dispatchEvent\n");
-	deferedDeleteWidgets(window);
+	//deferedDeleteWidgets(window);
 	switch (event.type()) {
 		case Event::MouseEnter:
 			window->mouseState=(MouseEvent&)event;
 			event.setWidget(window);
 			LastMouseEnter=window;
 			window->mouseEnterEvent((MouseEvent*)&event);
-			return;
+			break;
 		case Event::MouseLeave:
 			window->mouseState=(MouseEvent&)event;
 			if (LastMouseEnter) {
@@ -193,7 +194,7 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 			}
 			event.setWidget(window);
 			window->mouseLeaveEvent((MouseEvent*)&event);
-			return;
+			break;
 		case Event::MouseMove:
 			window->mouseState=(MouseEvent&)event;
 			//printf ("window->mouseState.p.x=%i\n",window->mouseState.p.x);
@@ -215,7 +216,7 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 				LastMouseEnter->mouseLeaveEvent((MouseEvent*)&event);
 				LastMouseEnter=NULL;
 			}
-			return;
+			break;
 		case Event::MouseDown:
 #ifdef DEBUGEVENTS
 			ppl7::PrintDebugTime("WindowManager::dispatchEvent, MouseDown\n");
@@ -247,7 +248,7 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 				event.setWidget(w);
 				w->mouseDownEvent((MouseEvent*)&event);
 			}
-			return;
+			break;
 
 		case Event::MouseUp:
 #ifdef DEBUGEVENTS
@@ -268,7 +269,7 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 					LastMouseDown=NULL;
 				}
 			}
-			return;
+			break;
 		case Event::MouseWheel:
 			window->mouseState=(MouseEvent&)event;
 			w=findMouseWidget(window, ((MouseEvent*)&event)->p);
@@ -276,16 +277,16 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 				event.setWidget(w);
 				w->mouseWheelEvent((MouseEvent*)&event);
 			}
-			return;
+			break;
 
 
 		default:
 #ifdef DEBUGEVENTS
 			PrintDebugTime("WindowManager::dispatchEvent(%tu, %s)  ==> Unhandled Event\n", (std::ptrdiff_t)window, event.name().toChar());
 #endif
-			return;
+			break;
 	}
-
+	deferedDeleteWidgets(window);
 }
 
 void WindowManager::setMouseFocus(Widget* w)
@@ -327,6 +328,7 @@ void WindowManager::dispatchClickEvent(Window* window)
 	else if (clickCount > 1) LastMouseDown->mouseDblClickEvent(&clickEvent);
 	clickCount=0;
 	LastMouseDown=NULL;
+	deferedDeleteWidgets(window);
 }
 
 void WindowManager::setKeyboardFocus(Widget* w)

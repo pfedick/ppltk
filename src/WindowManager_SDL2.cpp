@@ -612,7 +612,7 @@ void WindowManager_SDL2::handleEvents()
 			case SDL_USEREVENT:
 
 				if (sdl_event.user.code == 1) {	// ClickTimer
-					//printf ("SDL_USEREVENT 1\n");
+					//printf("SDL_USEREVENT 1\n");
 					dispatchClickEvent((Window*)sdl_event.user.data1);
 				} else if (sdl_event.user.code == 2) {	// TimerEvent
 					//printf("SDL_USEREVENT 2, windowid=%d\n", sdl_event.user.windowID);
@@ -695,6 +695,7 @@ void WindowManager_SDL2::handleEvents()
 				}
 			}
 		}
+
 	}
 #endif
 }
