@@ -963,12 +963,15 @@ public:
     int indexOf(Widget* widget) const;
 
     int addTab(Widget* page, const String& label, const Drawable& icon=Drawable());
+    int addTab(const String& label, const Drawable& icon=Drawable());
     int insertTab(int index, Widget* page, const String& label, const Drawable& icon=Drawable());
+    int insertTab(int index, const String& label, const Drawable& icon=Drawable());
     int count() const;
     int currentIndex() const;
     Widget* currentWidget() const;
     const String& tabText(int index) const;
     const Drawable& tabIcon(int index) const;
+    Widget* getWidget(int index) const;
     bool isTabVisible(int index) const;
     bool isTabEnabled(int index) const;
 

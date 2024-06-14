@@ -155,6 +155,13 @@ int TabWidget::addTab(Widget* page, const String& label, const Drawable& icon)
 	return myIndex;
 }
 
+int TabWidget::addTab(const String& label, const Drawable& icon)
+{
+	Widget *page=new Widget();
+	return addTab(page,label,icon);
+}
+
+
 int TabWidget::insertTab(int index, Widget* page, const String& label, const Drawable& icon)
 {
 	if (index > (int)myTabs.size()) return addTab(page, label, icon);
@@ -168,6 +175,12 @@ int TabWidget::insertTab(int index, Widget* page, const String& label, const Dra
 	updateCurrentWidget();
 	emmitCurrentChanged();
 	return index;
+}
+
+int TabWidget::insertTab(int index, const String& label, const Drawable& icon)
+{
+	Widget *page=new Widget();
+	return insertTab(index,page,label,icon);
 }
 
 int TabWidget::count() const
@@ -196,6 +209,12 @@ const Drawable& TabWidget::tabIcon(int index) const
 {
 	if (index < 0 || index >= (int)myTabs.size()) throw ppl7::OutOfBoundsEception("Tab %d does not exist", index);
 	return myTabs[index].icon;
+}
+
+Widget* TabWidget::getWidget(int index) const
+{
+	if (index < 0 || index >= (int)myTabs.size()) throw ppl7::OutOfBoundsEception("Tab %d does not exist", index);
+	return myTabs[index].widget;	
 }
 
 bool TabWidget::isTabVisible(int index) const
