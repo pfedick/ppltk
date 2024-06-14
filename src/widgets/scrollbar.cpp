@@ -175,6 +175,7 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			}
 			pos+=d;
 			if (pos >= size - visibleItems) pos=size - visibleItems;
+			if (pos<0) pos=0;
 			//ppl7::PrintDebug("pos=%d\n",pos);
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
@@ -204,6 +205,7 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			if (d < 1) d=1;
 			pos+=d;
 			if (pos >= size) pos=size - visibleItems;
+			if (pos<0) pos=0;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
 			ev.setWidget(this);
@@ -234,8 +236,8 @@ void Scrollbar::mouseMoveEvent(ppltk::MouseEvent* event)
 		if (drag_started) {
 			int draw_range=height() - 46;
 			int64_t v=(event->p.y - drag_offset) * size / draw_range;
-			if (v < 0) v=0;
 			if (v >= size - visibleItems) v=size - visibleItems;
+			if (v < 0) v=0;
 			pos=v;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
@@ -260,6 +262,7 @@ void Scrollbar::mouseWheelEvent(ppltk::MouseEvent* event)
 	if (event->wheel.y < 0 && pos < size - 1) {
 		pos+=d;
 		if (pos >= size - visibleItems) pos=size - visibleItems;
+		if (pos < 0) pos=0;
 		needsRedraw();
 		ppltk::Event ev(ppltk::Event::ValueChanged);
 		ev.setWidget(this);
