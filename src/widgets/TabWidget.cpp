@@ -54,7 +54,7 @@ TabWidget::TabWidget()
 	setTransparent(true);
 	Size s=myFont.measure(L" ");
 	tabHeight=s.height + 9;
-	setClientOffset(5, tabHeight + 5, 5, 5);
+	setClientOffset(5, tabHeight + 9, 9, 9);
 	myIndex=-1;
 	current_widget=NULL;
 }
@@ -67,7 +67,7 @@ TabWidget::TabWidget(int x, int y, int width, int height)
 	setTransparent(true);
 	Size s=myFont.measure(L" ");
 	tabHeight=s.height + 9;
-	setClientOffset(5, tabHeight + 5, 5, 5);
+	setClientOffset(5, tabHeight + 9, 9, 9);
 	myIndex=-1;
 	current_widget=NULL;
 }
@@ -239,7 +239,7 @@ void TabWidget::setFont(const Font& font)
 	myFont=font;
 	Size s=myFont.measure(L" ");
 	tabHeight=s.height + 9;
-	setClientOffset(5, tabHeight + 5, 5, 5);
+	setClientOffset(5, tabHeight + 9, 9, 9);
 
 	needsRedraw();
 	updateCurrentWidget();
