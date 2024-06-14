@@ -136,6 +136,8 @@ void ComboBox::clear()
 	items.clear();
 	if (selection) delete selection;
 	selection=NULL;
+	ppltk::WindowManager* wm=ppltk::GetWindowManager();
+	dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 
 	needsRedraw();
 }
@@ -182,9 +184,11 @@ void ComboBox::mouseDownEvent(ppltk::MouseEvent* event)
 {
 	if (event->widget() == this || event->widget() == dropdown_button) {
 		//printf("ComboBox::mouseDownEvent\n");
+		ppltk::WindowManager* wm=ppltk::GetWindowManager();
 		if (selection) {
 			delete(selection);
 			selection=NULL;
+			dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 		} else {
 			// we need the absolute coordinates of this widget on window
 			// and create a new Frame with window as parent and topmost
@@ -201,7 +205,8 @@ void ComboBox::mouseDownEvent(ppltk::MouseEvent* event)
 			}
 			selection->setCurrentIndex(myCurrentIndex);
 			window->addChild(selection);
-			GetWindowManager()->setMouseFocus(selection);
+			dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(3));
+			wm->setMouseFocus(selection);
 		}
 	} else {
 		EventHandler::mouseDownEvent(event);
@@ -215,6 +220,8 @@ void ComboBox::valueChangedEvent(ppltk::Event* event, int value)
 		setCurrentIndex(selection->currentIndex());
 		selection->deleteLater();
 		selection=NULL;
+		ppltk::WindowManager* wm=ppltk::GetWindowManager();
+		dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 		needsRedraw();
 		ppltk::Event ev(ppltk::Event::ValueChanged);
 		ev.setWidget(this);
@@ -226,9 +233,14 @@ void ComboBox::valueChangedEvent(ppltk::Event* event, int value)
 
 void ComboBox::lostFocusEvent(ppltk::FocusEvent* event)
 {
-	if (selection != NULL && event->newWidget() != selection) {
+	ppl7::PrintDebug("ComboBox::lostFocusEvent\n");
+	if (selection != NULL && event->newWidget() != selection && event->newWidget() != this && event->newWidget() != dropdown_button && !event->newWidget()->isChildOf(selection)) {
+		ppl7::PrintDebug("delete\n");
 		selection->deleteLater();
 		selection=NULL;
+		ppltk::WindowManager* wm=ppltk::GetWindowManager();
+		dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
+
 	}
 }
 
