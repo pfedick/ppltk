@@ -93,6 +93,8 @@ public:
     Color	buttonSymbolColor;
     Color   tabNonSelectedBackgroundColor;
     Color   tabDisabledFontColor;
+    Color   listBackgroundColor;
+    Color   comboBoxBackgroundColor;
 
 };
 

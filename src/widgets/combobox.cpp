@@ -152,7 +152,7 @@ void ComboBox::paint(ppl7::grafix::Drawable& draw)
 	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
 	int w=width() - 1;
 	int h=height() - 1;
-	draw.cls(style.buttonBackgroundColor);
+	draw.cls(style.comboBoxBackgroundColor);
 	draw.drawRect(0, 0, w, h, style.frameBorderColorLight);
 	ppl7::grafix::Font myFont=style.buttonFont;
 	myFont.setColor(style.labelFontColor);
@@ -233,9 +233,9 @@ void ComboBox::valueChangedEvent(ppltk::Event* event, int value)
 
 void ComboBox::lostFocusEvent(ppltk::FocusEvent* event)
 {
-	ppl7::PrintDebug("ComboBox::lostFocusEvent\n");
+	//ppl7::PrintDebug("ComboBox::lostFocusEvent\n");
 	if (selection != NULL && event->newWidget() != selection && event->newWidget() != this && event->newWidget() != dropdown_button && !event->newWidget()->isChildOf(selection)) {
-		ppl7::PrintDebug("delete\n");
+		//ppl7::PrintDebug("delete\n");
 		selection->deleteLater();
 		selection=NULL;
 		ppltk::WindowManager* wm=ppltk::GetWindowManager();

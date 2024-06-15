@@ -44,12 +44,16 @@ ListWidget::ListWidget(int x, int y, int width, int height)
 	setClientOffset(2, 2, 2, 2);
 	scrollbar=NULL;
 	myCurrentIndex=0;
-	scrollbar=new Scrollbar(width - 30, 0, 30, height - 4);
+	scrollbar=new Scrollbar(width - 29, 0, 29, height - 4);
 	scrollbar->setEventHandler(this);
 	this->addChild(scrollbar);
 	mouseOverIndex=-1;
 	visibleItems=height / 30;
+	scrollbar->setVisible(false);
 	scrollbar->setVisibleItems(visibleItems);
+
+	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
+	setBackgroundColor(style.listBackgroundColor);
 	//printf ("visibleItems=%d\n",visibleItems);
 }
 
@@ -116,6 +120,8 @@ void ListWidget::add(const ppl7::String& text, const ppl7::String& identifier)
 	items.push_back(item);
 	if (items.size() == 1) setCurrentIndex(0);
 	scrollbar->setSize((int)items.size());
+	if (items.size() > visibleItems) scrollbar->setVisible(true);
+	else scrollbar->setVisible(false);
 	needsRedraw();
 }
 
@@ -129,6 +135,8 @@ void ListWidget::remove(size_t index)
 		}
 	}
 	scrollbar->setSize((int)items.size());
+	if (items.size() > visibleItems) scrollbar->setVisible(true);
+	else scrollbar->setVisible(false);
 	needsRedraw();
 }
 
@@ -143,6 +151,8 @@ void ListWidget::remove(const ppl7::String& identifier)
 		}
 	}
 	scrollbar->setSize((int)items.size());
+	if (items.size() > visibleItems) scrollbar->setVisible(true);
+	else scrollbar->setVisible(false);
 	needsRedraw();
 }
 
@@ -153,6 +163,7 @@ void ListWidget::clear()
 	items.clear();
 	scrollbar->setPosition(0);
 	scrollbar->setSize(0);
+	scrollbar->setVisible(false);
 	needsRedraw();
 }
 
@@ -170,26 +181,38 @@ void ListWidget::paint(ppl7::grafix::Drawable& draw)
 {
 	ppltk::Frame::paint(draw);
 	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
-	int w=width() - 30;
 	//int h=height()-1;
 	int y=0;
 	ppl7::grafix::Font myFont=style.buttonFont;
-	ppl7::grafix::Color selectionColor=style.frameBackgroundColor * 1.4f;
-	ppl7::grafix::Color mouseoverColor=style.frameBackgroundColor * 1.7f;
+	ppl7::grafix::Color unevenColor=style.listBackgroundColor * 1.1f;
+	ppl7::grafix::Color selectionColor=style.inputSelectedBackgroundColor;
+	ppl7::grafix::Color mouseoverSelectionColor=style.inputSelectedBackgroundColor * 1.3f;
+	ppl7::grafix::Color mouseoverColor=style.listBackgroundColor * 1.7f;
+	ppl7::grafix::Color dividerColor=style.listBackgroundColor * 0.8f;
 	std::list<ListWidgetItem>::iterator it;
 	myFont.setColor(style.labelFontColor);
 	myFont.setOrientation(ppl7::grafix::Font::TOP);
 	int start=scrollbar->position();
+	//ppl7::grafix::Drawable client=draw.getDrawable(1, 1, draw.width() - 2, draw.height() - 2);
+	ppl7::grafix::Drawable client=clientDrawable(draw);
+	int w=width() - 2;
+	if (scrollbar->isVisible()) w-=29;
 	int c=0;
 	for (it=items.begin();it != items.end();++it) {
 		if (start <= c) {
-			if (c == mouseOverIndex)
-				draw.fillRect(0, y, w, y + 29, mouseoverColor);
+			if (c == mouseOverIndex && (*it).index != myCurrentIndex)
+				client.fillRect(0, y, w, y + 30, mouseoverColor);
+			else if (c == mouseOverIndex && (*it).index == myCurrentIndex)
+				client.fillRect(0, y, w, y + 30, mouseoverSelectionColor);
 			else if ((*it).index == myCurrentIndex)
-				draw.fillRect(0, y, w, y + 29, selectionColor);
+				client.fillRect(0, y, w, y + 30, selectionColor);
+			else if (c & 1)
+				client.fillRect(0, y, w, y + 30, unevenColor);
+			else
+				client.fillRect(0, y, w, y + 30, style.listBackgroundColor);
 			ppl7::grafix::Size s=myFont.measure((*it).text);
-			draw.print(myFont, 4, y + ((30 - s.height) >> 1), (*it).text);
-			draw.line(0, y + 30, w, y + 30, style.frameBorderColorLight);
+			client.print(myFont, 4, y + ((30 - s.height) >> 1), (*it).text);
+			client.line(0, y + 29, w, y + 29, dividerColor);
 			y+=30;
 		}
 		c++;
@@ -207,7 +230,7 @@ void ListWidget::valueChangedEvent(ppltk::Event* event, int value)
 
 void ListWidget::mouseDownEvent(ppltk::MouseEvent* event)
 {
-	if (event->p.x < width() - 30 && event->widget() == this) {
+	if (event->p.x < width() - 29 && event->widget() == this) {
 		size_t index=scrollbar->position() + event->p.y / 30;
 		if (index > items.size()) return;
 		setCurrentIndex((size_t)index);

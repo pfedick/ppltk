@@ -76,6 +76,8 @@ void WidgetStyle::setStyle(PredefinedStyle style)
 		buttonSymbolColor.setColor(26, 16, 16, 255);
 		tabNonSelectedBackgroundColor.setColor(200, 200, 200, 255);
 		tabDisabledFontColor.setColor(96, 96, 96, 255);
+		listBackgroundColor.setColor(240, 240, 240, 255);
+		comboBoxBackgroundColor.setColor(235, 235, 238, 255);
 
 	} else {
 		windowBackgroundColor.setColor(47, 47, 47, 255);
@@ -94,6 +96,8 @@ void WidgetStyle::setStyle(PredefinedStyle style)
 		buttonSymbolColor.setColor(255, 250, 250, 255);
 		tabNonSelectedBackgroundColor.setColor(61, 61, 64, 255);
 		tabDisabledFontColor.setColor(140, 140, 140, 255);
+		listBackgroundColor.setColor(40, 38, 38, 255);
+		comboBoxBackgroundColor.setColor(65, 62, 62, 255);
 
 	}
 }
