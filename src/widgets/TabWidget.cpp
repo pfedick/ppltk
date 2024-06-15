@@ -157,8 +157,8 @@ int TabWidget::addTab(Widget* page, const String& label, const Drawable& icon)
 
 int TabWidget::addTab(const String& label, const Drawable& icon)
 {
-	Widget *page=new Widget();
-	return addTab(page,label,icon);
+	Widget* page=new Widget();
+	return addTab(page, label, icon);
 }
 
 
@@ -179,8 +179,8 @@ int TabWidget::insertTab(int index, Widget* page, const String& label, const Dra
 
 int TabWidget::insertTab(int index, const String& label, const Drawable& icon)
 {
-	Widget *page=new Widget();
-	return insertTab(index,page,label,icon);
+	Widget* page=new Widget();
+	return insertTab(index, page, label, icon);
 }
 
 int TabWidget::count() const
@@ -214,7 +214,7 @@ const Drawable& TabWidget::tabIcon(int index) const
 Widget* TabWidget::getWidget(int index) const
 {
 	if (index < 0 || index >= (int)myTabs.size()) throw ppl7::OutOfBoundsEception("Tab %d does not exist", index);
-	return myTabs[index].widget;	
+	return myTabs[index].widget;
 }
 
 bool TabWidget::isTabVisible(int index) const
@@ -306,7 +306,7 @@ int TabWidget::drawTab(Drawable& draw, TabItem& tab, int x, const WidgetStyle& w
 	}
 
 	if (tab.icon.isEmpty() == false) {
-		w+=4 + tab.icon.width();
+		w+=8 + tab.icon.width();
 	}
 	if (w < 20) w=20;
 
@@ -337,7 +337,7 @@ int TabWidget::drawTab(Drawable& draw, TabItem& tab, int x, const WidgetStyle& w
 
 
 	if (tab.icon.isEmpty() == false) {
-		x+=2;
+		x+=6;
 		if (tab.enabled) draw.bltAlpha(tab.icon, x, y + (tabHeight - y - tab.icon.height()) / 2);
 		else draw.bltBlend(tab.icon, 0.5f, x, y + (tabHeight - y - tab.icon.height()) / 2);
 		x+=2 + tab.icon.width();
