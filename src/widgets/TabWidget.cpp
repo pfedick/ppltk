@@ -145,6 +145,7 @@ int TabWidget::addTab(Widget* page, const String& label, const Drawable& icon)
 {
 	TabItem tab(label, icon, page);
 	page->setPos(0, 0);
+	page->setTransparent(true);
 	page->setSize(clientSize());
 	myTabs.push_back(tab);
 	myIndex=(int)myTabs.size() - 1;
@@ -168,6 +169,7 @@ int TabWidget::insertTab(int index, Widget* page, const String& label, const Dra
 	TabItem tab(label, icon, page);
 	page->setPos(0, 0);
 	page->setSize(clientSize());
+	page->setTransparent(true);
 	std::vector<TabItem>::const_iterator it=myTabs.begin() + index;
 	myTabs.insert(it, tab);
 	myIndex=index;
