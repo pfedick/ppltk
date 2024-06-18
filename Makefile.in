@@ -44,6 +44,7 @@ OBJECTS = 	compile/WindowManager.o \
 	compile/Widget.o \
 	compile/WidgetStyle.o \
 	compile/Window.o \
+	compile/Resources.o \
 	compile/widget_Button.o \
 	compile/widget_checkbox.o \
 	compile/widget_combobox.o \
@@ -123,6 +124,10 @@ compile/WidgetStyle.o: src/WidgetStyle.cpp Makefile include/ppltk.h
 compile/Window.o: src/Window.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/Window.o -c src/Window.cpp $(CFLAGS)
+
+compile/Resources.o: src/Resources.cpp Makefile include/ppltk.h resources/res.h
+	- @mkdir -p compile
+	$(CXX) -o compile/Resources.o -c src/Resources.cpp $(CFLAGS)
 
 compile/WindowManager.o: src/WindowManager.cpp Makefile include/ppltk.h
 	- @mkdir -p compile

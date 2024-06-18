@@ -62,6 +62,10 @@ PPL7EXCEPTION(SDLException, Exception);
 using namespace ppl7;
 using namespace ppl7::grafix;
 
+
+ppl7::Resource *GetPPLTKResource();
+
+
 class WidgetStyle
 {
 private:
