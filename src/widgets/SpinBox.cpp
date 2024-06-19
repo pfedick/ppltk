@@ -77,9 +77,9 @@ void AbstractSpinBox::createUi()
     down_button->setEventHandler(this);
     addChild(down_button);
     if (wm) {
-        const WidgetStyle& style=GetWidgetStyle();
-        up_button->setIcon(wm->ButtonSymbols.getDrawable(3));
-        down_button->setIcon(wm->ButtonSymbols.getDrawable(4));
+        //const WidgetStyle& style=GetWidgetStyle();
+        up_button->setIcon(wm->ButtonSymbols.getDrawable(22));
+        down_button->setIcon(wm->ButtonSymbols.getDrawable(23));
     }
 }
 
