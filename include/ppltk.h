@@ -1371,7 +1371,7 @@ public:
 class AbstractSpinBox : public Widget
 {
 private:
-    Image img_up, img_down;
+    //Image img_up, img_down;
     Button* up_button;
     Button* down_button;
     LineInput* text_input;
