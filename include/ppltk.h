@@ -737,6 +737,8 @@ private:
 
 public:
     ImageList	ButtonSymbols;
+    ImageList	Toolbar;
+
 
     WindowManager();
     virtual ~WindowManager();

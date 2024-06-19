@@ -137,7 +137,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     testframe=new ppltk::Widget();
     //testframe->setTransparent(true);
     //addChild(testframe);
-    tab->addTab(testframe, "Text Input", gfx->Toolbar.getDrawable(68));
+    tab->addTab(testframe, "Text Input", wm->Toolbar.getDrawable(68));
 
     ppltk::Widget* w=new ppltk::Widget();
     tab->addTab(w, "zweites Widget");
@@ -178,7 +178,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     fpsLabel=new ppltk::Label("0", ppltk::Label::Inset);
     layout_menue->addWidget(fpsLabel);
 
-    exitButton=new ppltk::Button("Exit", gfx->Toolbar.getDrawable(68));
+    exitButton=new ppltk::Button("Exit", wm->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
     layout_menue->addWidget(exitButton);
 

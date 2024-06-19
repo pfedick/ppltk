@@ -32,12 +32,14 @@
 #include <stdlib.h>
 #endif
 #include "ppl7.h"
+#include "ppl7-grafix.h"
+#include "ppltk.h"
 
 
 #include "../resources/res.h"
 
 namespace ppltk {
-	
+
 static ppl7::Resource *ppltkResource=NULL;
 
 static void ppltkExitResource()
