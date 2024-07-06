@@ -51,6 +51,7 @@ ListWidget::ListWidget(int x, int y, int width, int height)
 	visibleItems=height / 30;
 	scrollbar->setVisible(false);
 	scrollbar->setVisibleItems(visibleItems);
+	sortingEnabled=false;
 
 	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
 	setBackgroundColor(style.listBackgroundColor);
@@ -122,6 +123,7 @@ void ListWidget::add(const ppl7::String& text, const ppl7::String& identifier)
 	scrollbar->setSize((int)items.size());
 	if (items.size() > visibleItems) scrollbar->setVisible(true);
 	else scrollbar->setVisible(false);
+	if (sortingEnabled) updateSortedItems();
 	needsRedraw();
 }
 
@@ -137,6 +139,7 @@ void ListWidget::remove(size_t index)
 	scrollbar->setSize((int)items.size());
 	if (items.size() > visibleItems) scrollbar->setVisible(true);
 	else scrollbar->setVisible(false);
+	if (sortingEnabled) updateSortedItems();
 	needsRedraw();
 }
 
@@ -153,6 +156,7 @@ void ListWidget::remove(const ppl7::String& identifier)
 	scrollbar->setSize((int)items.size());
 	if (items.size() > visibleItems) scrollbar->setVisible(true);
 	else scrollbar->setVisible(false);
+	if (sortingEnabled) updateSortedItems();
 	needsRedraw();
 }
 
@@ -161,13 +165,14 @@ void ListWidget::clear()
 	myCurrentText.clear();
 	myCurrentIdentifier.clear();
 	items.clear();
+	sorted_items.clear();
 	scrollbar->setPosition(0);
 	scrollbar->setSize(0);
 	scrollbar->setVisible(false);
 	needsRedraw();
 }
 
-std::list<ListWidget::ListWidgetItem> ListWidget::getItems() const
+const std::list<ListWidget::ListWidgetItem>& ListWidget::getItems() const
 {
 	return items;
 }
@@ -280,5 +285,43 @@ void ListWidget::lostFocusEvent(ppltk::FocusEvent* event)
 	FocusEvent new_event(Event::FocusOut, this, new_widget);
 	Frame::lostFocusEvent(&new_event);
 }
+
+bool ListWidget::hasIdentifier(const ppl7::String& identifier) const
+{
+	for (auto it=items.begin();it != items.end();++it) {
+		if (it->identifier == identifier) return true;
+	}
+	return false;
+}
+
+bool ListWidget::hasText(const ppl7::String& text) const
+{
+	for (auto it=items.begin();it != items.end();++it) {
+		if (it->text == text) return true;
+	}
+	return false;
+}
+
+void ListWidget::updateSortedItems()
+{
+	sorted_items.clear();
+	for (auto it=items.begin();it != items.end();++it) {
+		sorted_items.insert(std::pair<ppl7::String, ListWidgetItem&>(it->text, *it));
+	}
+
+}
+
+void ListWidget::setSortingEnabled(bool enable)
+{
+	sortingEnabled=enable;
+	if (sortingEnabled) updateSortedItems();
+	needsRedraw();
+}
+
+bool ListWidget::isSortingEnabled() const
+{
+	return sortingEnabled;
+}
+
 
 } //EOF namespace

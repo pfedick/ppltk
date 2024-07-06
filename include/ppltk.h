@@ -1291,8 +1291,13 @@ private:
     size_t myCurrentIndex;
     size_t visibleItems;
     int mouseOverIndex;
+    bool sortingEnabled;
 
     std::list<ListWidgetItem> items;
+    std::map<ppl7::String, const ListWidgetItem&> sorted_items;
+
+    void updateSortedItems();
+
 public:
     ListWidget(int x, int y, int width, int height);
     void setCurrentText(const ppl7::String& text);
@@ -1302,7 +1307,11 @@ public:
     void setCurrentIndex(size_t index);
     size_t currentIndex() const;
 
-    std::list<ListWidgetItem> getItems() const;
+    const std::list<ListWidgetItem>& getItems() const;
+    bool hasIdentifier(const ppl7::String& identifier) const;
+    bool hasText(const ppl7::String& text) const;
+    void setSortingEnabled(bool enable);
+    bool isSortingEnabled() const;
 
     void clear();
 
