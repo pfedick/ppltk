@@ -62,6 +62,10 @@ PPL7EXCEPTION(SDLException, Exception);
 using namespace ppl7;
 using namespace ppl7::grafix;
 
+
+ppl7::Resource *GetPPLTKResource();
+
+
 class WidgetStyle
 {
 private:
@@ -733,6 +737,8 @@ private:
 
 public:
     ImageList	ButtonSymbols;
+    ImageList	Toolbar;
+
 
     WindowManager();
     virtual ~WindowManager();
@@ -1374,7 +1380,7 @@ public:
 class AbstractSpinBox : public Widget
 {
 private:
-    Image img_up, img_down;
+    //Image img_up, img_down;
     Button* up_button;
     Button* down_button;
     LineInput* text_input;

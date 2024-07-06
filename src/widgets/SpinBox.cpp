@@ -66,7 +66,7 @@ AbstractSpinBox::AbstractSpinBox(int x, int y, int width, int height, const Stri
 
 void AbstractSpinBox::createUi()
 {
-    Grafix* gfx=GetGrafix();
+    ppltk::WindowManager* wm=ppltk::GetWindowManager();
     text_input=new LineInput();
     text_input->setEventHandler(this);
     addChild(text_input);
@@ -76,12 +76,10 @@ void AbstractSpinBox::createUi()
     down_button=new Button();
     down_button->setEventHandler(this);
     addChild(down_button);
-    if (gfx) {
-        const WidgetStyle& style=GetWidgetStyle();
-        img_up=gfx->ButtonSymbolsSmall.getDrawable(3, style.buttonSymbolColor);
-        img_down=gfx->ButtonSymbolsSmall.getDrawable(4, style.buttonSymbolColor);
-        up_button->setIcon(img_up);
-        down_button->setIcon(img_down);
+    if (wm) {
+        //const WidgetStyle& style=GetWidgetStyle();
+        up_button->setIcon(wm->ButtonSymbols.getDrawable(22));
+        down_button->setIcon(wm->ButtonSymbols.getDrawable(23));
     }
 }
 

@@ -66,6 +66,16 @@ WindowManager::WindowManager()
 	KeyboardFocus=NULL;
 	grabMouseWidget=NULL;
 	GameControllerFocus=NULL;
+
+	ppl7::Resource *resources=GetPPLTKResource();
+	ppl7::grafix::Grafix *gfx=ppl7::grafix::GetGrafix();
+	if (gfx) {
+		gfx->loadFont(resources->getMemory(4),"Default");
+		gfx->loadFont(resources->getMemory(5),"Default Mono");
+	}
+	//ButtonSymbols.load(resources->getMemory(3),15,15,ImageList::DIFFUSE);
+	Toolbar.load(resources->getMemory(1),16,16,ImageList::ALPHABLT);
+
 	updateButtonSymbols();
 }
 
@@ -87,14 +97,13 @@ void WindowManager::setWidgetStyle(const WidgetStyle& style)
 
 void WindowManager::updateButtonSymbols()
 {
-	Resource* res=GetPPLResource();
+	Resource* res=GetPPLTKResource();
 	ppl7::grafix::ImageList tmp;
-	tmp.load(res->getMemory(16), 15, 15, ImageList::DIFFUSE);
+	tmp.load(res->getMemory(3), 15, 15, ImageList::DIFFUSE);
 	ppl7::grafix::Size s=tmp.size();
 	ButtonSymbols.create(s.width, s.height);
 	ButtonSymbols.bltDiffuse(tmp, 0, 0, Style.buttonFontColor);
 	ButtonSymbols.setIconSize(15, 15);
-
 }
 
 void WindowManager::grabMouse(Widget* w)

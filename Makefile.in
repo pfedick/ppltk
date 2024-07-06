@@ -44,6 +44,7 @@ OBJECTS = 	compile/WindowManager.o \
 	compile/Widget.o \
 	compile/WidgetStyle.o \
 	compile/Window.o \
+	compile/Resources.o \
 	compile/widget_Button.o \
 	compile/widget_checkbox.o \
 	compile/widget_combobox.o \
@@ -84,6 +85,21 @@ all: compile/$(LIBNAME).a $(PROGRAM)
 clean:
 	-rm -rf *.o $(PROGRAM) *.core compile
 
+fonts:
+	- rm -rf resources/*.fnt6
+	- mkdir -p resources
+	#pplfontmaker -t resources/notosans.fnt6 -q /usr/share/fonts/google-noto/NotoSans-Regular.ttf -s "8,10,12,14,16,18,20,24,30" --idn --aa4 -n "NotoSans" --zlib -6
+	#pplfontmaker -t resources/notosans.fnt6 -q /usr/share/fonts/google-noto/NotoSans-Bold.ttf -s "8,10,12,14,16,18,20,24,30" --idn --aa4 -n "NotoSans" --zlib -6 --isbold
+	pplfontmaker -t resources/liberationsans.fnt6 -q /usr/share/fonts/liberation-sans/LiberationSans-Regular.ttf -s "8,10,12,14,16,18,20,24,30" --idn --aa4 -n "LiberationSans" --zlib -6
+	pplfontmaker -t resources/liberationsans.fnt6 -q /usr/share/fonts/liberation-sans/LiberationSans-Bold.ttf -s "8,10,12,14,16,18,20,24,30" --idn --aa4 -n "LiberationSans" --zlib -6 --isbold
+	pplfontmaker -t resources/liberationmono.fnt6 -q /usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf -s "7,8,10,12,14" --idn --aa4 -n "LiberationMono" --zlib -6
+	pplfontmaker -t resources/liberationmono.fnt6 -q /usr/share/fonts/liberation-mono/LiberationMono-Bold.ttf -s "7,8,10,12,14" --idn --aa4 -n "LiberationMono" --zlib -6 --isbold
+
+res:
+	-pplgenresource -b resources -c resources/resources.conf -t resources/res.h -l PPLTK_RESOURCES
+	-rm -f compile/Resourcen.o
+
+
 
 compile/main.o: demo/main.cpp Makefile include/ppltk.h demo/demo.h
 	- @mkdir -p compile
@@ -108,6 +124,10 @@ compile/WidgetStyle.o: src/WidgetStyle.cpp Makefile include/ppltk.h
 compile/Window.o: src/Window.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/Window.o -c src/Window.cpp $(CFLAGS)
+
+compile/Resources.o: src/Resources.cpp Makefile include/ppltk.h resources/res.h
+	- @mkdir -p compile
+	$(CXX) -o compile/Resources.o -c src/Resources.cpp $(CFLAGS)
 
 compile/WindowManager.o: src/WindowManager.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
