@@ -464,7 +464,9 @@ void WindowManager_SDL2::createWindow(Window& w)
 	SDL_GetWindowSize(priv->win, &width, &height);
 	w.setSize(width, height);
 
-	priv->gui=SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w.width(), w.height());
+	Size ui_size=w.uiSize();
+
+	priv->gui=SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ui_size.width, ui_size.height);
 	if (priv->gui == 0) {
 		const char* e=SDL_GetError();
 		SDL_DestroyRenderer(priv->renderer);
@@ -483,8 +485,8 @@ void WindowManager_SDL2::createWindow(Window& w)
 	}
 
 	priv->format=RGBFormat::A8R8G8B8;
-	priv->width=w.width();
-	priv->height=w.height();
+	priv->width=ui_size.width;
+	priv->height=ui_size.height;
 	w.setPrivateData(priv, this, &sdlWmFunctions);
 	sdlSetWindowIcon(priv, w.windowIcon());
 	windows.add(&w);
@@ -1155,6 +1157,7 @@ void WindowManager_SDL2::resizeWindow(Window& w, int width, int height)
 	SDL_WINDOW_PRIVATE* priv=(SDL_WINDOW_PRIVATE*)w.getPrivateData();
 	if (!priv) return;
 	//printf("recreating gui texture\n");
+	if (w.hasFixedUiSize()) return;
 	if (priv->gui) SDL_DestroyTexture(priv->gui);
 	priv->gui=SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 	if (priv->gui == 0) {

@@ -63,7 +63,7 @@ using namespace ppl7;
 using namespace ppl7::grafix;
 
 
-ppl7::Resource *GetPPLTKResource();
+ppl7::Resource* GetPPLTKResource();
 
 
 class WidgetStyle
@@ -647,6 +647,8 @@ private:
     Color	myBackground;
 
     MouseState	mouseState;
+    bool uiSizeIsFixed;
+    Size myUiSize;
 
 public:
     enum WindowFlags {
@@ -686,6 +688,9 @@ public:
     Window();
     ~Window();
     uint32_t flags() const;
+    void enableFixedUiSize(bool enable, int width=0, int height=0);
+    bool hasFixedUiSize() const;
+    const Size& uiSize() const;
     void setFlags(uint32_t flags);
     const String& windowTitle() const;
     void setWindowTitle(const String& title);

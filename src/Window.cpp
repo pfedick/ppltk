@@ -90,6 +90,7 @@ Window::Window()
 	wm=NULL;
 	myBackground=style.windowBackgroundColor;
 	keyfocus=this;
+	uiSizeIsFixed=false;
 }
 
 Window::~Window()
@@ -165,6 +166,25 @@ uint32_t Window::flags() const
 void Window::setFlags(uint32_t flags)
 {
 	windowFlags=flags;
+}
+
+void Window::enableFixedUiSize(bool enable, int width, int height)
+{
+	uiSizeIsFixed=enable;
+	myUiSize.width=width;
+	myUiSize.height=height;
+}
+
+
+bool Window::hasFixedUiSize() const
+{
+	return uiSizeIsFixed;
+}
+
+const Size& Window::uiSize() const
+{
+	if (uiSizeIsFixed) return myUiSize;
+	return size();
 }
 
 const String& Window::windowTitle() const
