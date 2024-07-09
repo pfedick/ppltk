@@ -103,7 +103,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::create(int width, int height, bool fullscreen)
 {
-    setSize(width, height);
+    setWindowSize(width, height);
+    enableFixedUiSize(true, width, height);
     setBackgroundColor(ppl7::grafix::Color(92, 92, 92, 92));
 
     ppl7::String debugText;
@@ -153,7 +154,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     w=new ppltk::Widget();
     tab->addTab(w, "drittes Widget");
 
-    ppltk::Scrollbar *scroll=new ppltk::Scrollbar(0,0,25,500);
+    ppltk::Scrollbar* scroll=new ppltk::Scrollbar(0, 0, 25, 500);
     scroll->setSize(100);
     scroll->setVisibleItems(25);
     w->addChild(scroll);
@@ -203,6 +204,7 @@ void MainWindow::mouseClickEvent(ppltk::MouseEvent* event)
 
 void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
 {
+    return;
     if (tab) tab->setSize(this->width() - 128, this->height() - 92);
     if (menue) menue->setWidth(this->width());
     //if (testframe) testframe->setSize(tab->clientSize());

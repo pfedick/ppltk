@@ -98,6 +98,30 @@ Window::~Window()
 	if (wm != NULL && privateData != NULL) wm->destroyWindow(*this);
 }
 
+void Window::setWindowSize(int width, int height)
+{
+	myWindowSize.width=width;
+	myWindowSize.height=height;
+	if (!uiSizeIsFixed) {
+		setSize(myWindowSize);
+	}
+}
+
+void Window::setWindowSize(const Size& size)
+{
+	myWindowSize=size;
+	if (!uiSizeIsFixed) {
+		setSize(myWindowSize);
+	}
+}
+
+const Size& Window::windowSize() const
+{
+	return myWindowSize;
+}
+
+
+
 /*!\brief Private Daten des Window-Managers
  *
  * \desc

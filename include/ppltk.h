@@ -649,6 +649,7 @@ private:
     MouseState	mouseState;
     bool uiSizeIsFixed;
     Size myUiSize;
+    Size myWindowSize;
 
 public:
     enum WindowFlags {
@@ -688,6 +689,9 @@ public:
     Window();
     ~Window();
     uint32_t flags() const;
+    void setWindowSize(int width, int height);
+    void setWindowSize(const Size& size);
+    const Size& windowSize() const;
     void enableFixedUiSize(bool enable, int width=0, int height=0);
     bool hasFixedUiSize() const;
     const Size& uiSize() const;

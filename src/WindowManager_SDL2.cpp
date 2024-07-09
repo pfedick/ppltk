@@ -430,10 +430,15 @@ void WindowManager_SDL2::createWindow(Window& w)
 	if (wf & Window::FullscreenDesktop) flags|=SDL_WINDOW_FULLSCREEN_DESKTOP;
 	if (wf & Window::OpenGL) flags|=SDL_WINDOW_OPENGL;
 
+	Size windowSize=w.windowSize();
+	if (windowSize.width == 0 || windowSize.height == 0) {
+		windowSize=w.size();
+		w.setWindowSize(windowSize);
+	}
 
 	priv->win=SDL_CreateWindow((const char*)w.windowTitle(),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		w.width(), w.height(), flags);
+		windowSize.width, windowSize.height, flags);
 	if (priv->win == 0) {
 		free(priv);
 		throw WindowCreateException("SDL_CreateWindow ERROR: %s", SDL_GetError());
@@ -527,7 +532,14 @@ size_t WindowManager_SDL2::numWindows()
 
 void WindowManager_SDL2::getMouseState(Point& p, int& buttonMask) const
 {
-
+#ifndef HAVE_SDL2
+	throw UnsupportedFeatureException("SDL2");
+#else
+	MouseState mouse;
+	getButtonMask(mouse);
+	SDL_GetMouseState(&p.x, &p.y);
+	buttonMask=(int)mouse.buttonMask;
+#endif
 }
 
 MouseState WindowManager_SDL2::getMouseState() const
@@ -756,10 +768,13 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 			//	event->window.windowID, event->window.data1,
 			//	event->window.data2);
 		{
-			w->setSize(event->window.data1, event->window.data2);
+			w->setWindowSize(event->window.data1, event->window.data2);
 			resizeWindow(*w, event->window.data1, event->window.data2);
 			ResizeEvent e;
 			e.setWidget(w);
+			e.width=event->window.data1;
+			e.height=event->window.data2;
+
 			w->resizeEvent(&e);
 
 		}
@@ -811,6 +826,20 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 #endif
 }
 
+ppl7::grafix::Point translateCoordinatesToUi(const Window* w, int x, int y)
+{
+	if (w->hasFixedUiSize()) {
+		const ppl7::grafix::Size& wSize=w->windowSize();
+		const ppl7::grafix::Size& uiSize=w->uiSize();
+		float x_factor=(float)uiSize.width / (float)wSize.width;
+		float y_factor=(float)uiSize.height / (float)wSize.height;
+		//ppl7::PrintDebug("x_factor=%0.3f, y_factor=%0.3f\n", x_factor, y_factor);
+		return ppl7::grafix::Point((int)((float)x * x_factor), (int)((float)y * y_factor));
+	}
+	//ppl7::PrintDebug("wir sind hier falsch\n");
+	return ppl7::grafix::Point(x, y);
+}
+
 
 void WindowManager_SDL2::DispatchMouseEvent(void* e)
 {
@@ -828,8 +857,7 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 
 
 		ev.setType(Event::MouseMove);
-		ev.p.x=event->x;
-		ev.p.y=event->y;
+		ev.p=translateCoordinatesToUi(w, event->x, event->y);
 		ev.buttonMask=(MouseEvent::MouseButton)0;
 		ev.button=(MouseEvent::MouseButton)0;
 		getButtonMask(ev);
@@ -842,8 +870,7 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 		if (!w) return;
 
 		ev.setType(Event::MouseDown);
-		ev.p.x=event->x;
-		ev.p.y=event->y;
+		ev.p=translateCoordinatesToUi(w, event->x, event->y);
 		ev.buttonMask=(MouseEvent::MouseButton)0;
 		ev.button=(MouseEvent::MouseButton)0;
 		getButtonMask(ev);
@@ -862,8 +889,7 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 		if (!w) return;
 
 		ev.setType(Event::MouseUp);
-		ev.p.x=event->x;
-		ev.p.y=event->y;
+		ev.p=translateCoordinatesToUi(w, event->x, event->y);
 		ev.buttonMask=(MouseEvent::MouseButton)0;
 		ev.button=(MouseEvent::MouseButton)0;
 		getButtonMask(ev);
@@ -883,7 +909,9 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 		MouseState mouse;
 		ev.buttonMask=(MouseEvent::MouseButton)0;
 		ev.button=(MouseEvent::MouseButton)0;
-		SDL_GetMouseState(&ev.p.x, &ev.p.y);
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+		ev.p=translateCoordinatesToUi(w, x, y);
 		getButtonMask(ev);
 		ev.wheel.x=event->x;
 		ev.wheel.y=event->y;
