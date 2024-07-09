@@ -51,6 +51,9 @@ typedef struct {
 	SDL_Texture* gui;
 	int width, height;
 	RGBFormat format;
+	bool scaleUi;
+	int window_width;
+	int window_height;
 } SDL_WINDOW_PRIVATE;
 
 
@@ -273,11 +276,35 @@ static void sdlUnlockWindowSurface(void* privatedata)
 	SDL_UnlockTexture(priv->gui);
 }
 
+static void getDestinationRect(SDL_WINDOW_PRIVATE* priv, SDL_Rect& dest)
+{
+	float aspect=(float)priv->width / (float)priv->height;
+	dest.x=0;
+	dest.y=0;
+	dest.w=priv->window_width;
+	dest.h=priv->window_height;
+	if (dest.w > priv->window_width) dest.w=priv->window_width;
+	dest.h=dest.w / aspect;
+	if (dest.h > priv->window_height) {
+		dest.h=priv->window_height;
+		dest.w=dest.h * aspect;
+	}
+	dest.y=(priv->window_height - dest.h) / 2;
+	dest.x=(priv->window_width - dest.w) / 2;
+}
+
+
 static void sdlDrawWindowSurface(void* privatedata)
 {
 	SDL_WINDOW_PRIVATE* priv=(SDL_WINDOW_PRIVATE*)privatedata;
 	if (!priv) throw NullPointerException();
-	SDL_RenderCopy(priv->renderer, priv->gui, NULL, NULL);
+	if (priv->scaleUi) {
+		SDL_Rect dest;
+		getDestinationRect(priv, dest);
+		SDL_RenderCopy(priv->renderer, priv->gui, NULL, &dest);
+	} else {
+		SDL_RenderCopy(priv->renderer, priv->gui, NULL, NULL);
+	}
 }
 
 static void* sdlGetRenderer(void* privatedata)
@@ -435,6 +462,9 @@ void WindowManager_SDL2::createWindow(Window& w)
 		windowSize=w.size();
 		w.setWindowSize(windowSize);
 	}
+	priv->scaleUi=w.hasFixedUiSize();
+	priv->window_width=windowSize.width;
+	priv->window_height=windowSize.height;
 
 	priv->win=SDL_CreateWindow((const char*)w.windowTitle(),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -487,6 +517,9 @@ void WindowManager_SDL2::createWindow(Window& w)
 		SDL_DestroyWindow(priv->win);
 		free(priv);
 		throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
+	}
+	if (priv->scaleUi) {
+		SDL_SetTextureScaleMode(priv->gui, SDL_ScaleModeBest);
 	}
 
 	priv->format=RGBFormat::A8R8G8B8;
@@ -826,15 +859,24 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 #endif
 }
 
-ppl7::grafix::Point translateCoordinatesToUi(const Window* w, int x, int y)
+ppl7::grafix::Point translateCoordinatesToUi(Window* w, int x, int y)
 {
 	if (w->hasFixedUiSize()) {
 		const ppl7::grafix::Size& wSize=w->windowSize();
+		SDL_Rect dest={ 0,0,wSize.width, wSize.height };
+		SDL_WINDOW_PRIVATE* priv=(SDL_WINDOW_PRIVATE*)w->getPrivateData();
+		if (priv) getDestinationRect(priv, dest);
+
 		const ppl7::grafix::Size& uiSize=w->uiSize();
-		float x_factor=(float)uiSize.width / (float)wSize.width;
-		float y_factor=(float)uiSize.height / (float)wSize.height;
-		//ppl7::PrintDebug("x_factor=%0.3f, y_factor=%0.3f\n", x_factor, y_factor);
-		return ppl7::grafix::Point((int)((float)x * x_factor), (int)((float)y * y_factor));
+		float x_factor=(float)uiSize.width / (float)dest.w;
+		float y_factor=(float)uiSize.height / (float)dest.h;
+		/*
+		ppl7::PrintDebug("x=%d, y=%d, in: %d:%d, out: %d:%d\n", dest.x, dest.y, x, y,
+			(int)((float)(x - dest.x) * x_factor),
+			(int)((float)(y - dest.y) * y_factor));
+		*/
+
+		return ppl7::grafix::Point((int)((float)(x - dest.x) * x_factor), (int)((float)(y - dest.y) * y_factor));
 	}
 	//ppl7::PrintDebug("wir sind hier falsch\n");
 	return ppl7::grafix::Point(x, y);
@@ -1185,6 +1227,9 @@ void WindowManager_SDL2::resizeWindow(Window& w, int width, int height)
 	SDL_WINDOW_PRIVATE* priv=(SDL_WINDOW_PRIVATE*)w.getPrivateData();
 	if (!priv) return;
 	//printf("recreating gui texture\n");
+	priv->window_width=width;
+	priv->window_height=height;
+
 	if (w.hasFixedUiSize()) return;
 	if (priv->gui) SDL_DestroyTexture(priv->gui);
 	priv->gui=SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
