@@ -87,6 +87,7 @@ void Scrollbar::setSize(int size)
 void Scrollbar::setPosition(int position)
 {
 	if (position != pos && position < size && position >= 0) {
+		if (position > size - visibleItems) position=size - visibleItems;
 		pos=position;
 		needsRedraw();
 	}
@@ -175,7 +176,7 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			}
 			pos+=d;
 			if (pos >= size - visibleItems) pos=size - visibleItems;
-			if (pos<0) pos=0;
+			if (pos < 0) pos=0;
 			//ppl7::PrintDebug("pos=%d\n",pos);
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
@@ -205,7 +206,7 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			if (d < 1) d=1;
 			pos+=d;
 			if (pos >= size) pos=size - visibleItems;
-			if (pos<0) pos=0;
+			if (pos < 0) pos=0;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
 			ev.setWidget(this);
