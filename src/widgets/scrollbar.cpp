@@ -112,7 +112,7 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 	ppl7::grafix::Color shade1=style.buttonBackgroundColor * 1.05f;
 	ppl7::grafix::Color shade2=style.buttonBackgroundColor * 0.85f;
 	ppl7::grafix::Drawable indicator=draw.getDrawable(0, 23, draw.width(), draw.height() - 24);
-	int w=indicator.width() - 1;
+	int w=indicator.width();
 	//int h=indicator.height()-1;
 	ppl7::grafix::Rect r1=indicator.rect();
 
@@ -128,7 +128,8 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 			indicator.height(),pxi,size,visibleItems, visible, unvisible,r1.y1,r1.y2);
 		*/
 		if (r1.y2 >= indicator.height() - 1) r1.y2=indicator.height() - 2;
-
+	} else {
+		r1.y2-=2;
 
 	}
 	slider_pos=r1;
