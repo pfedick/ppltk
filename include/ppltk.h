@@ -1123,9 +1123,9 @@ class Scrollbar : public ppltk::Widget
 private:
     ppltk::Button* up_button;
     ppltk::Button* down_button;
-    int size;
+    int mySize;
     int pos;
-    int visibleItems;
+    int myVisibleItems;
 
     ppl7::grafix::Rect slider_pos;
     bool drag_started;
@@ -1139,6 +1139,9 @@ public:
     void setPosition(int position);
     void setVisibleItems(int items);
     int position() const;
+    int visibleItems() const;
+    int size() const;
+
     virtual ppl7::String widgetType() const override;
     virtual void paint(ppl7::grafix::Drawable& draw) override;
     void mouseDownEvent(ppltk::MouseEvent* event) override;

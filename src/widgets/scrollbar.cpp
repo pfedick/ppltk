@@ -55,9 +55,9 @@ Scrollbar::Scrollbar(int x, int y, int width, int height) // @suppress("Class me
 	down_button->setEventHandler(this);
 	addChild(up_button);
 	addChild(down_button);
-	size=0;
+	mySize=0;
 	pos=0;
-	visibleItems=0;
+	myVisibleItems=0;
 	drag_started=false;
 	drag_offset=0;
 }
@@ -77,8 +77,8 @@ ppl7::String Scrollbar::widgetType() const
 
 void Scrollbar::setSize(int size)
 {
-	if (size != this->size && size >= 0) {
-		this->size=size;
+	if (size != this->mySize && size >= 0) {
+		this->mySize=size;
 		if (pos > size) pos=size;
 		needsRedraw();
 	}
@@ -86,8 +86,8 @@ void Scrollbar::setSize(int size)
 
 void Scrollbar::setPosition(int position)
 {
-	if (position != pos && position < size && position >= 0) {
-		if (position > size - visibleItems) position=size - visibleItems;
+	if (position != pos && position < mySize && position >= 0) {
+		if (position > mySize - myVisibleItems) position=mySize - myVisibleItems;
 		pos=position;
 		needsRedraw();
 	}
@@ -95,13 +95,23 @@ void Scrollbar::setPosition(int position)
 
 void Scrollbar::setVisibleItems(int items)
 {
-	visibleItems=items;
+	myVisibleItems=items;
 	needsRedraw();
 }
 
 int Scrollbar::position() const
 {
 	return pos;
+}
+
+int Scrollbar::visibleItems() const
+{
+	return myVisibleItems;
+}
+
+int Scrollbar::size() const
+{
+	return mySize;
 }
 
 void Scrollbar::paint(ppl7::grafix::Drawable& draw)
@@ -116,12 +126,12 @@ void Scrollbar::paint(ppl7::grafix::Drawable& draw)
 	//int h=indicator.height()-1;
 	ppl7::grafix::Rect r1=indicator.rect();
 
-	if (visibleItems > 0 && visibleItems < size) {
-		float pxi=(float)indicator.height() / (float)size;
-		int visible=pxi * visibleItems;
+	if (myVisibleItems > 0 && myVisibleItems < mySize) {
+		float pxi=(float)indicator.height() / (float)mySize;
+		int visible=pxi * myVisibleItems;
 		if (visible < 25) visible=25;
 		int unvisible=indicator.height() - visible;
-		r1.y1=pos * unvisible / (size - visibleItems);
+		r1.y1=pos * unvisible / (mySize - myVisibleItems);
 		r1.y2=r1.y1 + visible;
 		/*
 		ppl7::PrintDebug("height: %d, pxi=%0.3f, size=%d, visibleItems=%d, visible=%d, unvisible=%d, y1=%d, y2=%d\n",
@@ -155,7 +165,7 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 		if (pos > 0) {
 			int d=1;
 			if (event->button == MouseState::Right) {
-				d=visibleItems - 1;
+				d=myVisibleItems - 1;
 				if (d < 1)d=1;
 			}
 			pos-=d;
@@ -169,14 +179,14 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 		return;
 
 	} else if (event->widget() == down_button) {
-		if (pos < size - visibleItems) {
+		if (pos < mySize - myVisibleItems) {
 			int d=1;
 			if (event->button == MouseState::Right) {
-				d=visibleItems - 1;
+				d=myVisibleItems - 1;
 				if (d < 1)d=1;
 			}
 			pos+=d;
-			if (pos >= size - visibleItems) pos=size - visibleItems;
+			if (pos >= mySize - myVisibleItems) pos=mySize - myVisibleItems;
 			if (pos < 0) pos=0;
 			//ppl7::PrintDebug("pos=%d\n",pos);
 			needsRedraw();
@@ -194,7 +204,7 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			drag_start_pos=event->p;
 			ppltk::GetWindowManager()->grabMouse(this);
 		} else if (event->p.y < slider_pos.y1 && pos>0) {
-			int d=visibleItems - 1;
+			int d=myVisibleItems - 1;
 			if (d < 1) d=1;
 			pos-=d;
 			if (pos < 0) pos=0;
@@ -202,11 +212,11 @@ void Scrollbar::mouseDownEvent(ppltk::MouseEvent* event)
 			ppltk::Event ev(ppltk::Event::ValueChanged);
 			ev.setWidget(this);
 			valueChangedEvent(&ev, pos);
-		} else if (event->p.y > slider_pos.y2 && pos < size - visibleItems) {
-			int d=visibleItems - 1;
+		} else if (event->p.y > slider_pos.y2 && pos < mySize - myVisibleItems) {
+			int d=myVisibleItems - 1;
 			if (d < 1) d=1;
 			pos+=d;
-			if (pos >= size) pos=size - visibleItems;
+			if (pos >= mySize) pos=mySize - myVisibleItems;
 			if (pos < 0) pos=0;
 			needsRedraw();
 			ppltk::Event ev(ppltk::Event::ValueChanged);
@@ -237,8 +247,8 @@ void Scrollbar::mouseMoveEvent(ppltk::MouseEvent* event)
 	if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
 		if (drag_started) {
 			int draw_range=height() - 46;
-			int64_t v=(event->p.y - drag_offset) * size / draw_range;
-			if (v >= size - visibleItems) v=size - visibleItems;
+			int64_t v=(event->p.y - drag_offset) * mySize / draw_range;
+			if (v >= mySize - myVisibleItems) v=mySize - myVisibleItems;
 			if (v < 0) v=0;
 			pos=v;
 			needsRedraw();
@@ -257,13 +267,13 @@ void Scrollbar::mouseWheelEvent(ppltk::MouseEvent* event)
 {
 	int d=1;
 	if (event->keyModifier & KeyEvent::KEYMOD_LEFTALT) { //TODO
-		d=visibleItems - 1;
+		d=myVisibleItems - 1;
 		if (d < 1) d=1;
 	}
 
-	if (event->wheel.y < 0 && pos < size - 1) {
+	if (event->wheel.y < 0 && pos < mySize - 1) {
 		pos+=d;
-		if (pos >= size - visibleItems) pos=size - visibleItems;
+		if (pos >= mySize - myVisibleItems) pos=mySize - myVisibleItems;
 		if (pos < 0) pos=0;
 		needsRedraw();
 		ppltk::Event ev(ppltk::Event::ValueChanged);
