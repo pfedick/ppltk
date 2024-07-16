@@ -474,6 +474,11 @@ void EventHandler::currentChanged(Event* event, int index)
 	if (handler) handler->currentChanged(event, index);
 }
 
+void EventHandler::dropEvent(DropEvent* event)
+{
+	if (handler) handler->dropEvent(event);
+}
+
 
 
 }	// EOF namespace ppltk
