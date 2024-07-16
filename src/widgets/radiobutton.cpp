@@ -91,7 +91,7 @@ void RadioButton::setChecked(bool checked)
 void RadioButton::paint(ppl7::grafix::Drawable& draw)
 {
 	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
-	ppl7::grafix::Drawable d=draw.getDrawable(16, 0, draw.width() - 16, draw.height());
+	ppl7::grafix::Drawable d=draw.getDrawable(16, 0, draw.width(), draw.height());
 	Label::paint(d);
 	int y1=draw.height() / 2;
 	draw.circle(9, y1, 7, style.frameBorderColorLight);

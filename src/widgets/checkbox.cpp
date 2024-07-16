@@ -76,9 +76,11 @@ void CheckBox::paint(ppl7::grafix::Drawable& draw)
 {
 	int s=draw.height() * 3 / 5;
 	int sh=s / 2;
-
+	//draw.drawRect(0, 0, draw.width(), draw.height(), ppl7::grafix::Color(255, 0, 0, 255));
 	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
-	ppl7::grafix::Drawable d=draw.getDrawable(s + (s / 3), 0, draw.width() - (s + s / 3), draw.height());
+	int x=s + (s / 3);
+	ppl7::grafix::Drawable d=draw.getDrawable(x, 0, draw.width(), draw.height());
+	//d.cls();
 	Label::paint(d);
 	int y1=draw.height() / 2 - sh;
 	int y2=draw.height() / 2 + sh;
