@@ -418,6 +418,7 @@ WindowManager_SDL2::WindowManager_SDL2()
 	screenRefreshRate=current.refresh_rate;
 	//printf ("Auflösung: %i x %i, Format: %s, Refresh: %i\n",screenSize.width,screenSize.height,(const char*)screenRGBFormat.name(),screenRefreshRate);
 #endif
+	lastWindowEnterEvent=NULL;
 }
 
 WindowManager_SDL2::~WindowManager_SDL2()
@@ -741,6 +742,21 @@ void WindowManager_SDL2::handleEvents()
 					gcWidget->gameControllerDeviceRemoved(&ev);
 				}
 			}
+			break;
+
+			case SDL_DROPFILE:
+			{
+				//ppl7::PrintDebug("SDL_DROPFILE\n");
+				DropEvent ev;
+				ev.setType(Event::DropFileEvent);
+				ev.text.set(sdl_event.drop.file);
+				//Window* w=getWindow(sdl_event.window.windowID);
+				if (!lastWindowEnterEvent) return;
+				//ppl7::PrintDebug("OK\n");
+				SDL_free(sdl_event.drop.file);
+				lastWindowEnterEvent->dropEvent(&ev);
+			}
+			break;
 		}
 
 	}
@@ -826,8 +842,9 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 			//fprintf(stderr, "Window %d restored", event->window.windowID);
 			break;
 		case SDL_WINDOWEVENT_ENTER:
-			//fprintf(stderr, "Mouse entered window %d",
-			//        event->window.windowID);
+			lastWindowEnterEvent=w;
+				//fprintf(stderr, "Mouse entered window %d",
+				//        event->window.windowID);
 			break;
 		case SDL_WINDOWEVENT_LEAVE:
 			//fprintf(stderr, "Mouse left window %d", event->window.windowID);
@@ -1286,6 +1303,15 @@ String WindowManager_SDL2::getClipboardText() const
 
 }
 
-
+void* WindowManager_SDL2::getSDLWindow(Window& w)
+{
+#ifndef HAVE_SDL2
+	throw UnsupportedFeatureException("SDL2");
+#else
+	SDL_WINDOW_PRIVATE* priv=(SDL_WINDOW_PRIVATE*)w.getPrivateData();
+	if (!priv) return NULL;
+	return priv->win;
+#endif
+}
 
 }	// EOF namespace ppltk
