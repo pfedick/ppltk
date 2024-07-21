@@ -357,7 +357,7 @@ void LineInput::keyDownEvent(KeyEvent* event)
 				calcCursorPosition();
 				validateAndSendEvent(myText);
 			}
-			selection.clear();
+			if ((event->key & 128))selection.clear();
 			calcSelectionPosition();
 
 		} else if (key_modifier == KeyEvent::KEYMOD_LEFTCTRL) {
