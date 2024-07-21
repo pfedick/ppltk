@@ -636,12 +636,17 @@ void WindowManager_SDL2::handleEvents()
 				DispatchMouseEvent(&sdl_event);
 				break;
 			case SDL_KEYDOWN:
+				//ppl7::PrintDebug("SDL_KEYDOWN\n");
+				DispatchKeyEvent(&sdl_event);
+				break;
+
 			case SDL_KEYUP:
-				//printf ("SDL_KEYDOWN or SDL_KEYUP Event\n");
+				//ppl7::PrintDebug("SDL_KEYUP\n");
 				DispatchKeyEvent(&sdl_event);
 				break;
 			case SDL_TEXTINPUT:
 			{
+				//ppl7::PrintDebug("SDL_TEXTINPUT\n");
 				Widget* keyFocusWidget=getKeyboardFocus();
 				if (keyFocusWidget) {
 					SDL_TextInputEvent* event=(SDL_TextInputEvent*)&sdl_event;
@@ -1091,7 +1096,7 @@ void WindowManager_SDL2::DispatchKeyEvent(void* e)
 
 	if (event->keysym.sym >= SDLK_a && event->keysym.sym <= SDLK_z) {
 		kev.key=event->keysym.sym - SDLK_a + KeyEvent::KEY_a;
-	} else if (event->keysym.sym >= SDLK_0 && event->keysym.sym <= SDLK_z) {
+	} else if (event->keysym.sym >= SDLK_0 && event->keysym.sym <= SDLK_9) {
 		kev.key=event->keysym.sym - SDLK_0 + KeyEvent::KEY_0;
 	} else {
 		switch (event->keysym.sym) {
