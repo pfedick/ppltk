@@ -488,15 +488,18 @@ void TextEdit::textInputEvent(TextInputEvent* event)
 	moveScrollbarToCursor();
 	selection.clear();
 	validateAndSendEvent(myText);
+	/*
 	if (validator) {
 		if (validator->validateText(myText) == false) return;
 	}
+	*/
 }
 
 void TextEdit::deleteSelection()
 {
+	//ppl7::PrintDebug("TextEdit::deleteSelection(): %d\n", selection.exists());
 	if (selection.exists()) {
-		WideString new_text=myText.left(selection.start) + myText.mid(selection.end);
+		WideString new_text=myText.left(selection.start) + myText.mid(selection.end + 1);
 		myText=new_text;
 		cursorpos=selection.start;
 		calcCursorPosition();
@@ -624,19 +627,21 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			}
 		}
 		if (!selectmode) {
-			if (event->key != KeyEvent::KEY_LEFTCTRL && event->key != KeyEvent::KEY_RIGHTCTRL) {
-				//ppl7::PrintDebug("selection.clear()\n");
+			if (event->key != KeyEvent::KEY_LEFTCTRL && event->key != KeyEvent::KEY_RIGHTCTRL && (event->key & 128)) {
+				//ppl7::PrintDebug("DEBUG 1: selection.clear()\n");
 				selection.clear();
 			}
 		}
+
 		moveScrollbarToCursor();
 	}
+	//printf("TextEdit::keyDownEvent done\n");
 	Frame::keyDownEvent(event);
 }
 
 void TextEdit::keyUpEvent(KeyEvent* event)
 {
-	//printf ("TextEdit::keyUpEvent(keycode=%i, repeat=%i, modifier: %i)\n",event->key, event->repeat, event->modifier);
+	//printf("TextEdit::keyUpEvent(keycode=%i, repeat=%i, modifier: %i)\n", event->key, event->repeat, event->modifier);
 	Frame::keyUpEvent(event);
 }
 
@@ -747,6 +752,7 @@ bool TextEdit::Selection::exists() const
 
 void TextEdit::Selection::clear()
 {
+	//ppl7::PrintDebug("TextEdit::Selection::clear %d => %d (%d)\n", start, end, end - start + 1);
 	start=-1;
 	end=-1;
 }
