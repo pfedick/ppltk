@@ -228,8 +228,11 @@ void LineInput::mouseDownEvent(MouseEvent* event)
 	} else if (event->buttonMask & ppltk::MouseEvent::MouseButton::Middle) {
 		WideString clipboard=String(GetWindowManager()->getClipboardText());
 		WideString new_text=myText.left(cursorpos) + clipboard + myText.mid(cursorpos);
-		myText=new_text;
-		cursorpos+=clipboard.size();
+		if (validator == NULL || validator->validateText(new_text) == true) {
+			myText=new_text;
+			validateAndSendEvent(new_text);
+			cursorpos+=clipboard.size();
+		}
 
 	}
 	calcCursorPosition();
@@ -303,9 +306,7 @@ void LineInput::textInputEvent(TextInputEvent* event)
 	calcCursorPosition();
 	selection.clear();
 	validateAndSendEvent(myText);
-	if (validator) {
-		if (validator->validateText(myText) == false) return;
-	}
+
 }
 
 void LineInput::deleteSelection()
@@ -374,8 +375,11 @@ void LineInput::keyDownEvent(KeyEvent* event)
 				deleteSelection();
 				WideString clipboard=String(GetWindowManager()->getClipboardText());
 				WideString new_text=myText.left(cursorpos) + clipboard + myText.mid(cursorpos);
-				myText=new_text;
-				cursorpos+=clipboard.size();
+				if (validator == NULL || validator->validateText(new_text) == true) {
+					validateAndSendEvent(new_text);
+					myText=new_text;
+					cursorpos+=clipboard.size();
+				}
 				calcCursorPosition();
 
 			}
