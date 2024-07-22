@@ -305,6 +305,7 @@ public:
     MouseButton buttonMask;
     MouseButton button;
     int keyModifier;
+    uint8_t clicks;
 
 };
 
@@ -763,7 +764,7 @@ public:
     virtual ~WindowManager();
     const WidgetStyle& getWidgetStyle() const;
     void setWidgetStyle(const WidgetStyle& style);
-    void dispatchEvent(Window* window, Event& event);
+    void dispatchMouseEvent(Window* window, MouseEvent& event);
     void dispatchClickEvent(Window* window);
     void setDoubleClickIntervall(int ms);
     void setKeyboardFocus(Widget* w);

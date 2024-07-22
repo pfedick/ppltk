@@ -62,19 +62,19 @@ WindowManager::WindowManager()
 	LastMouseEnter=NULL;
 	LastMouseFocus=NULL;
 	clickCount=0;
-	doubleClickIntervall=200;
+	doubleClickIntervall=150;
 	KeyboardFocus=NULL;
 	grabMouseWidget=NULL;
 	GameControllerFocus=NULL;
 
-	ppl7::Resource *resources=GetPPLTKResource();
-	ppl7::grafix::Grafix *gfx=ppl7::grafix::GetGrafix();
+	ppl7::Resource* resources=GetPPLTKResource();
+	ppl7::grafix::Grafix* gfx=ppl7::grafix::GetGrafix();
 	if (gfx) {
-		gfx->loadFont(resources->getMemory(4),"Default");
-		gfx->loadFont(resources->getMemory(5),"Default Mono");
+		gfx->loadFont(resources->getMemory(4), "Default");
+		gfx->loadFont(resources->getMemory(5), "Default Mono");
 	}
 	//ButtonSymbols.load(resources->getMemory(3),15,15,ImageList::DIFFUSE);
-	Toolbar.load(resources->getMemory(1),16,16,ImageList::ALPHABLT);
+	Toolbar.load(resources->getMemory(1), 16, 16, ImageList::ALPHABLT);
 
 	updateButtonSymbols();
 }
@@ -182,72 +182,63 @@ void WindowManager::deferedDeleteWidgets(Widget* widget)
 	}
 }
 
-void WindowManager::dispatchEvent(Window* window, Event& event)
+void WindowManager::dispatchMouseEvent(Window* window, MouseEvent& event)
 {
 	Widget* w;
-	//printf("WindowManager::dispatchEvent\n");
+	//printf("WindowManager::dispatchMouseEvent\n");
 	//deferedDeleteWidgets(window);
 	switch (event.type()) {
 		case Event::MouseEnter:
-			window->mouseState=(MouseEvent&)event;
+			window->mouseState=event;
 			event.setWidget(window);
 			LastMouseEnter=window;
-			window->mouseEnterEvent((MouseEvent*)&event);
+			window->mouseEnterEvent(&event);
 			break;
 		case Event::MouseLeave:
-			window->mouseState=(MouseEvent&)event;
+			window->mouseState=event;
 			if (LastMouseEnter) {
 				event.setWidget(LastMouseEnter);
-				LastMouseEnter->mouseLeaveEvent((MouseEvent*)&event);
+				LastMouseEnter->mouseLeaveEvent(&event);
 				LastMouseEnter=NULL;
 			}
 			event.setWidget(window);
-			window->mouseLeaveEvent((MouseEvent*)&event);
+			window->mouseLeaveEvent(&event);
 			break;
 		case Event::MouseMove:
-			window->mouseState=(MouseEvent&)event;
+			window->mouseState=event;
 			//printf ("window->mouseState.p.x=%i\n",window->mouseState.p.x);
-			w=findMouseWidget(window, ((MouseEvent*)&event)->p);
+			w=findMouseWidget(window, event.p);
 			if (w) {
 				if (w != LastMouseEnter) {
 					if (LastMouseEnter) {
 						event.setWidget(LastMouseEnter);
-						LastMouseEnter->mouseLeaveEvent((MouseEvent*)&event);
+						LastMouseEnter->mouseLeaveEvent(&event);
 					}
 					event.setWidget(w);
-					w->mouseEnterEvent((MouseEvent*)&event);
+					w->mouseEnterEvent(&event);
 					LastMouseEnter=w;
 				}
 				event.setWidget(w);
-				w->mouseMoveEvent((MouseEvent*)&event);
+				w->mouseMoveEvent(&event);
 			} else if (LastMouseEnter) {
 				event.setWidget(LastMouseEnter);
-				LastMouseEnter->mouseLeaveEvent((MouseEvent*)&event);
+				LastMouseEnter->mouseLeaveEvent(&event);
 				LastMouseEnter=NULL;
 			}
 			break;
 		case Event::MouseDown:
 #ifdef DEBUGEVENTS
-			ppl7::PrintDebugTime("WindowManager::dispatchEvent, MouseDown\n");
+			ppl7::PrintDebugTime("WindowManager::dispatchMouseEvent, MouseDown\n");
 #endif
 
-			window->mouseState=(MouseEvent&)event;
-			w=findMouseWidget(window, ((MouseEvent*)&event)->p);
+			window->mouseState=event;
+			w=findMouseWidget(window, event.p);
 			if (w) {
+				clickCount=event.clicks;
 				if (w != LastMouseDown) {
-					clickCount=0;
 					if (LastMouseDown) {
 						LastMouseDown->needsRedraw();
 					}
-					/*
-					FocusEvent fe(Event::Type::FocusOut, LastMouseDown, w);
-					if (LastMouseDown) {
-						LastMouseDown->lostFocusEvent(&fe);
-						LastMouseDown->needsRedraw();
-					}
-					fe.setType(Event::Type::FocusIn);
-					w->gotFocusEvent(&fe);
-					*/
 				}
 				LastMouseDown=w;
 				setMouseFocus(w);
@@ -255,23 +246,31 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 				w->needsRedraw();
 
 				event.setWidget(w);
-				w->mouseDownEvent((MouseEvent*)&event);
+				w->mouseDownEvent(&event);
+
+				if (event.clicks == 2) {
+					LastMouseDown->mouseDblClickEvent(&event);
+				}
 			}
 			break;
 
 		case Event::MouseUp:
 #ifdef DEBUGEVENTS
-			ppl7::PrintDebugTime("WindowManager::dispatchEvent, MouseUp\n");
+			ppl7::PrintDebugTime("WindowManager::dispatchMouseEvent, MouseUp, clicks: %d\n", event.clicks);
 #endif
-			window->mouseState=(MouseEvent&)event;
-			w=findMouseWidget(window, ((MouseEvent*)&event)->p);
+			window->mouseState=event;
+			w=findMouseWidget(window, event.p);
 			if (w) {
 				event.setWidget(w);
-				w->mouseUpEvent((MouseEvent*)&event);
+				w->mouseUpEvent(&event);
 				if (LastMouseDown == w) {
-					clickCount++;
-					clickEvent=*((MouseEvent*)&event);
-					if (clickCount == 1) startClickEvent(static_cast<Window*>(window));
+					clickCount=event.clicks;
+					clickEvent=event;
+					if (event.clicks == 1) startClickEvent(static_cast<Window*>(window));
+					else if (event.clicks == 2) {
+						//ppl7::PrintDebug("Doubleclick\n");
+						//LastMouseDown->mouseDblClickEvent(&event);
+					}
 					//LastMouseDown->mouseClickEvent((MouseEvent*)&event);
 				} else {
 					clickCount=0;
@@ -280,18 +279,18 @@ void WindowManager::dispatchEvent(Window* window, Event& event)
 			}
 			break;
 		case Event::MouseWheel:
-			window->mouseState=(MouseEvent&)event;
-			w=findMouseWidget(window, ((MouseEvent*)&event)->p);
+			window->mouseState=event;
+			w=findMouseWidget(window, event.p);
 			if (w) {
 				event.setWidget(w);
-				w->mouseWheelEvent((MouseEvent*)&event);
+				w->mouseWheelEvent(&event);
 			}
 			break;
 
 
 		default:
 #ifdef DEBUGEVENTS
-			PrintDebugTime("WindowManager::dispatchEvent(%tu, %s)  ==> Unhandled Event\n", (std::ptrdiff_t)window, event.name().toChar());
+			PrintDebugTime("WindowManager::dispatchMouseEvent(%tu, %s)  ==> Unhandled Event\n", (std::ptrdiff_t)window, event.name().toChar());
 #endif
 			break;
 	}
@@ -330,13 +329,13 @@ void WindowManager::dispatchClickEvent(Window* window)
 {
 	if (!window) return;
 	if (!LastMouseDown) return;
-#ifdef DEBUGEVENTS
-	ppl7::PrintDebugTime("WindowManager::dispatchClickEvent, clickCount=%d\n", clickCount);
-#endif
+//#ifdef DEBUGEVENTS
+	//ppl7::PrintDebugTime("WindowManager::dispatchClickEvent, clickCount=%d\n", clickCount);
+//#endif
 	if (clickCount == 1) LastMouseDown->mouseClickEvent(&clickEvent);
-	else if (clickCount > 1) LastMouseDown->mouseDblClickEvent(&clickEvent);
+	//else if (clickCount > 1) LastMouseDown->mouseDblClickEvent(&clickEvent);
 	clickCount=0;
-	LastMouseDown=NULL;
+	//LastMouseDown=NULL;
 	deferedDeleteWidgets(window);
 }
 

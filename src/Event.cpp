@@ -154,6 +154,7 @@ MouseState::MouseState()
 {
 	p.x=0;
 	p.y=0;
+	clicks=0;
 	button=(MouseState::MouseButton)0;
 	buttonMask=(MouseState::MouseButton)0;
 }

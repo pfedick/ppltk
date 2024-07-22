@@ -918,22 +918,20 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 
 		Window* w=getWindow(event->windowID);
 		if (!w) return;
-
-
 		ev.setType(Event::MouseMove);
 		ev.p=translateCoordinatesToUi(w, event->x, event->y);
 		ev.buttonMask=(MouseEvent::MouseButton)0;
 		ev.button=(MouseEvent::MouseButton)0;
 		getButtonMask(ev);
-		dispatchEvent(w, ev);
+		dispatchMouseEvent(w, ev);
 
 	} else if (type == SDL_MOUSEBUTTONDOWN) {
 		SDL_MouseButtonEvent* event=(SDL_MouseButtonEvent*)e;
-
+		//ppl7::PrintDebug("SDL_MOUSEBUTTONDOWN, clicks: %d\n", event->clicks);
 		Window* w=getWindow(event->windowID);
 		if (!w) return;
-
 		ev.setType(Event::MouseDown);
+		ev.clicks=event->clicks;
 		ev.p=translateCoordinatesToUi(w, event->x, event->y);
 		ev.buttonMask=(MouseEvent::MouseButton)0;
 		ev.button=(MouseEvent::MouseButton)0;
@@ -945,14 +943,16 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 		if (event->button == 5) ev.button=MouseEvent::WheelDown;
 		if (event->button == 6) ev.button=MouseEvent::X1;
 		if (event->button == 7) ev.button=MouseEvent::X2;
-		dispatchEvent(w, ev);
+		dispatchMouseEvent(w, ev);
 	} else if (type == SDL_MOUSEBUTTONUP) {
 		SDL_MouseButtonEvent* event=(SDL_MouseButtonEvent*)e;
+		//ppl7::PrintDebug("SDL_MOUSEBUTTONUP, clicks: %d\n", event->clicks);
 
 		Window* w=getWindow(event->windowID);
 		if (!w) return;
 
 		ev.setType(Event::MouseUp);
+		ev.clicks=event->clicks;
 		ev.p=translateCoordinatesToUi(w, event->x, event->y);
 		ev.buttonMask=(MouseEvent::MouseButton)0;
 		ev.button=(MouseEvent::MouseButton)0;
@@ -964,7 +964,7 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 		if (event->button == 5) ev.button=MouseEvent::WheelDown;
 		if (event->button == 6) ev.button=MouseEvent::X1;
 		if (event->button == 7) ev.button=MouseEvent::X2;
-		dispatchEvent(w, ev);
+		dispatchMouseEvent(w, ev);
 	} else if (type == SDL_MOUSEWHEEL) {
 		SDL_MouseWheelEvent* event=(SDL_MouseWheelEvent*)e;
 		Window* w=getWindow(event->windowID);
@@ -980,7 +980,7 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 		ev.wheel.x=event->x;
 		ev.wheel.y=event->y;
 		//printf ("MouseWheelEvent %d:%d\n", ev.wheel.x, ev.wheel.y);
-		dispatchEvent(w, ev);
+		dispatchMouseEvent(w, ev);
 
 		//ev.setType(Event::MouseUp);
 
@@ -995,7 +995,7 @@ typedef struct {
 #ifdef HAVE_SDL2
 static Uint32 clickTimer(Uint32 interval, void* param)
 {
-	//printf("clickTimer\n");
+	//ppl7::PrintDebug("clickTimer\n");
 	SDL_Event event;
 	SDL_UserEvent userevent;
 
@@ -1019,7 +1019,7 @@ void WindowManager_SDL2::startClickEvent(Window* win)
 #ifndef HAVE_SDL2
 	throw UnsupportedFeatureException("SDL2");
 #else
-	//printf ("WindowManager_SDL2::startClickEvent\n");
+	//ppl7::PrintDebug("WindowManager_SDL2::startClickEvent with %d ms\n", getDoubleClickIntervall());
 	SDL_AddTimer(getDoubleClickIntervall(), clickTimer, win);
 #endif
 }
