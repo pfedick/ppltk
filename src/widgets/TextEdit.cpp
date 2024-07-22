@@ -397,8 +397,11 @@ void TextEdit::mouseDownEvent(MouseEvent* event)
 	} else if (event->buttonMask & ppltk::MouseEvent::MouseButton::Middle) {
 		WideString clipboard=String(GetWindowManager()->getClipboardText());
 		WideString new_text=myText.left(cursorpos) + clipboard + myText.mid(cursorpos);
-		myText=new_text;
-		cursorpos+=clipboard.size();
+		if (validator == NULL || validator->validateText(new_text) == true) {
+			myText=new_text;
+			validateAndSendEvent(new_text);
+			cursorpos+=clipboard.size();
+		}
 		invalidateCache();
 
 	}
@@ -605,8 +608,11 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 				deleteSelection();
 				WideString clipboard=String(GetWindowManager()->getClipboardText());
 				WideString new_text=myText.left(cursorpos) + clipboard + myText.mid(cursorpos);
-				myText=new_text;
-				cursorpos+=clipboard.size();
+				if (validator == NULL || validator->validateText(new_text) == true) {
+					myText=new_text;
+					validateAndSendEvent(new_text);
+					cursorpos+=clipboard.size();
+				}
 				invalidateCache();
 				calcCursorPosition();
 			} else if (event->key == KeyEvent::KEY_a) {
