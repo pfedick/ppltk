@@ -437,17 +437,22 @@ void LineInput::mouseDblClickEvent(MouseEvent* event)
 	if (myText.notEmpty()) {
 		ppl7::grafix::Point p=event->p;
 		cursorpos=calcPosition(p.x);
-		selection.begin(cursorpos);
-		for (int i=cursorpos;i >= 0;i--) {
-			wchar_t c=myText[i];
-			if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
-			selection.start=i;
-		}
-		for (int i=cursorpos;i < (int)myText.size();i++) {
-			wchar_t c=myText[i];
-			if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
-			selection.end=i + 1;
+		if (cursorpos < myText.size()) {
+			selection.begin(cursorpos);
+			for (int i=cursorpos;i >= 0;i--) {
+				wchar_t c=myText[i];
+				if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
+				selection.start=i;
+			}
+			for (int i=cursorpos;i < (int)myText.size();i++) {
+				wchar_t c=myText[i];
+				if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
+				selection.end=i + 1;
 
+			}
+		} else {
+			selection.begin(0);
+			selection.end=myText.size();
 		}
 		calcSelectionPosition();
 		needsRedraw();
