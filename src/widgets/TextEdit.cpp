@@ -665,17 +665,19 @@ void TextEdit::mouseDblClickEvent(MouseEvent* event)
 		if (vertical_scrollbar) p.y+=vertical_scrollbar->position() * line_height;
 
 		cursorpos=calcPosition(p);
-		selection.begin(cursorpos);
-		for (int i=cursorpos;i >= 0;i--) {
-			wchar_t c=myText[i];
-			if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
-			selection.start=i;
-		}
-		for (int i=cursorpos;i < (int)myText.size();i++) {
-			wchar_t c=myText[i];
-			if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
-			selection.end=i;
+		if (cursorpos < myText.size()) {
+			selection.begin(cursorpos);
+			for (int i=cursorpos;i >= 0;i--) {
+				wchar_t c=myText[i];
+				if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
+				selection.start=i;
+			}
+			for (int i=cursorpos;i < (int)myText.size();i++) {
+				wchar_t c=myText[i];
+				if (c == '\n' || c == ' ' || c == '.' || c == ',') break;
+				selection.end=i;
 
+			}
 		}
 		needsRedraw();
 		moveScrollbarToCursor();
