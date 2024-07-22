@@ -599,7 +599,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 			if (event->key == KeyEvent::KEY_c) {
 				ppl7::String text;
 				if (selection.exists()) {
-					ppl7::String t=myText.mid(selection.start, selection.end - selection.start);
+					ppl7::String t=myText.mid(selection.start, selection.end - selection.start + 1);
 					text=String(t);
 					//printf("selection=%s\n", (const char*)text);
 					GetWindowManager()->setClipboardText(text);
