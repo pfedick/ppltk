@@ -66,6 +66,13 @@ using namespace ppl7::grafix;
 ppl7::Resource* GetPPLTKResource();
 
 
+enum class SortOrder
+{
+    AscendingOrder=0,
+    DescendingOrder=1
+};
+
+
 class WidgetStyle
 {
 private:
@@ -1342,6 +1349,7 @@ public:
     bool hasText(const ppl7::String& text) const;
     void setSortingEnabled(bool enable);
     bool isSortingEnabled() const;
+    void sortItems(SortOrder sort=SortOrder::AscendingOrder);
 
     void clear();
 
@@ -1385,6 +1393,7 @@ public:
     void setCurrentIdentifier(const ppl7::String& identifier);
     ppl7::String currentText() const;
     ppl7::String currentIdentifier() const;
+    void sortItems(SortOrder sort=SortOrder::AscendingOrder);
 
     void setCurrentIndex(size_t index);
     size_t currentIndex() const;

@@ -128,6 +128,28 @@ void ComboBox::add(const ppl7::String& text, const ppl7::String& identifier)
 	needsRedraw();
 }
 
+void ComboBox::sortItems(SortOrder sort)
+{
+	ppl7::String current=currentIdentifier();
+	std::map<ppl7::String, ComboBoxItem> sorted;
+	for (auto it=items.begin();it != items.end();++it) {
+		sorted.insert(std::pair<ppl7::String, ComboBoxItem>(it->text, *it));
+	}
+	items.clear();
+	if (sort == SortOrder::AscendingOrder) {
+		for (auto it=sorted.begin();it != sorted.end();++it) {
+			it->second.index=items.size();
+			items.push_back(it->second);
+		}
+	} else {
+		for (auto it=sorted.rbegin();it != sorted.rend();++it) {
+			it->second.index=items.size();
+			items.push_back(it->second);
+		}
+	}
+	setCurrentIdentifier(current);
+	needsRedraw();
+}
 
 void ComboBox::clear()
 {
