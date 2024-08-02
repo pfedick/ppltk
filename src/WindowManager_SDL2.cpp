@@ -817,10 +817,7 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 			//        event->window.data2);
 			break;
 		case SDL_WINDOWEVENT_RESIZED:
-			//printf("SDL_WINDOWEVENT_RESIZED on window %d\n", event->window.windowID);
-			//printf("Window %d resized to %dx%d",
-			//	event->window.windowID, event->window.data1,
-			//	event->window.data2);
+			//ppl7::PrintDebug("SDL_WINDOWEVENT_RESIZED on window %d, resized to %d x %d\n", event->window.windowID,event->window.data1, event->window.data2 );
 		{
 			w->setWindowSize(event->window.data1, event->window.data2);
 			resizeWindow(*w, event->window.data1, event->window.data2);
@@ -838,13 +835,13 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 			//printf("SDL_WINDOWEVENT_SIZE_CHANGED on window %d\n", event->window.windowID);
 			break;
 		case SDL_WINDOWEVENT_MINIMIZED:
-			//fprintf(stderr, "Window %d minimized", event->window.windowID);
+			//fprintf(stderr, "Window %d minimized\n", event->window.windowID);
 			break;
 		case SDL_WINDOWEVENT_MAXIMIZED:
-			//fprintf(stderr, "Window %d maximized", event->window.windowID);
+			//fprintf(stderr, "Window %d maximized\n", event->window.windowID);
 			break;
 		case SDL_WINDOWEVENT_RESTORED:
-			//fprintf(stderr, "Window %d restored", event->window.windowID);
+			//fprintf(stderr, "Window %d restored\n", event->window.windowID);
 			break;
 		case SDL_WINDOWEVENT_ENTER:
 			lastWindowEnterEvent=w;
@@ -873,6 +870,13 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 			break;
 		case SDL_WINDOWEVENT_HIT_TEST:
 			break;
+		case SDL_WINDOWEVENT_ICCPROF_CHANGED:
+			//ppl7::PrintDebug("SDL_WINDOWEVENT_ICCPROF_CHANGED\n");
+			break;
+		case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+			//ppl7::PrintDebug("SDL_WINDOWEVENT_DISPLAY_CHANGED\n");
+			break;
+
 		default:
 			printf("SDL Window %d got unknown event %d\n",
 				event->window.windowID, event->window.event);
@@ -1215,11 +1219,17 @@ void WindowManager_SDL2::setWindowDisplayMode(Window& w, const Window::DisplayMo
 			throw SDLException("SDL_GetWindowDisplayMode failed with: %s", SDL_GetError());
 		}
 	}
-	if (priv->gui) SDL_DestroyTexture(priv->gui);
+
 
 	w.setRGBFormat(SDL2RGBFormat(sdlmode.format));
 	w.setSize(sdlmode.w, sdlmode.h);
+	if (w.hasFixedUiSize()) {
+		//ppl7::PrintDebug("we don't change the gui size, which is: %d x %d\n",priv->width, priv->height);
+		return;
+	}
 
+
+	if (priv->gui) SDL_DestroyTexture(priv->gui);
 	priv->gui=SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w.width(), w.height());
 	if (priv->gui == 0) {
 		const char* e=SDL_GetError();
@@ -1252,7 +1262,10 @@ void WindowManager_SDL2::resizeWindow(Window& w, int width, int height)
 	priv->window_width=width;
 	priv->window_height=height;
 
-	if (w.hasFixedUiSize()) return;
+	if (w.hasFixedUiSize()) {
+		//ppl7::PrintDebug("we don't change the gui size, which is: %d x %d\n",priv->width, priv->height);
+		return;
+	}
 	if (priv->gui) SDL_DestroyTexture(priv->gui);
 	priv->gui=SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 	if (priv->gui == 0) {
