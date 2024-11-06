@@ -315,7 +315,7 @@ void SpinBox::stepDown()
 bool SpinBox::validateText(const ppl7::WideString& text)
 {
     ppl7::String t=text;
-    if (t.isEmpty() || t.pregMatch("/^-?[0-9]*$/")) {
+    if (t.isEmpty() || ppl7::RegEx::match("^-?[0-9]*$",t)) {
         int64_t v=text.toInt64();
         if (v >= min && v <= max) return true;
         return false;
@@ -326,7 +326,7 @@ bool SpinBox::validateText(const ppl7::WideString& text)
 bool SpinBox::validateInput(const ppl7::WideString& text)
 {
     ppl7::String t=text;
-    if (t.isEmpty() || t.pregMatch("/^-?[0-9]*$/")) {
+    if (t.isEmpty() || ppl7::RegEx::match("^-?[0-9]*$",t)) {
         return true;
     }
     return false;
@@ -446,7 +446,7 @@ void DoubleSpinBox::stepDown()
 bool DoubleSpinBox::validateText(const ppl7::WideString& text)
 {
     ppl7::String t=text;
-    if (t.isEmpty() || t.pregMatch("/^-?[0-9\\.,]*$/")) {
+    if (t.isEmpty() || ppl7::RegEx::match("^-?[0-9\\.,]*$",t)) {
         double v=text.toDouble();
         if (v >= min && v <= max) return true;
     }
@@ -456,7 +456,7 @@ bool DoubleSpinBox::validateText(const ppl7::WideString& text)
 bool DoubleSpinBox::validateInput(const ppl7::WideString& text)
 {
     ppl7::String t=text;
-    if (t.isEmpty() || t.pregMatch("/^-?[0-9\\.,]*$/")) {
+    if (t.isEmpty() || ppl7::RegEx::match("^-?[0-9\\.,]*$",t)) {
         return true;
     }
     return false;
