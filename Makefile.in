@@ -28,7 +28,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 ###############################################################################
 
-CXX		= g++
+CXX                     = @CXX@
 EXTRA_CFLAGS =
 INCLUDE	= -I include
 CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@ @SDL2_CFLAGS@
