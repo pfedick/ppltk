@@ -523,7 +523,7 @@ void TextEdit::keyDownEvent(KeyEvent* event)
 		//ppl7::PrintDebug("%d\n",selectmode);
 
 		if (event->key != KeyEvent::KEY_UP && event->key != KeyEvent::KEY_DOWN) first_cursor_up_down_x=-1;
-		if (event->key == KeyEvent::KEY_ENTER || event->key == KeyEvent::KEY_RETURN) {
+		if (event->key == KeyEvent::KEY_NUMPAD_ENTER || event->key == KeyEvent::KEY_RETURN) {
 			TextInputEvent ev;
 			ev.text.set(L"\n");
 			textInputEvent(&ev);

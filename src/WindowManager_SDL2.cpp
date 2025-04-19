@@ -1084,13 +1084,13 @@ void WindowManager_SDL2::DispatchKeyEvent(void* e)
 	KeyEvent ev;
 	SDL_KeyboardEvent* event=(SDL_KeyboardEvent*)e;
 
-	/*
-	WideString st;
-	st.set((wchar_t)event->keysym.sym);
-	printf ("KeyEvent: State: %i, Repeat: %i, ",event->state,event->repeat);
-	printf ("Scancode: %i, Keycode: %i, Modifier: %i\n",event->keysym.scancode, event->keysym.sym, event->keysym.mod);
-	st.printnl();
-	*/
+	
+	//WideString st;
+	//st.set((wchar_t)event->keysym.sym);
+	//ppl7::PrintDebug ("KeyEvent: State: %i, Repeat: %i, ",event->state,event->repeat);
+	//ppl7::PrintDebug ("Scancode: %i, Keycode: %i, Modifier: %i\n",event->keysym.scancode, event->keysym.sym, event->keysym.mod);
+	//st.printnl();
+	
 	Widget* keyFocusWidget=getKeyboardFocus();
 	if (!keyFocusWidget) return;
 
@@ -1123,6 +1123,18 @@ void WindowManager_SDL2::DispatchKeyEvent(void* e)
 			case SDLK_F10: kev.key=KeyEvent::KEY_F10; break;
 			case SDLK_F11: kev.key=KeyEvent::KEY_F11; break;
 			case SDLK_F12: kev.key=KeyEvent::KEY_F12; break;
+			case SDLK_F13: kev.key=KeyEvent::KEY_F13; break;
+			case SDLK_F14: kev.key=KeyEvent::KEY_F14; break;
+			case SDLK_F15: kev.key=KeyEvent::KEY_F15; break;
+			case SDLK_F16: kev.key=KeyEvent::KEY_F16; break;
+			case SDLK_F17: kev.key=KeyEvent::KEY_F17; break;
+			case SDLK_F18: kev.key=KeyEvent::KEY_F18; break;
+			case SDLK_F19: kev.key=KeyEvent::KEY_F19; break;
+			case SDLK_F20: kev.key=KeyEvent::KEY_F20; break;
+			case SDLK_F21: kev.key=KeyEvent::KEY_F21; break;
+			case SDLK_F22: kev.key=KeyEvent::KEY_F22; break;
+			case SDLK_F23: kev.key=KeyEvent::KEY_F23; break;
+			case SDLK_F24: kev.key=KeyEvent::KEY_F24; break;
 			case SDLK_PRINTSCREEN: kev.key=KeyEvent::KEY_PRINTSCREEN; break;
 			case SDLK_SCROLLLOCK: kev.key=KeyEvent::KEY_SCROLLLOCK; break;
 			case SDLK_PAUSE: kev.key=KeyEvent::KEY_PAUSE; break;
@@ -1144,15 +1156,39 @@ void WindowManager_SDL2::DispatchKeyEvent(void* e)
 			case SDLK_RSHIFT: kev.key=KeyEvent::KEY_RIGHTSHIFT; break;
 			case SDLK_RALT: kev.key=KeyEvent::KEY_RIGHTALT; break;
 			case SDLK_RGUI: kev.key=KeyEvent::KEY_RIGHTGUI; break;
-			case SDLK_KP_ENTER: kev.key=KeyEvent::KEY_ENTER; break;
 			case SDLK_NUMLOCKCLEAR: kev.key=KeyEvent::KEY_NUMLOCK; break;
 			case SDLK_MODE: kev.key=KeyEvent::KEY_MODE; break;
+			case SDLK_KP_0: kev.key=KeyEvent::KEY_NUMPAD_0; break;
+			case SDLK_KP_1: kev.key=KeyEvent::KEY_NUMPAD_1; break;
+			case SDLK_KP_2: kev.key=KeyEvent::KEY_NUMPAD_2; break;
+			case SDLK_KP_3: kev.key=KeyEvent::KEY_NUMPAD_3; break;
+			case SDLK_KP_4: kev.key=KeyEvent::KEY_NUMPAD_4; break;
+			case SDLK_KP_5: kev.key=KeyEvent::KEY_NUMPAD_5; break;
+			case SDLK_KP_6: kev.key=KeyEvent::KEY_NUMPAD_6; break;
+			case SDLK_KP_7: kev.key=KeyEvent::KEY_NUMPAD_7; break;
+			case SDLK_KP_8: kev.key=KeyEvent::KEY_NUMPAD_8; break;
+			case SDLK_KP_9: kev.key=KeyEvent::KEY_NUMPAD_9; break;
+			case SDLK_KP_PERIOD: kev.key=KeyEvent::KEY_NUMPAD_PERIOD; break;
+			case SDLK_KP_EQUALS: kev.key=KeyEvent::KEY_NUMPAD_EQUALS; break;
+			case SDLK_KP_DIVIDE: kev.key=KeyEvent::KEY_NUMPAD_DIVIDE; break;
+			case SDLK_KP_MULTIPLY: kev.key=KeyEvent::KEY_NUMPAD_MULTIPLY; break;
+			case SDLK_KP_MINUS: kev.key=KeyEvent::KEY_NUMPAD_MINUS; break;
+			case SDLK_KP_PLUS: kev.key=KeyEvent::KEY_NUMPAD_PLUS; break;
+			case SDLK_KP_ENTER: kev.key=KeyEvent::KEY_NUMPAD_ENTER; break;
+			case SDLK_KP_COMMA: kev.key=KeyEvent::KEY_NUMPAD_COMMA; break;
+			
+
+
 			default: kev.key=KeyEvent::KEY_UNKNOWN; break;
 		}
 	}
 	kev.modifier=TranslateKeyModifierFromSDL(event->keysym.mod);
 
-	if (kev.key == KeyEvent::KEY_UNKNOWN) return;
+	if (kev.key == KeyEvent::KEY_UNKNOWN) {
+		ppl7::PrintDebug ("Unknown KeyEvent: State: %i, Repeat: %i, ",event->state,event->repeat);
+		ppl7::PrintDebug ("Scancode: %i, Keycode: %i, Modifier: %i\n",event->keysym.scancode, event->keysym.sym, event->keysym.mod);
+		return;
+	}
 
 	if (event->type == SDL_KEYDOWN) {
 		keyFocusWidget->keyDownEvent(&kev);
