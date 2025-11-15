@@ -408,18 +408,30 @@ WindowManager_SDL3::WindowManager_SDL3()
 #else
     if (wm != NULL && wm != this) throw DuplicateWindowManagerException();
     wm = this;
+
     /* Get init data on all the subsystems */
     uint32_t subsystem_init;
     subsystem_init = SDL_WasInit(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+    if (!(subsystem_init & SDL_INIT_EVENTS)) {
+        if (!SDL_Init(SDL_INIT_EVENTS)) throw InitializationException("WindowManager_SDL3: SDL_INIT_EVENTS [%s]", SDL_GetError());
+    }
+
 
     if (!(subsystem_init & SDL_INIT_VIDEO)) {
-        if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) throw InitializationException("WindowManager_SDL3: SDL_INIT_VIDEO");
+        if (!SDL_Init(SDL_INIT_VIDEO)) throw InitializationException("WindowManager_SDL3: SDL_INIT_VIDEO [%s]", SDL_GetError());
     }
 
     atexit(SDL_Quit);
+    lastWindowEnterEvent = NULL;
 
-    const SDL_DisplayMode* current = SDL_GetDesktopDisplayMode(0);
+    int count = 0;
+    SDL_DisplayID* displaysIDs = SDL_GetDisplays(&count);
+    if (count < 1) throw InitializationException("No display found!");
+
+
+    const SDL_DisplayMode* current = SDL_GetDesktopDisplayMode(displaysIDs[0]);
     if (!current) {
+        return;
         throw InitializationException("SDL-ERROR: %s\n", SDL_GetError());
     }
     screenRGBFormat = SDL2RGBFormat(current->format);
@@ -427,7 +439,7 @@ WindowManager_SDL3::WindowManager_SDL3()
     screenRefreshRate = current->refresh_rate;
     //printf ("Auflösung: %i x %i, Format: %s, Refresh: %i\n",screenSize.width,screenSize.height,(const char*)screenRGBFormat.name(),screenRefreshRate);
 #endif
-    lastWindowEnterEvent = NULL;
+
 }
 
 WindowManager_SDL3::~WindowManager_SDL3()
@@ -506,7 +518,7 @@ void WindowManager_SDL3::createWindow(Window& w)
         throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
 
     }
-    if (SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND) != 0) {
+    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND)) {
         const char* e = SDL_GetError();
         SDL_DestroyTexture(priv->gui);
         SDL_DestroyRenderer(priv->renderer);
@@ -884,6 +896,7 @@ void WindowManager_SDL3::DispatchWindowEvent(void* e)
     default:
         printf("SDL Window %d got unknown event %d\n",
             event->window.windowID, event->window.type);
+        fflush(stdout);
         break;
     }
 #endif
@@ -1253,13 +1266,13 @@ void WindowManager_SDL3::setWindowDisplayMode(Window& w, const Window::DisplayMo
         sdlmode.w = mode.width;
         sdlmode.refresh_rate = mode.refresh_rate;
         sdlmode.format = RGBFormat2SDLFormat(mode.format);
-        if (SDL_SetWindowFullscreenMode(priv->win, &sdlmode) != 0) {
+        if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode)) {
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
         }
     }
     else {
         SDL_SetWindowSize(priv->win, mode.width, mode.height);
-        if (SDL_SetWindowFullscreenMode(priv->win, &sdlmode) != 0) {
+        if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode)) {
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
         }
     }
@@ -1283,7 +1296,7 @@ void WindowManager_SDL3::setWindowDisplayMode(Window& w, const Window::DisplayMo
         throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
 
     }
-    if (SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND) != 0) {
+    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND)) {
         const char* e = SDL_GetError();
         SDL_DestroyTexture(priv->gui);
         SDL_DestroyRenderer(priv->renderer);
@@ -1319,7 +1332,7 @@ void WindowManager_SDL3::resizeWindow(Window& w, int width, int height)
     }
     priv->width = width;
     priv->height = height;
-    if (SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND) != 0) {
+    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND)) {
         const char* e = SDL_GetError();
         throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
     }

@@ -32,14 +32,13 @@ CXX                     = @CXX@
 EXTRA_CFLAGS =
 INCLUDE	= -I include
 CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@ -Dmain=SDL_main 
-LIB		= @LIBPPL7_LIBS@  @SDL2_LIBS@ @SDL3_LIBS@ -lstdc++
+LIB		= @LIBPPL7_LIBS@  @SDL3_LIBS@ -lstdc++
 LIBDEP	:= @LIBPPL7@
 LIBNAME = libppltk
 PROGRAM	= ppltk
 
 
 OBJECTS = 	compile/WindowManager.o \
-	compile/WindowManager_SDL2.o \
 	compile/WindowManager_SDL3.o \
 	compile/Event.o \
 	compile/Widget.o \

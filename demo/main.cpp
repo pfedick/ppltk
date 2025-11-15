@@ -33,6 +33,8 @@
 #include <ppl7-grafix.h>
 #include "demo.h"
 
+#include <SDL3/SDL.h>
+
 int start(int agrc, char** argv)
 {
 
@@ -49,23 +51,31 @@ int start(int agrc, char** argv)
         throw std::exception();
     }
 
-    ppl7::grafix::Grafix gfx;
-    ppltk::WindowManager_SDL2 wm;
+    try {
+        ppl7::grafix::Grafix gfx;
+        ppltk::WindowManager_SDL3 wm;
 
-    MainWindow win;
-    win.create(1280, 720, false);
+        MainWindow win;
+        win.create(1280, 720, false);
 
 
-    //SDL_Renderer *renderer=(SDL_Renderer*)win.getRenderer();
-    while (wm.numWindows() > 0) {
-        win.updateFrameRate();
-        win.clearScreen();
-        win.drawWidgets();
-        win.presentScreen();
+        //SDL_Renderer *renderer=(SDL_Renderer*)win.getRenderer();
+        while (wm.numWindows() > 0) {
+            win.updateFrameRate();
+            win.clearScreen();
+            win.drawWidgets();
+            win.presentScreen();
 
-        wm.handleEvents();
+            wm.handleEvents();
 
+        }
     }
+    catch (ppl7::Exception& e) {
+        e.print();
+        return 1;
+    }
+
+
 
     //wm.destroyWindow(MainWindow);
 
@@ -74,23 +84,23 @@ int start(int agrc, char** argv)
 
 MainWindow::MainWindow()
 {
-    gfx=ppl7::grafix::GetGrafix();
+    gfx = ppl7::grafix::GetGrafix();
     setWindowTitle("PPL7 Toolkit-Demo");
     setBackgroundColor(ppl7::grafix::Color(0, 0, 0, 0));
     setWindowIcon(gfx->Icons32.getDrawable(30));
-    menue=NULL;
-    fpsLabel=NULL;
-    exitButton=NULL;
-    testframe=NULL;
-    layout_menue=NULL;
-    tab=NULL;
-    testframe=NULL;
-    text=NULL;
-    smalltext=NULL;
-    input=NULL;
+    menue = NULL;
+    fpsLabel = NULL;
+    exitButton = NULL;
+    testframe = NULL;
+    layout_menue = NULL;
+    tab = NULL;
+    testframe = NULL;
+    text = NULL;
+    smalltext = NULL;
+    input = NULL;
     Style.setStyle(ppltk::WidgetStyle::Dark);
     //Style.labelFont.setSize(20);
-    wm=ppltk::GetWindowManager();
+    wm = ppltk::GetWindowManager();
     wm->setWidgetStyle(Style);
 
 }
@@ -116,33 +126,33 @@ void MainWindow::create(int width, int height, bool fullscreen)
         "genug sein.");
 
 
-    int flags=ppltk::Window::DefaultWindow;
-    flags|=ppltk::Window::Resizeable;
+    int flags = ppltk::Window::DefaultWindow;
+    flags |= ppltk::Window::Resizeable;
 
     if (fullscreen) {
-        flags=ppltk::Window::DefaultFullscreen;
+        flags = ppltk::Window::DefaultFullscreen;
     }
     setFlags(flags);
     ppltk::GetWindowManager()->createWindow(*this);
 
-    menue=new ppltk::Frame(0, 0, this->width(), 32);
+    menue = new ppltk::Frame(0, 0, this->width(), 32);
     addChild(menue);
     //ppl7::grafix::Size menueSize=menue->clientSize();
 
-    layout_menue=new ppltk::HBoxLayout();
+    layout_menue = new ppltk::HBoxLayout();
     menue->setLayout(layout_menue);
 
-    tab=new ppltk::TabWidget(64, 64, this->width() - 128, this->height() - 92);
+    tab = new ppltk::TabWidget(64, 64, this->width() - 128, this->height() - 92);
     addChild(tab);
 
-    testframe=new ppltk::Widget();
+    testframe = new ppltk::Widget();
     //testframe->setTransparent(true);
     //addChild(testframe);
     tab->addTab(testframe, "Text Input", wm->Toolbar.getDrawable(68));
 
-    ppltk::Widget* w=new ppltk::Widget();
+    ppltk::Widget* w = new ppltk::Widget();
     tab->addTab(w, "zweites Widget");
-    smalltext=new ppltk::TextEdit(0, 40, 200, 400);
+    smalltext = new ppltk::TextEdit(0, 40, 200, 400);
     smalltext->setText(debugText);
     w->addChild(smalltext);
 
@@ -151,10 +161,10 @@ void MainWindow::create(int width, int height, bool fullscreen)
     //tab->setTabVisible(1, false);
 
 
-    w=new ppltk::Widget();
+    w = new ppltk::Widget();
     tab->addTab(w, "drittes Widget");
 
-    ppltk::Scrollbar* scroll=new ppltk::Scrollbar(0, 0, 25, 500);
+    ppltk::Scrollbar* scroll = new ppltk::Scrollbar(0, 0, 25, 500);
     scroll->setSize(100);
     scroll->setVisibleItems(25);
     w->addChild(scroll);
@@ -162,24 +172,24 @@ void MainWindow::create(int width, int height, bool fullscreen)
     tab->setCurrentIndex(0);
 
 
-    text=new ppltk::TextEdit(0, 40, testframe->clientSize().width, testframe->clientSize().height - 40);
+    text = new ppltk::TextEdit(0, 40, testframe->clientSize().width, testframe->clientSize().height - 40);
 
     text->setText(debugText);
     text->setEventHandler(this);
     testframe->addChild(text);
 
 
-    input=new ppltk::LineInput(0, 0, testframe->clientSize().width, 30, "Ein einzeiliger Test Text");
+    input = new ppltk::LineInput(0, 0, testframe->clientSize().width, 30, "Ein einzeiliger Test Text");
     testframe->addChild(input);
 
 
-    ppltk::Label* label=new ppltk::Label("FPS:");
+    ppltk::Label* label = new ppltk::Label("FPS:");
     layout_menue->addWidget(label);
 
-    fpsLabel=new ppltk::Label("0", ppltk::Label::Inset);
+    fpsLabel = new ppltk::Label("0", ppltk::Label::Inset);
     layout_menue->addWidget(fpsLabel);
 
-    exitButton=new ppltk::Button("Exit", wm->Toolbar.getDrawable(68));
+    exitButton = new ppltk::Button("Exit", wm->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
     layout_menue->addWidget(exitButton);
 
@@ -187,16 +197,16 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
 void MainWindow::closeEvent(ppltk::Event* event)
 {
-    ppltk::WindowManager* wm=ppltk::GetWindowManager();
+    ppltk::WindowManager* wm = ppltk::GetWindowManager();
     wm->destroyWindow(*this);
     event->accept();
 }
 
 void MainWindow::mouseClickEvent(ppltk::MouseEvent* event)
 {
-    Widget* w=event->widget();
+    Widget* w = event->widget();
     if (w == exitButton) {
-        ppltk::WindowManager* wm=ppltk::GetWindowManager();
+        ppltk::WindowManager* wm = ppltk::GetWindowManager();
         wm->destroyWindow(*this);
         event->accept();
     }
@@ -226,16 +236,16 @@ void MainWindow::updateFrameRate()
 
 FrameRate::FrameRate()
 {
-    desiredFrameRate=0;
-    fps=0;
-    lastFpsTime=ppl7::GetTime();
-    framecount=0;
+    desiredFrameRate = 0;
+    fps = 0;
+    lastFpsTime = ppl7::GetTime();
+    framecount = 0;
 }
 
 
 void FrameRate::setFrameRate(int fps)
 {
-    desiredFrameRate=fps;
+    desiredFrameRate = fps;
 }
 
 
@@ -248,11 +258,11 @@ int FrameRate::getFPS() const
 void FrameRate::updateFPS()
 {
     framecount++;
-    ppl7::ppl_time_t now=ppl7::GetTime();
+    ppl7::ppl_time_t now = ppl7::GetTime();
     if (now > lastFpsTime) {
-        lastFpsTime=now;
-        fps=framecount;
-        framecount=0;
+        lastFpsTime = now;
+        fps = framecount;
+        framecount = 0;
     }
 }
 
