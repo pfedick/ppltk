@@ -31,8 +31,8 @@
 CXX                     = @CXX@
 EXTRA_CFLAGS =
 INCLUDE	= -I include
-CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@ @SDL2_CFLAGS@
-LIB		= @LIBPPL7_LIBS@  @SDL2_LIBS@ -lstdc++
+CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@ -Dmain=SDL_main 
+LIB		= @LIBPPL7_LIBS@  @SDL2_LIBS@ @SDL3_LIBS@ -lstdc++
 LIBDEP	:= @LIBPPL7@
 LIBNAME = libppltk
 PROGRAM	= ppltk
@@ -40,6 +40,7 @@ PROGRAM	= ppltk
 
 OBJECTS = 	compile/WindowManager.o \
 	compile/WindowManager_SDL2.o \
+	compile/WindowManager_SDL3.o \
 	compile/Event.o \
 	compile/Widget.o \
 	compile/WidgetStyle.o \
@@ -136,6 +137,10 @@ compile/WindowManager.o: src/WindowManager.cpp Makefile include/ppltk.h
 compile/WindowManager_SDL2.o: src/WindowManager_SDL2.cpp Makefile include/ppltk.h
 	- @mkdir -p compile
 	$(CXX) -o compile/WindowManager_SDL2.o -c src/WindowManager_SDL2.cpp $(CFLAGS)
+
+compile/WindowManager_SDL3.o: src/WindowManager_SDL3.cpp Makefile include/ppltk.h
+	- @mkdir -p compile
+	$(CXX) -o compile/WindowManager_SDL3.o -c src/WindowManager_SDL3.cpp $(CFLAGS)
 
 
 ### Widgets ############################################################

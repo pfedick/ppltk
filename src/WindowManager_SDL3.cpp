@@ -1,0 +1,1381 @@
+/*******************************************************************************
+ * This file is part of "Patrick's Programming Library Toolkit", ppltk.
+ * Web: https://github.com/pfedick/ppltk
+ *
+ *******************************************************************************
+ * Copyright (c) 2024, Patrick Fedick <patrick@pfp.de>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ *******************************************************************************/
+
+
+#include "ppltk_config.h"
+#include "ppltk.h"
+#ifdef HAVE_SDL3
+#include <SDL3/SDL.h>
+#endif
+
+namespace ppltk {
+
+using namespace ppl7;
+using namespace ppl7::grafix;
+
+
+#ifdef HAVE_SDL3
+static WindowManager_SDL3* wm = NULL;
+
+typedef struct {
+    SDL_DisplayMode* mode;
+    SDL_Window* win;
+    SDL_Renderer* renderer;
+    SDL_Texture* gui;
+    int width, height;
+    RGBFormat format;
+    bool scaleUi;
+    int window_width;
+    int window_height;
+} SDL_WINDOW_PRIVATE;
+
+typedef struct {
+    Window* win;
+    SDL_Texture* tex;
+} SDL_SURFACE_PRIVATE;
+
+
+typedef struct {
+    int depth;
+    uint32_t Rmask;
+    uint32_t Gmask;
+    uint32_t Bmask;
+    uint32_t Amask;
+} SDL_COLORFORMAT;
+
+static RGBFormat SDL2RGBFormat(const Uint32 f)
+{
+    switch (f) {
+    case SDL_PIXELFORMAT_INDEX8: return RGBFormat::Palette;
+    case SDL_PIXELFORMAT_RGB332: return RGBFormat::R3G3B2;
+    case SDL_PIXELFORMAT_XRGB4444: return RGBFormat::X4R4G4B4;
+    case SDL_PIXELFORMAT_XRGB1555: return RGBFormat::X1R5G5B5;
+    case SDL_PIXELFORMAT_XBGR1555: return RGBFormat::X1B5G5R5;
+    case SDL_PIXELFORMAT_ARGB4444: return RGBFormat::A4R4G4B4;
+    case SDL_PIXELFORMAT_ABGR4444: return RGBFormat::A4B4G4R4;
+    case SDL_PIXELFORMAT_ARGB1555: return RGBFormat::A1R5G5B5;
+    case SDL_PIXELFORMAT_ABGR1555: return RGBFormat::A1B5G5R5;
+    case SDL_PIXELFORMAT_RGB565: return RGBFormat::R5G6B5;
+    case SDL_PIXELFORMAT_BGR565: return RGBFormat::B5G6R5;
+    case SDL_PIXELFORMAT_RGB24: return RGBFormat::R8G8B8;
+    case SDL_PIXELFORMAT_BGR24: return RGBFormat::B8G8R8;
+    case SDL_PIXELFORMAT_XRGB8888: return RGBFormat::X8R8G8B8;
+    case SDL_PIXELFORMAT_XBGR8888: return RGBFormat::X8B8G8R8;
+    case SDL_PIXELFORMAT_ARGB8888: return RGBFormat::A8R8G8B8;
+    case SDL_PIXELFORMAT_ABGR8888: return RGBFormat::A8B8G8R8;
+    }
+    throw UnsupportedColorFormatException("format=%d", f);
+}
+
+/*
+static SDL_COLORFORMAT RGBFormat2SDLStruct(const RGBFormat& format)
+{
+    SDL_COLORFORMAT f;
+    f.depth = 0;
+    f.Rmask = 0;
+    f.Gmask = 0;
+    f.Bmask = 0;
+    f.Amask = 0;
+    switch (format) {
+    case RGBFormat::Palette:
+        f.depth = 8;
+        break;
+    case RGBFormat::A8R8G8B8:
+    case RGBFormat::X8R8G8B8:
+        f.depth = 32;
+        f.Amask = 0xff000000;
+        f.Rmask = 0x00ff0000;
+        f.Gmask = 0x0000ff00;
+        f.Bmask = 0x000000ff;
+        break;
+    case RGBFormat::A8B8G8R8:
+    case RGBFormat::X8B8G8R8:
+        f.depth = 32;
+        f.Amask = 0xff000000;
+        f.Rmask = 0x000000ff;
+        f.Gmask = 0x0000ff00;
+        f.Bmask = 0x00ff0000;
+        break;
+    case RGBFormat::R5G6B5:
+        f.depth = 16;
+        f.Amask = 0x00000000;
+        f.Rmask = 0x0000f800;
+        f.Gmask = 0x000007e0;
+        f.Bmask = 0x0000001f;
+        break;
+    case RGBFormat::B5G6R5:
+        f.depth = 16;
+        f.Amask = 0x00000000;
+        f.Rmask = 0x0000001f;
+        f.Gmask = 0x000007e0;
+        f.Bmask = 0x0000f800;
+        break;
+    case RGBFormat::X1R5G5B5:
+    case RGBFormat::A1R5G5B5:
+        f.depth = 16;
+        f.Amask = 0x00008000;
+        f.Rmask = 0x00007c00;
+        f.Gmask = 0x000003e0;
+        f.Bmask = 0x0000001f;
+        break;
+    case RGBFormat::X1B5G5R5:
+    case RGBFormat::A1B5G5R5:
+        f.depth = 16;
+        f.Amask = 0x00008000;
+        f.Rmask = 0x0000001f;
+        f.Gmask = 0x000003e0;
+        f.Bmask = 0x00007c00;
+        break;
+    case RGBFormat::X4R4G4B4:
+    case RGBFormat::A4R4G4B4:
+        f.depth = 16;
+        f.Amask = 0x0000f000;
+        f.Rmask = 0x00000f00;
+        f.Gmask = 0x000000f0;
+        f.Bmask = 0x0000000f;
+        break;
+    case RGBFormat::R8G8B8:
+        f.depth = 24;
+        f.Rmask = 0x00ff0000;
+        f.Gmask = 0x0000ff00;
+        f.Bmask = 0x000000ff;
+        break;
+    case RGBFormat::B8G8R8:
+        f.depth = 24;
+        f.Rmask = 0x000000ff;
+        f.Gmask = 0x0000ff00;
+        f.Bmask = 0x00ff0000;
+        break;
+    case RGBFormat::R3G3B2:
+        f.depth = 8;
+        f.Rmask = 0x00000003;
+        f.Gmask = 0x0000001c;
+        f.Bmask = 0x000000e0;
+        break;
+    case RGBFormat::A8R3G3B2:
+        f.depth = 16;
+        f.Amask = 0x0000ff00;
+        f.Rmask = 0x00000003;
+        f.Gmask = 0x0000001c;
+        f.Bmask = 0x000000e0;
+        break;
+    default:
+        throw UnsupportedColorFormatException();
+    }
+
+    return f;
+}
+
+*/
+
+static SDL_PixelFormat RGBFormat2SDLFormat(const ppl7::grafix::RGBFormat& format)
+{
+    switch (format) {
+    case ppl7::grafix::RGBFormat::Palette:
+        return SDL_PIXELFORMAT_INDEX8;
+    case ppl7::grafix::RGBFormat::A8R8G8B8:
+        return SDL_PIXELFORMAT_ARGB8888;
+    case ppl7::grafix::RGBFormat::X8R8G8B8:
+        return SDL_PIXELFORMAT_XRGB8888;
+    case ppl7::grafix::RGBFormat::A8B8G8R8:
+        return SDL_PIXELFORMAT_ABGR8888;
+    case ppl7::grafix::RGBFormat::X8B8G8R8:
+        return SDL_PIXELFORMAT_XBGR8888;
+    default:
+        throw ppl7::grafix::UnsupportedColorFormatException();
+    }
+    throw ppl7::grafix::UnsupportedColorFormatException();
+}
+
+
+
+static void sdlSetWindowTitle(void* privatedata, const String& Title)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) return;
+    SDL_SetWindowTitle(priv->win, (const char*)Title);
+
+}
+static void sdlSetWindowIcon(void* privatedata, const Drawable& Icon)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) return;
+    if (Icon.isEmpty()) {
+        SDL_SetWindowIcon(priv->win, NULL);
+        return;
+    }
+    //SDL_COLORFORMAT cf = RGBFormat2SDLStruct(Icon.rgbformat());
+
+    SDL_Surface* s = SDL_CreateSurfaceFrom(
+        Icon.width(),
+        Icon.height(),
+        RGBFormat2SDLFormat(Icon.rgbformat()),
+        Icon.adr(),
+        Icon.pitch());
+    if (!s) throw SurfaceCreateException("sdlSetWindowIcon ERROR: %s", SDL_GetError());
+    SDL_SetWindowIcon(priv->win, s);
+    SDL_DestroySurface(s);
+}
+
+static void sdlCreateSurface(void* privatedata)
+{
+
+}
+
+static void sdlCreateTexture(void* privatedata)
+{
+
+}
+
+static Drawable sdlLockWindowSurface(void* privatedata)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) throw NullPointerException();
+    void* pixels;
+    int pitch;
+    SDL_LockTexture(priv->gui, NULL, &pixels, &pitch);
+    //printf("gui texture gelockt: %d x %d\n", priv->width, priv->height);
+    return ppl7::grafix::Drawable(pixels, pitch, priv->width, priv->height, priv->format);
+}
+
+static void sdlUnlockWindowSurface(void* privatedata)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) throw NullPointerException();
+    SDL_UnlockTexture(priv->gui);
+}
+
+static void getDestinationRect(SDL_WINDOW_PRIVATE* priv, SDL_Rect& dest)
+{
+    float aspect = (float)priv->width / (float)priv->height;
+    dest.x = 0;
+    dest.y = 0;
+    dest.w = priv->window_width;
+    dest.h = priv->window_height;
+    if (dest.w > priv->window_width) dest.w = priv->window_width;
+    dest.h = dest.w / aspect;
+    if (dest.h > priv->window_height) {
+        dest.h = priv->window_height;
+        dest.w = dest.h * aspect;
+    }
+    dest.y = (priv->window_height - dest.h) / 2;
+    dest.x = (priv->window_width - dest.w) / 2;
+}
+
+static void getDestinationFRect(SDL_WINDOW_PRIVATE* priv, SDL_FRect& dest)
+{
+    float aspect = (float)priv->width / (float)priv->height;
+    dest.x = 0.0f;
+    dest.y = 0.0f;
+    dest.w = priv->window_width;
+    dest.h = priv->window_height;
+    if (dest.w > priv->window_width) dest.w = priv->window_width;
+    dest.h = dest.w / aspect;
+    if (dest.h > priv->window_height) {
+        dest.h = priv->window_height;
+        dest.w = dest.h * aspect;
+    }
+    dest.y = (priv->window_height - dest.h) / 2;
+    dest.x = (priv->window_width - dest.w) / 2;
+}
+
+
+static void sdlDrawWindowSurface(void* privatedata)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) throw NullPointerException();
+    if (priv->scaleUi) {
+        SDL_FRect dest;
+        getDestinationFRect(priv, dest);
+        SDL_RenderTexture(priv->renderer, priv->gui, NULL, &dest);
+    }
+    else {
+        SDL_RenderTexture(priv->renderer, priv->gui, NULL, NULL);
+    }
+}
+
+static void* sdlGetRenderer(void* privatedata)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) throw NullPointerException();
+    return priv->renderer;
+}
+
+static void sdlClearScreen(void* privatedata)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) throw NullPointerException();
+    SDL_RenderClear(priv->renderer);
+}
+
+static void sdlPresentScreen(void* privatedata)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv) throw NullPointerException();
+    SDL_RenderPresent(priv->renderer);
+}
+
+static int TranslateKeyModifierFromSDL(int sdl_key_modifier)
+{
+    int modifier = KeyEvent::KEYMOD_NONE;
+    if (sdl_key_modifier & SDL_KMOD_LSHIFT) modifier |= KeyEvent::KEYMOD_LEFTSHIFT;
+    if (sdl_key_modifier & SDL_KMOD_RSHIFT) modifier |= KeyEvent::KEYMOD_RIGHTSHIFT;
+    if (sdl_key_modifier & SDL_KMOD_LCTRL) modifier |= KeyEvent::KEYMOD_LEFTCTRL;
+    if (sdl_key_modifier & SDL_KMOD_RCTRL) modifier |= KeyEvent::KEYMOD_RIGHTCTRL;
+    if (sdl_key_modifier & SDL_KMOD_LALT) modifier |= KeyEvent::KEYMOD_LEFTALT;
+    if (sdl_key_modifier & SDL_KMOD_RALT) modifier |= KeyEvent::KEYMOD_RIGHTALT;
+    if (sdl_key_modifier & SDL_KMOD_LGUI) modifier |= KeyEvent::KEYMOD_LEFTGUI;
+    if (sdl_key_modifier & SDL_KMOD_RGUI) modifier |= KeyEvent::KEYMOD_RIGHTGUI;
+    if (sdl_key_modifier & SDL_KMOD_NUM) modifier |= KeyEvent::KEYMOD_NUM;
+    if (sdl_key_modifier & SDL_KMOD_CAPS) modifier |= KeyEvent::KEYMOD_CAPS;
+    if (sdl_key_modifier & SDL_KMOD_MODE) modifier |= KeyEvent::KEYMOD_MODE;
+    return modifier;
+}
+
+static void getButtonMask(MouseState& ev)
+{
+    uint8_t state = SDL_GetMouseState(NULL, NULL);
+    if (state & 1) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Left);
+    if (state & 2) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Middle);
+    if (state & 4) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Right);
+    if (state & 8) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::WheelUp);
+    if (state & 16) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::WheelDown);
+    if (state & 32) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X1);
+    if (state & 64) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X2);
+
+
+    const bool* kstate = SDL_GetKeyboardState(NULL);
+    ev.keyModifier = 0;
+    if (kstate[SDL_SCANCODE_LCTRL]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTCTRL;
+    if (kstate[SDL_SCANCODE_RCTRL]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTCTRL;
+    if (kstate[SDL_SCANCODE_LSHIFT]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTSHIFT;
+    if (kstate[SDL_SCANCODE_RSHIFT]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTSHIFT;
+    if (kstate[SDL_SCANCODE_LALT]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTALT;
+    if (kstate[SDL_SCANCODE_RALT]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTALT;
+    if (kstate[SDL_SCANCODE_LGUI]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTGUI;
+    if (kstate[SDL_SCANCODE_RGUI]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTGUI;
+    if (kstate[SDL_SCANCODE_MODE]) ev.keyModifier |= KeyEvent::KEYMOD_MODE;
+    if (kstate[SDL_SCANCODE_NUMLOCKCLEAR]) ev.keyModifier |= KeyEvent::KEYMOD_NUM;
+    if (kstate[SDL_SCANCODE_CAPSLOCK]) ev.keyModifier |= KeyEvent::KEYMOD_CAPS;
+}
+
+static PRIV_WINDOW_FUNCTIONS sdlWmFunctions = {
+        sdlSetWindowTitle,
+        sdlSetWindowIcon,
+        sdlCreateSurface,
+        sdlCreateTexture,
+        sdlLockWindowSurface,
+        sdlUnlockWindowSurface,
+        sdlDrawWindowSurface,
+        sdlGetRenderer,
+        sdlClearScreen,
+        sdlPresentScreen
+};
+
+#endif // HAVE_SDL3
+
+WindowManager_SDL3::WindowManager_SDL3()
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    if (wm != NULL && wm != this) throw DuplicateWindowManagerException();
+    wm = this;
+    /* Get init data on all the subsystems */
+    uint32_t subsystem_init;
+    subsystem_init = SDL_WasInit(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+
+    if (!(subsystem_init & SDL_INIT_VIDEO)) {
+        if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) throw InitializationException("WindowManager_SDL3: SDL_INIT_VIDEO");
+    }
+
+    atexit(SDL_Quit);
+
+    const SDL_DisplayMode* current = SDL_GetDesktopDisplayMode(0);
+    if (!current) {
+        throw InitializationException("SDL-ERROR: %s\n", SDL_GetError());
+    }
+    screenRGBFormat = SDL2RGBFormat(current->format);
+    screenSize.setSize(current->w, current->h);
+    screenRefreshRate = current->refresh_rate;
+    //printf ("Auflösung: %i x %i, Format: %s, Refresh: %i\n",screenSize.width,screenSize.height,(const char*)screenRGBFormat.name(),screenRefreshRate);
+#endif
+    lastWindowEnterEvent = NULL;
+}
+
+WindowManager_SDL3::~WindowManager_SDL3()
+{
+#ifdef HAVE_SDL3
+    if (wm == this) wm = NULL;
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+#endif
+}
+
+const Size& WindowManager_SDL3::desktopResolution() const
+{
+    return screenSize;
+}
+
+const RGBFormat& WindowManager_SDL3::desktopRGBFormat() const
+{
+    return screenRGBFormat;
+}
+
+void WindowManager_SDL3::createWindow(Window& w)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    if (w.getPrivateData() != NULL) throw WindowAlreadyCreatedException();
+
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)calloc(sizeof(SDL_WINDOW_PRIVATE), 1);
+    if (!priv) throw OutOfMemoryException();
+    int flags = 0;
+    uint32_t wf = w.flags();
+    if (wf & Window::NoBorder) flags |= SDL_WINDOW_BORDERLESS;
+    if (wf & Window::Resizeable) flags |= SDL_WINDOW_RESIZABLE;
+    if (wf & Window::Maximized) flags |= SDL_WINDOW_MAXIMIZED;
+    if (wf & Window::Minimized) flags |= SDL_WINDOW_MINIMIZED;
+    if (wf & Window::Fullscreen) flags |= SDL_WINDOW_FULLSCREEN;
+    //if (wf & Window::FullscreenDesktop) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    if (wf & Window::OpenGL) flags |= SDL_WINDOW_OPENGL;
+
+    Size windowSize = w.windowSize();
+    if (windowSize.width == 0 || windowSize.height == 0) {
+        windowSize = w.size();
+        w.setWindowSize(windowSize);
+    }
+    priv->scaleUi = w.hasFixedUiSize();
+    priv->window_width = windowSize.width;
+    priv->window_height = windowSize.height;
+
+    priv->win = SDL_CreateWindow((const char*)w.windowTitle(),
+        windowSize.width, windowSize.height, flags);
+    if (priv->win == 0) {
+        free(priv);
+        throw WindowCreateException("SDL_CreateWindow ERROR: %s", SDL_GetError());
+    }
+
+    SDL_SetPointerProperty(SDL_GetWindowProperties(priv->win), "WindowClass", &w);
+    priv->renderer = SDL_CreateRenderer(priv->win, NULL);
+    if (priv->renderer == 0) {
+        const char* e = SDL_GetError();
+        SDL_DestroyWindow(priv->win);
+        free(priv);
+        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+    }
+    int width, height;
+    SDL_GetWindowSize(priv->win, &width, &height);
+    w.setSize(width, height);
+
+    Size ui_size = w.uiSize();
+
+    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ui_size.width, ui_size.height);
+    if (priv->gui == 0) {
+        const char* e = SDL_GetError();
+        SDL_DestroyRenderer(priv->renderer);
+        SDL_DestroyWindow(priv->win);
+        free(priv);
+        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+
+    }
+    if (SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND) != 0) {
+        const char* e = SDL_GetError();
+        SDL_DestroyTexture(priv->gui);
+        SDL_DestroyRenderer(priv->renderer);
+        SDL_DestroyWindow(priv->win);
+        free(priv);
+        throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
+    }
+    if (priv->scaleUi) {
+        SDL_SetTextureScaleMode(priv->gui, SDL_ScaleMode::SDL_SCALEMODE_LINEAR);
+    }
+
+    priv->format = RGBFormat::A8R8G8B8;
+    priv->width = ui_size.width;
+    priv->height = ui_size.height;
+    w.setPrivateData(priv, this, &sdlWmFunctions);
+    sdlSetWindowIcon(priv, w.windowIcon());
+    windows.add(&w);
+#endif
+}
+
+void WindowManager_SDL3::destroyWindow(Window& w)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv) return;
+    windows.erase(&w);
+    if (priv->gui) SDL_DestroyTexture(priv->gui);
+    if (priv->renderer) SDL_DestroyRenderer(priv->renderer);
+    if (priv->win) SDL_DestroyWindow(priv->win);
+    free(priv);
+    w.setPrivateData(NULL, NULL, NULL);
+#endif
+}
+
+void WindowManager_SDL3::setWindowPosition(Window& w, int x, int y)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv) return;
+    SDL_SetWindowPosition(priv->win, x, y);
+#endif
+}
+
+size_t WindowManager_SDL3::numWindows()
+{
+    return windows.size();
+}
+
+void WindowManager_SDL3::getMouseState(Point& p, int& buttonMask) const
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    MouseState mouse;
+    getButtonMask(mouse);
+    float x, y;
+    SDL_GetMouseState(&x, &y);
+    p.x = (int)x;
+    p.y = (int)y;
+    buttonMask = (int)mouse.buttonMask;
+#endif
+}
+
+MouseState WindowManager_SDL3::getMouseState() const
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    MouseState mouse;
+    getButtonMask(mouse);
+    float x, y;
+    SDL_GetMouseState(&x, &y);
+    mouse.p.x = (int)x;
+    mouse.p.y = (int)y;
+    mouse.button = mouse.buttonMask;
+    return mouse;
+#endif
+}
+
+void WindowManager_SDL3::startEventLoop()
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    while (numWindows() > 0) {
+        handleEvents();
+        ppl7::MSleep(5);
+    }
+#endif
+}
+
+Window* WindowManager_SDL3::getWindow(uint32_t id)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_Window* win = SDL_GetWindowFromID(id);
+    if (!win) return NULL;
+    return (Window*)SDL_GetPointerProperty(SDL_GetWindowProperties(win), "WindowClass", NULL);
+#endif
+}
+
+void WindowManager_SDL3::handleEvents()
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_Event sdl_event;
+    while (SDL_PollEvent(&sdl_event)) {		// Alle Events verarbeiten
+        //printf ("event vorhanden: %d\n",sdl_event.type);
+
+        if (sdl_event.type >= SDL_EVENT_WINDOW_FIRST && sdl_event.type <= SDL_EVENT_WINDOW_LAST) {
+            DispatchWindowEvent(&sdl_event);
+            return;
+        }
+
+        switch (sdl_event.type) {
+        case SDL_EVENT_QUIT:
+            DispatchQuitEvent(&sdl_event);
+            break;
+
+        case SDL_EVENT_MOUSE_MOTION:
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+        case SDL_EVENT_MOUSE_WHEEL:
+            DispatchMouseEvent(&sdl_event);
+            break;
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:
+            //ppl7::PrintDebug("SDL_KEYDOWN\n");
+            DispatchKeyEvent(&sdl_event);
+            break;
+
+        case SDL_EVENT_TEXT_INPUT:
+        {
+            //ppl7::PrintDebug("SDL_TEXTINPUT\n");
+            Widget* keyFocusWidget = getKeyboardFocus();
+            if (keyFocusWidget) {
+                SDL_TextInputEvent* event = (SDL_TextInputEvent*)&sdl_event;
+                TextInputEvent te;
+                te.text.set(event->text);
+                keyFocusWidget->textInputEvent(&te);
+
+            }
+            break;
+        }
+        case SDL_EVENT_USER:
+
+            if (sdl_event.user.code == 1) {	// ClickTimer
+                //printf("SDL_USEREVENT 1\n");
+                dispatchClickEvent((Window*)sdl_event.user.data1);
+            }
+            else if (sdl_event.user.code == 2) {	// TimerEvent
+                //printf("SDL_USEREVENT 2, windowid=%d\n", sdl_event.user.windowID);
+                Widget* w = (Widget*)sdl_event.user.data1;
+                Event e;
+                e.setWidget(w);
+                w->timerEvent(&e);
+            }
+            break;
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        {
+            Widget* gcWidget = getGameControllerFocus();
+            if (gcWidget) {
+                SDL_GamepadAxisEvent* event = (SDL_GamepadAxisEvent*)&sdl_event;
+                GameControllerAxisEvent ev;
+                ev.setType(Event::GameControllerAxisMotion);
+                ev.setWidget(gcWidget);
+                ev.axis = event->axis;
+                ev.value = event->value;
+                gcWidget->gameControllerAxisMotionEvent(&ev);
+                //printf("Event: SDL_EVENT_GAMEPAD_AXIS_MOTION id=%d, axis=%d, value=%d\n", event->which, event->axis, event->value);
+
+            }
+            break;
+        }
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        {
+            Widget* gcWidget = getGameControllerFocus();
+            if (gcWidget) {
+                SDL_GamepadButtonEvent* event = (SDL_GamepadButtonEvent*)&sdl_event;
+                GameControllerButtonEvent ev;
+                ev.setType(Event::GameControllerButtonDown);
+                ev.setWidget(gcWidget);
+                ev.button = event->button;
+                ev.state = event->down;
+                gcWidget->gameControllerButtonDownEvent(&ev);
+                //printf("Event: SDL_EVENT_GAMEPAD_BUTTON_DOWN, id=%d, button=%d, state=%d\n", event->which, event->button, event->state);
+            }
+            break;
+        }
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        {
+            Widget* gcWidget = getGameControllerFocus();
+            if (gcWidget) {
+                SDL_GamepadButtonEvent* event = (SDL_GamepadButtonEvent*)&sdl_event;
+                GameControllerButtonEvent ev;
+                ev.setType(Event::GameControllerButtonUp);
+                ev.setWidget(gcWidget);
+                ev.button = event->button;
+                ev.state = event->down;
+                gcWidget->gameControllerButtonUpEvent(&ev);
+                //printf("Event: SDL_EVENT_GAMEPAD_BUTTON_UP, id=%d, button=%d, state=%d\n", event->which, event->button, event->state);
+            }
+            break;
+        }
+        case SDL_EVENT_GAMEPAD_ADDED:
+        {
+            Widget* gcWidget = getGameControllerFocus();
+            if (gcWidget) {
+                SDL_GamepadDeviceEvent* event = (SDL_GamepadDeviceEvent*)&sdl_event;
+                GameControllerEvent ev;
+                ev.setType(Event::GameControllerButtonUp);
+                ev.setWidget(gcWidget);
+                ev.which = event->which;
+                gcWidget->gameControllerDeviceAdded(&ev);
+            }
+
+        }
+        break;
+        case SDL_EVENT_GAMEPAD_REMOVED:
+        {
+            Widget* gcWidget = getGameControllerFocus();
+            if (gcWidget) {
+                SDL_GamepadDeviceEvent* event = (SDL_GamepadDeviceEvent*)&sdl_event;
+                GameControllerEvent ev;
+                ev.setType(Event::GameControllerButtonUp);
+                ev.setWidget(gcWidget);
+                ev.which = event->which;
+                gcWidget->gameControllerDeviceRemoved(&ev);
+            }
+        }
+        break;
+
+        case SDL_EVENT_DROP_FILE:
+        {
+            //ppl7::PrintDebug("SDL_DROPFILE\n");
+            DropEvent ev;
+            ev.setType(Event::DropFileEvent);
+            ev.text.set(sdl_event.drop.data);
+            if (sdl_event.drop.source) ev.source.set(sdl_event.drop.source);
+            ev.p.x = sdl_event.drop.x;
+            ev.p.y = sdl_event.drop.y;
+            //Window* w=getWindow(sdl_event.window.windowID);
+            if (!lastWindowEnterEvent) return;
+            //ppl7::PrintDebug("OK\n");
+            lastWindowEnterEvent->dropEvent(&ev);
+        }
+        break;
+        }
+
+    }
+#endif
+}
+
+void WindowManager_SDL3::DispatchQuitEvent(void* e)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    const SDL_Event* event = (SDL_Event*)e;
+    Window* w = getWindow(event->window.windowID);
+    if (!w) return;
+    Event ev(Event::Quit);
+    ev.setWidget(w);
+    w->quitEvent(&ev);
+#endif
+}
+
+
+void WindowManager_SDL3::DispatchWindowEvent(void* e)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    const SDL_Event* event = (SDL_Event*)e;
+
+    Window* w = getWindow(event->window.windowID);
+    if (!w) return;
+
+    switch (event->window.type) {
+    case SDL_EVENT_WINDOW_SHOWN:
+        //printf("Window %d shown", event->window.windowID);
+        w->clearScreen();
+        w->drawWidgets();
+        w->presentScreen();
+        break;
+    case SDL_EVENT_WINDOW_HIDDEN:
+        //fprintf(stderr, "Window %d hidden", event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_EXPOSED:
+        //fprintf(stderr, "Window %d exposed", event->window.windowID);
+        /*
+        w->clearScreen();
+        w->drawWidgets();
+        w->presentScreen();
+        */
+        break;
+    case SDL_EVENT_WINDOW_MOVED:
+        //fprintf(stderr, "Window %d moved to %d,%d",
+        //        event->window.windowID, event->window.data1,
+        //        event->window.data2);
+        break;
+    case SDL_EVENT_WINDOW_RESIZED:
+        //ppl7::PrintDebug("SDL_WINDOWEVENT_RESIZED on window %d, resized to %d x %d\n", event->window.windowID,event->window.data1, event->window.data2 );
+    {
+        w->setWindowSize(event->window.data1, event->window.data2);
+        resizeWindow(*w, event->window.data1, event->window.data2);
+        ResizeEvent e;
+        e.setWidget(w);
+        e.width = event->window.data1;
+        e.height = event->window.data2;
+
+        w->resizeEvent(&e);
+
+    }
+
+    break;
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+        //printf("SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED on window %d\n", event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_MINIMIZED:
+        //fprintf(stderr, "Window %d minimized\n", event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_MAXIMIZED:
+        //fprintf(stderr, "Window %d maximized\n", event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_RESTORED:
+        //fprintf(stderr, "Window %d restored\n", event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_MOUSE_ENTER:
+        lastWindowEnterEvent = w;
+        //fprintf(stderr, "Mouse entered window %d",
+        //        event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+        //fprintf(stderr, "Mouse left window %d", event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        //fprintf(stderr, "Window %d gained keyboard focus",
+        //        event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_FOCUS_LOST:
+        //fprintf(stderr, "Window %d lost keyboard focus",
+        //        event->window.windowID);
+        break;
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+    {
+        Event e(Event::Close);
+        e.setWidget(w);
+        w->closeEvent(&e);
+    }
+    break;
+    case SDL_EVENT_WINDOW_HIT_TEST:
+        break;
+    case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
+        //ppl7::PrintDebug("SDL_EVENT_WINDOW_ICCPROF_CHANGED\n");
+        break;
+    case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
+        //ppl7::PrintDebug("SDL_WINDOWEVENT_DISPLAY_CHANGED\n");
+        break;
+
+    case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+        ppl7::PrintDebug("SDL_EVENT_WINDOW_ENTER_FULLSCREEN\n");
+        break;
+
+    case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+        ppl7::PrintDebug("SDL_EVENT_WINDOW_LEAVE_FULLSCREEN\n");
+        break;
+
+    default:
+        printf("SDL Window %d got unknown event %d\n",
+            event->window.windowID, event->window.type);
+        break;
+    }
+#endif
+}
+
+static ppl7::grafix::Point translateCoordinatesToUi(Window* w, int x, int y)
+{
+    if (w->hasFixedUiSize()) {
+        const ppl7::grafix::Size& wSize = w->windowSize();
+        SDL_Rect dest = { 0,0,wSize.width, wSize.height };
+        SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w->getPrivateData();
+        if (priv) getDestinationRect(priv, dest);
+
+        const ppl7::grafix::Size& uiSize = w->uiSize();
+        float x_factor = (float)uiSize.width / (float)dest.w;
+        float y_factor = (float)uiSize.height / (float)dest.h;
+        /*
+        ppl7::PrintDebug("x=%d, y=%d, in: %d:%d, out: %d:%d\n", dest.x, dest.y, x, y,
+            (int)((float)(x - dest.x) * x_factor),
+            (int)((float)(y - dest.y) * y_factor));
+        */
+
+        return ppl7::grafix::Point((int)((float)(x - dest.x) * x_factor), (int)((float)(y - dest.y) * y_factor));
+    }
+    //ppl7::PrintDebug("wir sind hier falsch\n");
+    return ppl7::grafix::Point(x, y);
+}
+
+void WindowManager_SDL3::DispatchMouseEvent(void* e)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    MouseEvent ev;
+    Uint32 type = ((SDL_Event*)e)->type;
+
+    if (type == SDL_EVENT_MOUSE_MOTION) {
+        SDL_MouseMotionEvent* event = (SDL_MouseMotionEvent*)e;
+
+        Window* w = getWindow(event->windowID);
+        if (!w) return;
+        ev.setType(Event::MouseMove);
+        ev.p = translateCoordinatesToUi(w, event->x, event->y);
+        ev.buttonMask = (MouseEvent::MouseButton)0;
+        ev.button = (MouseEvent::MouseButton)0;
+        getButtonMask(ev);
+        dispatchMouseEvent(w, ev);
+
+    }
+    else if (type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+        SDL_MouseButtonEvent* event = (SDL_MouseButtonEvent*)e;
+        //ppl7::PrintDebug("SDL_MOUSEBUTTONDOWN, clicks: %d\n", event->clicks);
+        Window* w = getWindow(event->windowID);
+        if (!w) return;
+        ev.setType(Event::MouseDown);
+        ev.clicks = event->clicks;
+        ev.p = translateCoordinatesToUi(w, event->x, event->y);
+        ev.buttonMask = (MouseEvent::MouseButton)0;
+        ev.button = (MouseEvent::MouseButton)0;
+        getButtonMask(ev);
+        if (event->button == 1) ev.button = MouseEvent::Left;
+        if (event->button == 2) ev.button = MouseEvent::Middle;
+        if (event->button == 3) ev.button = MouseEvent::Right;
+        if (event->button == 4) ev.button = MouseEvent::WheelUp;
+        if (event->button == 5) ev.button = MouseEvent::WheelDown;
+        if (event->button == 6) ev.button = MouseEvent::X1;
+        if (event->button == 7) ev.button = MouseEvent::X2;
+        dispatchMouseEvent(w, ev);
+    }
+    else if (type == SDL_EVENT_MOUSE_BUTTON_UP) {
+        SDL_MouseButtonEvent* event = (SDL_MouseButtonEvent*)e;
+        //ppl7::PrintDebug("SDL_MOUSEBUTTONUP, clicks: %d\n", event->clicks);
+
+        Window* w = getWindow(event->windowID);
+        if (!w) return;
+
+        ev.setType(Event::MouseUp);
+        ev.clicks = event->clicks;
+        ev.p = translateCoordinatesToUi(w, event->x, event->y);
+        ev.buttonMask = (MouseEvent::MouseButton)0;
+        ev.button = (MouseEvent::MouseButton)0;
+        getButtonMask(ev);
+        if (event->button == 1) ev.button = MouseEvent::Left;
+        if (event->button == 2) ev.button = MouseEvent::Middle;
+        if (event->button == 3) ev.button = MouseEvent::Right;
+        if (event->button == 4) ev.button = MouseEvent::WheelUp;
+        if (event->button == 5) ev.button = MouseEvent::WheelDown;
+        if (event->button == 6) ev.button = MouseEvent::X1;
+        if (event->button == 7) ev.button = MouseEvent::X2;
+        dispatchMouseEvent(w, ev);
+    }
+    else if (type == SDL_EVENT_MOUSE_WHEEL) {
+        SDL_MouseWheelEvent* event = (SDL_MouseWheelEvent*)e;
+        Window* w = getWindow(event->windowID);
+        if (!w) return;
+        ev.setType(Event::MouseWheel);
+        MouseState mouse;
+        ev.buttonMask = (MouseEvent::MouseButton)0;
+        ev.button = (MouseEvent::MouseButton)0;
+        float x, y;
+        SDL_GetMouseState(&x, &y);
+        ev.p = translateCoordinatesToUi(w, x, y);
+        getButtonMask(ev);
+        ev.wheel.x = event->x;
+        ev.wheel.y = event->y;
+        //printf ("MouseWheelEvent %d:%d\n", ev.wheel.x, ev.wheel.y);
+        dispatchMouseEvent(w, ev);
+
+        //ev.setType(Event::MouseUp);
+
+    }
+#endif
+}
+
+typedef struct {
+
+} CLICK_EVENT;
+
+#ifdef HAVE_SDL3
+static Uint32 clickTimer(void* param, SDL_TimerID timerID, Uint32 interval)
+{
+    //ppl7::PrintDebug("clickTimer\n");
+    SDL_Event event;
+    SDL_UserEvent userevent;
+
+    userevent.type = SDL_EVENT_USER;
+    userevent.code = 1;
+    userevent.data1 = param;
+    userevent.data2 = NULL;
+    userevent.windowID = 0;
+    userevent.timestamp = 0;
+
+    event.type = SDL_EVENT_USER;
+    event.user = userevent;
+
+    SDL_PushEvent(&event);
+    return 0;
+}
+#endif
+
+void WindowManager_SDL3::startClickEvent(Window* win)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    //ppl7::PrintDebug("WindowManager_SDL2::startClickEvent with %d ms\n", getDoubleClickIntervall());
+    SDL_AddTimer(getDoubleClickIntervall(), clickTimer, win);
+#endif
+}
+
+
+#ifdef HAVE_SDL3
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+
+
+static Uint32 timerEvent(void* param, SDL_TimerID timerID, Uint32 interval)
+{
+
+    //printf("SDL timerEvent\n");
+    SDL_Event event;
+    SDL_UserEvent userevent;
+
+    userevent.type = SDL_EVENT_USER;
+    userevent.code = 2;
+    userevent.data1 = param;
+    userevent.data2 = (void*)interval;
+    userevent.windowID = 0;
+    userevent.timestamp = 0;
+
+    event.type = SDL_EVENT_USER;
+    event.user = userevent;
+
+    SDL_PushEvent(&event);
+    return interval;
+}
+#pragma GCC diagnostic pop
+#endif
+
+int WindowManager_SDL3::startTimer(Widget* w, int intervall)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    return SDL_AddTimer(intervall, timerEvent, w);
+#endif
+}
+
+void WindowManager_SDL3::removeTimer(int timer_id)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_RemoveTimer((SDL_TimerID)timer_id);
+#endif
+}
+
+
+void WindowManager_SDL3::DispatchKeyEvent(void* e)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    KeyEvent ev;
+    SDL_KeyboardEvent* event = (SDL_KeyboardEvent*)e;
+
+
+    //WideString st;
+    //st.set((wchar_t)event->keysym.sym);
+    //ppl7::PrintDebug ("KeyEvent: State: %i, Repeat: %i, ",event->state,event->repeat);
+    //ppl7::PrintDebug ("Scancode: %i, Keycode: %i, Modifier: %i\n",event->keysym.scancode, event->keysym.sym, event->keysym.mod);
+    //st.printnl();
+
+    Widget* keyFocusWidget = getKeyboardFocus();
+    if (!keyFocusWidget) return;
+
+    KeyEvent kev;
+    kev.setWidget(keyFocusWidget);
+    kev.repeat = (bool)event->repeat;
+
+    if (event->key >= SDLK_A && event->key <= SDLK_Z) {
+        kev.key = event->key - SDLK_A + KeyEvent::KEY_a;
+    }
+    else if (event->key >= SDLK_0 && event->key <= SDLK_9) {
+        kev.key = event->key - SDLK_0 + KeyEvent::KEY_0;
+    }
+    else {
+        switch (event->key) {
+        case SDLK_UNKNOWN: kev.key = KeyEvent::KEY_UNKNOWN; break;
+        case SDLK_RETURN: kev.key = KeyEvent::KEY_RETURN; break;
+        case SDLK_ESCAPE: kev.key = KeyEvent::KEY_ESCAPE; break;
+        case SDLK_BACKSPACE: kev.key = KeyEvent::KEY_BACKSPACE; break;
+        case SDLK_TAB: kev.key = KeyEvent::KEY_TAB; break;
+        case SDLK_SPACE: kev.key = KeyEvent::KEY_SPACE; break;
+        case SDLK_CAPSLOCK: kev.key = KeyEvent::KEY_CAPSLOCK; break;
+        case SDLK_F1: kev.key = KeyEvent::KEY_F1; break;
+        case SDLK_F2: kev.key = KeyEvent::KEY_F2; break;
+        case SDLK_F3: kev.key = KeyEvent::KEY_F3; break;
+        case SDLK_F4: kev.key = KeyEvent::KEY_F4; break;
+        case SDLK_F5: kev.key = KeyEvent::KEY_F5; break;
+        case SDLK_F6: kev.key = KeyEvent::KEY_F6; break;
+        case SDLK_F7: kev.key = KeyEvent::KEY_F7; break;
+        case SDLK_F8: kev.key = KeyEvent::KEY_F8; break;
+        case SDLK_F9: kev.key = KeyEvent::KEY_F9; break;
+        case SDLK_F10: kev.key = KeyEvent::KEY_F10; break;
+        case SDLK_F11: kev.key = KeyEvent::KEY_F11; break;
+        case SDLK_F12: kev.key = KeyEvent::KEY_F12; break;
+        case SDLK_F13: kev.key = KeyEvent::KEY_F13; break;
+        case SDLK_F14: kev.key = KeyEvent::KEY_F14; break;
+        case SDLK_F15: kev.key = KeyEvent::KEY_F15; break;
+        case SDLK_F16: kev.key = KeyEvent::KEY_F16; break;
+        case SDLK_F17: kev.key = KeyEvent::KEY_F17; break;
+        case SDLK_F18: kev.key = KeyEvent::KEY_F18; break;
+        case SDLK_F19: kev.key = KeyEvent::KEY_F19; break;
+        case SDLK_F20: kev.key = KeyEvent::KEY_F20; break;
+        case SDLK_F21: kev.key = KeyEvent::KEY_F21; break;
+        case SDLK_F22: kev.key = KeyEvent::KEY_F22; break;
+        case SDLK_F23: kev.key = KeyEvent::KEY_F23; break;
+        case SDLK_F24: kev.key = KeyEvent::KEY_F24; break;
+        case SDLK_PRINTSCREEN: kev.key = KeyEvent::KEY_PRINTSCREEN; break;
+        case SDLK_SCROLLLOCK: kev.key = KeyEvent::KEY_SCROLLLOCK; break;
+        case SDLK_PAUSE: kev.key = KeyEvent::KEY_PAUSE; break;
+        case SDLK_INSERT: kev.key = KeyEvent::KEY_INSERT; break;
+        case SDLK_HOME: kev.key = KeyEvent::KEY_HOME; break;
+        case SDLK_PAGEUP: kev.key = KeyEvent::KEY_PAGEUP; break;
+        case SDLK_DELETE: kev.key = KeyEvent::KEY_DELETE; break;
+        case SDLK_END: kev.key = KeyEvent::KEY_END; break;
+        case SDLK_PAGEDOWN: kev.key = KeyEvent::KEY_PAGEDOWN; break;
+        case SDLK_RIGHT: kev.key = KeyEvent::KEY_RIGHT; break;
+        case SDLK_LEFT: kev.key = KeyEvent::KEY_LEFT; break;
+        case SDLK_DOWN: kev.key = KeyEvent::KEY_DOWN; break;
+        case SDLK_UP: kev.key = KeyEvent::KEY_UP; break;
+        case SDLK_LCTRL: kev.key = KeyEvent::KEY_LEFTCTRL; break;
+        case SDLK_LSHIFT: kev.key = KeyEvent::KEY_LEFTSHIFT; break;
+        case SDLK_LALT: kev.key = KeyEvent::KEY_LEFTALT; break;
+        case SDLK_LGUI: kev.key = KeyEvent::KEY_LEFTGUI; break;
+        case SDLK_RCTRL: kev.key = KeyEvent::KEY_RIGHTCTRL; break;
+        case SDLK_RSHIFT: kev.key = KeyEvent::KEY_RIGHTSHIFT; break;
+        case SDLK_RALT: kev.key = KeyEvent::KEY_RIGHTALT; break;
+        case SDLK_RGUI: kev.key = KeyEvent::KEY_RIGHTGUI; break;
+        case SDLK_NUMLOCKCLEAR: kev.key = KeyEvent::KEY_NUMLOCK; break;
+        case SDLK_MODE: kev.key = KeyEvent::KEY_MODE; break;
+        case SDLK_KP_0: kev.key = KeyEvent::KEY_NUMPAD_0; break;
+        case SDLK_KP_1: kev.key = KeyEvent::KEY_NUMPAD_1; break;
+        case SDLK_KP_2: kev.key = KeyEvent::KEY_NUMPAD_2; break;
+        case SDLK_KP_3: kev.key = KeyEvent::KEY_NUMPAD_3; break;
+        case SDLK_KP_4: kev.key = KeyEvent::KEY_NUMPAD_4; break;
+        case SDLK_KP_5: kev.key = KeyEvent::KEY_NUMPAD_5; break;
+        case SDLK_KP_6: kev.key = KeyEvent::KEY_NUMPAD_6; break;
+        case SDLK_KP_7: kev.key = KeyEvent::KEY_NUMPAD_7; break;
+        case SDLK_KP_8: kev.key = KeyEvent::KEY_NUMPAD_8; break;
+        case SDLK_KP_9: kev.key = KeyEvent::KEY_NUMPAD_9; break;
+        case SDLK_KP_PERIOD: kev.key = KeyEvent::KEY_NUMPAD_PERIOD; break;
+        case SDLK_KP_EQUALS: kev.key = KeyEvent::KEY_NUMPAD_EQUALS; break;
+        case SDLK_KP_DIVIDE: kev.key = KeyEvent::KEY_NUMPAD_DIVIDE; break;
+        case SDLK_KP_MULTIPLY: kev.key = KeyEvent::KEY_NUMPAD_MULTIPLY; break;
+        case SDLK_KP_MINUS: kev.key = KeyEvent::KEY_NUMPAD_MINUS; break;
+        case SDLK_KP_PLUS: kev.key = KeyEvent::KEY_NUMPAD_PLUS; break;
+        case SDLK_KP_ENTER: kev.key = KeyEvent::KEY_NUMPAD_ENTER; break;
+        case SDLK_KP_COMMA: kev.key = KeyEvent::KEY_NUMPAD_COMMA; break;
+
+        default: kev.key = KeyEvent::KEY_UNKNOWN; break;
+        }
+    }
+    kev.modifier = TranslateKeyModifierFromSDL(event->mod);
+
+    if (kev.key == KeyEvent::KEY_UNKNOWN) {
+        ppl7::PrintDebug("Unknown KeyEvent: State: %i, Repeat: %i, ", event->down, event->repeat);
+        ppl7::PrintDebug("Scancode: %i, Keycode: %i, Modifier: %i\n", event->scancode, event->key, event->mod);
+        return;
+    }
+
+    if (event->type == SDL_EVENT_KEY_DOWN) {
+        keyFocusWidget->keyDownEvent(&kev);
+
+    }
+    else if (event->type == SDL_EVENT_KEY_UP) {
+        keyFocusWidget->keyUpEvent(&kev);
+    }
+#endif
+}
+
+void WindowManager_SDL3::changeWindowMode(Window& w, Window::WindowMode mode)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv) return;
+    uint32_t flags = 0;
+    if (mode == Window::WindowMode::Fullscreen) flags = SDL_WINDOW_FULLSCREEN;
+    //else if (mode == Window::WindowMode::FullscreenDesktop) flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+    SDL_SetWindowFullscreen(priv->win, flags);
+
+#endif
+}
+
+Window::WindowMode WindowManager_SDL3::getWindowMode(Window& w)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv) throw NoWindowException();
+
+    uint32_t flags = SDL_GetWindowFlags(priv->win);
+    //if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) return Window::WindowMode::FullscreenDesktop;
+    if (flags & SDL_WINDOW_FULLSCREEN) return Window::WindowMode::Fullscreen;
+    return Window::WindowMode::Window;
+#endif
+}
+
+void WindowManager_SDL3::setWindowDisplayMode(Window& w, const Window::DisplayMode& mode)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv) return;
+    Uint32 flags = SDL_GetWindowFlags(priv->win);
+    SDL_DisplayMode sdlmode;
+    //sdlmode.driverdata = NULL;
+
+    if (flags & SDL_WINDOW_FULLSCREEN) {
+
+        sdlmode.h = mode.height;
+        sdlmode.w = mode.width;
+        sdlmode.refresh_rate = mode.refresh_rate;
+        sdlmode.format = RGBFormat2SDLFormat(mode.format);
+        if (SDL_SetWindowFullscreenMode(priv->win, &sdlmode) != 0) {
+            throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
+        }
+    }
+    else {
+        SDL_SetWindowSize(priv->win, mode.width, mode.height);
+        if (SDL_SetWindowFullscreenMode(priv->win, &sdlmode) != 0) {
+            throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
+        }
+    }
+
+
+    w.setRGBFormat(SDL2RGBFormat(sdlmode.format));
+    w.setSize(sdlmode.w, sdlmode.h);
+    if (w.hasFixedUiSize()) {
+        //ppl7::PrintDebug("we don't change the gui size, which is: %d x %d\n",priv->width, priv->height);
+        return;
+    }
+
+
+    if (priv->gui) SDL_DestroyTexture(priv->gui);
+    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w.width(), w.height());
+    if (priv->gui == 0) {
+        const char* e = SDL_GetError();
+        SDL_DestroyRenderer(priv->renderer);
+        SDL_DestroyWindow(priv->win);
+        free(priv);
+        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+
+    }
+    if (SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND) != 0) {
+        const char* e = SDL_GetError();
+        SDL_DestroyTexture(priv->gui);
+        SDL_DestroyRenderer(priv->renderer);
+        SDL_DestroyWindow(priv->win);
+        free(priv);
+        throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
+    }
+    w.needsRedraw();
+#endif
+}
+
+void WindowManager_SDL3::resizeWindow(Window& w, int width, int height)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv) return;
+    //printf("recreating gui texture\n");
+    priv->window_width = width;
+    priv->window_height = height;
+
+    if (w.hasFixedUiSize()) {
+        //ppl7::PrintDebug("we don't change the gui size, which is: %d x %d\n",priv->width, priv->height);
+        return;
+    }
+    if (priv->gui) SDL_DestroyTexture(priv->gui);
+    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+    if (priv->gui == 0) {
+        const char* e = SDL_GetError();
+        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+
+    }
+    priv->width = width;
+    priv->height = height;
+    if (SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND) != 0) {
+        const char* e = SDL_GetError();
+        throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
+    }
+    w.needsRedraw();
+#endif
+}
+
+
+void WindowManager_SDL3::setClipboardText(const ppl7::String& text)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_SetClipboardText((const char*)text);
+#endif
+}
+
+bool WindowManager_SDL3::hasClipboardText() const
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    return SDL_HasClipboardText();
+#endif
+
+}
+
+String WindowManager_SDL3::getClipboardText() const
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    String t;
+    char* text = SDL_GetClipboardText();
+    if (text) {
+        t.set(text);
+        SDL_free(text);
+    }
+    return t;
+
+#endif
+
+}
+
+void* WindowManager_SDL3::getSDLWindow(Window& w)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv) return NULL;
+    return priv->win;
+#endif
+}
+
+
+
+}	// EOF namespace ppltk
+

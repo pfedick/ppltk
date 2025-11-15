@@ -67,6 +67,7 @@
 #undef HAVE_WCHAR_H
 
 #undef HAVE_SDL2 1
+#undef HAVE_SDL3 1
 
 
 #endif

@@ -68,8 +68,8 @@ ppl7::Resource* GetPPLTKResource();
 
 enum class SortOrder
 {
-    AscendingOrder=0,
-    DescendingOrder=1
+    AscendingOrder = 0,
+    DescendingOrder = 1
 };
 
 
@@ -79,10 +79,10 @@ private:
 
 public:
     enum PredefinedStyle {
-        Light=0,
-        Dark=1
+        Light = 0,
+        Dark = 1
     };
-    WidgetStyle(PredefinedStyle style=Light);
+    WidgetStyle(PredefinedStyle style = Light);
     void setStyle(PredefinedStyle style);
     Color	windowBackgroundColor;
     Color	frameBackgroundColor;
@@ -116,7 +116,7 @@ class Event
     friend class EventHandler;
 public:
     enum Type {
-        Unknown=0,
+        Unknown = 0,
         MouseEnter,
         MouseMove,
         MouseLeave,
@@ -180,134 +180,134 @@ class KeyEvent : public Event
 public:
     enum keycode {
         KEY_UNKNOWN = 0,
-        KEY_0			=1,
-        KEY_1			=2,
-        KEY_2			=3,
-        KEY_3			=4,
-        KEY_4			=5,
-        KEY_5			=6,
-        KEY_6			=7,
-        KEY_7			=8,
-        KEY_8			=9,
-        KEY_9			=10,
-        KEY_a			=11,
-        KEY_b			=12,
-        KEY_c			=13,
-        KEY_d			=14,
-        KEY_e			=15,
-        KEY_f			=16,
-        KEY_g			=17,
-        KEY_h			=18,
-        KEY_i			=19,
-        KEY_j			=20,
-        KEY_k			=21,
-        KEY_l			=22,
-        KEY_m			=23,
-        KEY_n			=24,
-        KEY_o			=25,
-        KEY_p			=26,
-        KEY_q			=27,
-        KEY_r			=28,
-        KEY_s			=29,
-        KEY_t			=30,
-        KEY_u			=31,
-        KEY_v			=32,
-        KEY_w			=33,
-        KEY_x			=34,
-        KEY_y			=35,
-        KEY_z			=36,
-        KEY_NUMPAD_0    =100,
-        KEY_NUMPAD_1    =101,
-        KEY_NUMPAD_2    =102,
-        KEY_NUMPAD_3    =103,
-        KEY_NUMPAD_4    =104,
-        KEY_NUMPAD_5    =105,
-        KEY_NUMPAD_6    =106,
-        KEY_NUMPAD_7    =107,
-        KEY_NUMPAD_8    =108,
-        KEY_NUMPAD_9    =109,
-        KEY_NUMPAD_PERIOD    =110,
-        KEY_NUMPAD_EQUALS    =111,
-        KEY_NUMPAD_DIVIDE    =112,
-        KEY_NUMPAD_MULTIPLY  =113,
-        KEY_NUMPAD_MINUS     =114,
-        KEY_NUMPAD_PLUS      =115,
-        KEY_NUMPAD_ENTER     =116,
-        KEY_NUMPAD_COMMA     =117,
-        KEY_RETURN		= 128,
-        KEY_ESCAPE		= 129,
-        KEY_BACKSPACE	= 130,
-        KEY_TAB			= 131,
-        KEY_SPACE		= 132,
-        KEY_CAPSLOCK	= 133,
-        KEY_F1			= 134,
-        KEY_F2			= 135,
-        KEY_F3			= 136,
-        KEY_F4			= 137,
-        KEY_F5			= 138,
-        KEY_F6			= 139,
-        KEY_F7			= 140,
-        KEY_F8			= 141,
-        KEY_F9			= 142,
-        KEY_F10			= 143,
-        KEY_F11			= 144,
-        KEY_F12			= 145,
-        KEY_PRINTSCREEN	= 146,
-        KEY_SCROLLLOCK	= 147,
-        KEY_PAUSE		= 148,
-        KEY_INSERT		= 149,
-        KEY_HOME		= 150,
-        KEY_PAGEUP		= 151,
-        KEY_DELETE		= 152,
-        KEY_END			= 153,
-        KEY_PAGEDOWN	= 154,
-        KEY_RIGHT		= 155,
-        KEY_LEFT		= 156,
-        KEY_DOWN		= 157,
-        KEY_UP			= 158,
-        KEY_NUMLOCK		= 159,
-        KEY_F13         = 160,
-        KEY_F14         = 161,
-        KEY_F15         = 162,
-        KEY_F16         = 163,
-        KEY_F17         = 164,
-        KEY_F18         = 165,
-        KEY_F19         = 166,
-        KEY_F20         = 167,
-        KEY_F21         = 168,
-        KEY_F22         = 169,
-        KEY_F23         = 170,
-        KEY_F24         = 171,
-        KEY_LEFTCTRL	= 224,
-        KEY_LEFTSHIFT	= 225,
-        KEY_LEFTALT		= 226,
-        KEY_LEFTGUI		= 227,
-        KEY_RIGHTCTRL	= 224,
-        KEY_RIGHTSHIFT	= 225,
-        KEY_RIGHTALT	= 226,
-        KEY_RIGHTGUI	= 227,
-        KEY_MODE		= 257,
+        KEY_0 = 1,
+        KEY_1 = 2,
+        KEY_2 = 3,
+        KEY_3 = 4,
+        KEY_4 = 5,
+        KEY_5 = 6,
+        KEY_6 = 7,
+        KEY_7 = 8,
+        KEY_8 = 9,
+        KEY_9 = 10,
+        KEY_a = 11,
+        KEY_b = 12,
+        KEY_c = 13,
+        KEY_d = 14,
+        KEY_e = 15,
+        KEY_f = 16,
+        KEY_g = 17,
+        KEY_h = 18,
+        KEY_i = 19,
+        KEY_j = 20,
+        KEY_k = 21,
+        KEY_l = 22,
+        KEY_m = 23,
+        KEY_n = 24,
+        KEY_o = 25,
+        KEY_p = 26,
+        KEY_q = 27,
+        KEY_r = 28,
+        KEY_s = 29,
+        KEY_t = 30,
+        KEY_u = 31,
+        KEY_v = 32,
+        KEY_w = 33,
+        KEY_x = 34,
+        KEY_y = 35,
+        KEY_z = 36,
+        KEY_NUMPAD_0 = 100,
+        KEY_NUMPAD_1 = 101,
+        KEY_NUMPAD_2 = 102,
+        KEY_NUMPAD_3 = 103,
+        KEY_NUMPAD_4 = 104,
+        KEY_NUMPAD_5 = 105,
+        KEY_NUMPAD_6 = 106,
+        KEY_NUMPAD_7 = 107,
+        KEY_NUMPAD_8 = 108,
+        KEY_NUMPAD_9 = 109,
+        KEY_NUMPAD_PERIOD = 110,
+        KEY_NUMPAD_EQUALS = 111,
+        KEY_NUMPAD_DIVIDE = 112,
+        KEY_NUMPAD_MULTIPLY = 113,
+        KEY_NUMPAD_MINUS = 114,
+        KEY_NUMPAD_PLUS = 115,
+        KEY_NUMPAD_ENTER = 116,
+        KEY_NUMPAD_COMMA = 117,
+        KEY_RETURN = 128,
+        KEY_ESCAPE = 129,
+        KEY_BACKSPACE = 130,
+        KEY_TAB = 131,
+        KEY_SPACE = 132,
+        KEY_CAPSLOCK = 133,
+        KEY_F1 = 134,
+        KEY_F2 = 135,
+        KEY_F3 = 136,
+        KEY_F4 = 137,
+        KEY_F5 = 138,
+        KEY_F6 = 139,
+        KEY_F7 = 140,
+        KEY_F8 = 141,
+        KEY_F9 = 142,
+        KEY_F10 = 143,
+        KEY_F11 = 144,
+        KEY_F12 = 145,
+        KEY_PRINTSCREEN = 146,
+        KEY_SCROLLLOCK = 147,
+        KEY_PAUSE = 148,
+        KEY_INSERT = 149,
+        KEY_HOME = 150,
+        KEY_PAGEUP = 151,
+        KEY_DELETE = 152,
+        KEY_END = 153,
+        KEY_PAGEDOWN = 154,
+        KEY_RIGHT = 155,
+        KEY_LEFT = 156,
+        KEY_DOWN = 157,
+        KEY_UP = 158,
+        KEY_NUMLOCK = 159,
+        KEY_F13 = 160,
+        KEY_F14 = 161,
+        KEY_F15 = 162,
+        KEY_F16 = 163,
+        KEY_F17 = 164,
+        KEY_F18 = 165,
+        KEY_F19 = 166,
+        KEY_F20 = 167,
+        KEY_F21 = 168,
+        KEY_F22 = 169,
+        KEY_F23 = 170,
+        KEY_F24 = 171,
+        KEY_LEFTCTRL = 224,
+        KEY_LEFTSHIFT = 225,
+        KEY_LEFTALT = 226,
+        KEY_LEFTGUI = 227,
+        KEY_RIGHTCTRL = 224,
+        KEY_RIGHTSHIFT = 225,
+        KEY_RIGHTALT = 226,
+        KEY_RIGHTGUI = 227,
+        KEY_MODE = 257,
     };
 
     enum keymodifier {
-        KEYMOD_NONE			= 0,
-        KEYMOD_LEFTSHIFT	= 0x0001,
-        KEYMOD_RIGHTSHIFT	= 0x0002,
-        KEYMOD_LEFTCTRL		= 0x0004,
-        KEYMOD_RIGHTCTRL	= 0x0008,
-        KEYMOD_LEFTALT		= 0x0010,
-        KEYMOD_RIGHTALT		= 0x0020,
-        KEYMOD_LEFTGUI		= 0x0040,
-        KEYMOD_RIGHTGUI		= 0x0080,
-        KEYMOD_MODIFIER		= 0x00ff,
-        KEYMOD_NUM			= 0x0100,
-        KEYMOD_CAPS			= 0x0200,
-        KEYMOD_MODE			= 0x0400,
+        KEYMOD_NONE = 0,
+        KEYMOD_LEFTSHIFT = 0x0001,
+        KEYMOD_RIGHTSHIFT = 0x0002,
+        KEYMOD_LEFTCTRL = 0x0004,
+        KEYMOD_RIGHTCTRL = 0x0008,
+        KEYMOD_LEFTALT = 0x0010,
+        KEYMOD_RIGHTALT = 0x0020,
+        KEYMOD_LEFTGUI = 0x0040,
+        KEYMOD_RIGHTGUI = 0x0080,
+        KEYMOD_MODIFIER = 0x00ff,
+        KEYMOD_NUM = 0x0100,
+        KEYMOD_CAPS = 0x0200,
+        KEYMOD_MODE = 0x0400,
 
-        KEYMOD_SHIFT		= KEYMOD_LEFTSHIFT | KEYMOD_RIGHTSHIFT,
-        KEYMOD_CTRL			= KEYMOD_LEFTCTRL | KEYMOD_RIGHTCTRL,
-        KEYMOD_ALT			= KEYMOD_LEFTALT | KEYMOD_RIGHTALT,
-        KEYMOD_GUI			= KEYMOD_LEFTGUI | KEYMOD_RIGHTGUI,
+        KEYMOD_SHIFT = KEYMOD_LEFTSHIFT | KEYMOD_RIGHTSHIFT,
+        KEYMOD_CTRL = KEYMOD_LEFTCTRL | KEYMOD_RIGHTCTRL,
+        KEYMOD_ALT = KEYMOD_LEFTALT | KEYMOD_RIGHTALT,
+        KEYMOD_GUI = KEYMOD_LEFTGUI | KEYMOD_RIGHTGUI,
 
 
     };
@@ -328,13 +328,13 @@ class MouseState
 public:
     MouseState();
     enum MouseButton {
-        Left=1,
-        Middle=2,
-        Right=4,
-        WheelUp=8,
-        WheelDown=16,
-        X1=32,
-        X2=64
+        Left = 1,
+        Middle = 2,
+        Right = 4,
+        WheelUp = 8,
+        WheelDown = 16,
+        X1 = 32,
+        X2 = 64
     };
     Point p;
     Point wheel;
@@ -400,6 +400,8 @@ class DropEvent : public Event
 {
 public:
     ppl7::String text;
+    ppl7::String source;
+    ppl7::grafix::Point p;
 };
 
 
@@ -472,17 +474,17 @@ private:
 
 public:
     enum SurfaceFlags {
-        Hardware					=	0x00000001,
-        Lockable					=	0x00000002,
-        VideoMemory					=	0x00000004,
-        ZBuffer						=	0x00000008,
-        StencilBuffer				=	0x00000010,
-        SoftwareVertexProcessing	=	0x00000020,
-        Multithreaded				=	0x00000040,
-        FPUPreserve					=	0x00000080,
-        OpenGL						=	0x00000100,
-        Texture						=	0x00000200,
-        DefaultSurface				=	Hardware | Lockable | VideoMemory,
+        Hardware = 0x00000001,
+        Lockable = 0x00000002,
+        VideoMemory = 0x00000004,
+        ZBuffer = 0x00000008,
+        StencilBuffer = 0x00000010,
+        SoftwareVertexProcessing = 0x00000020,
+        Multithreaded = 0x00000040,
+        FPUPreserve = 0x00000080,
+        OpenGL = 0x00000100,
+        Texture = 0x00000200,
+        DefaultSurface = Hardware | Lockable | VideoMemory,
     };
     Surface();
     ~Surface();
@@ -506,10 +508,10 @@ class SizePolicy
 {
 public:
     enum PolicyFlag {
-        GrowFlag=1,
-        ExpandFlag=2,
-        ShrinkFlag=4,
-        IgnoreFlag=8
+        GrowFlag = 1,
+        ExpandFlag = 2,
+        ShrinkFlag = 4,
+        IgnoreFlag = 8
     };
 
     enum Policy {
@@ -594,9 +596,9 @@ public:
     const Size maxSize() const;
     const Size minSize() const;
     void setMaxSize(const Size& s);
-    void setMaxSize(int width=65535, int height=65535);
+    void setMaxSize(int width = 65535, int height = 65535);
     void setMinSize(const Size& s);
-    void setMinSize(int width=0, int height=0);
+    void setMinSize(int width = 0, int height = 0);
     const SizePolicy& sizePolicy() const;
     void setSizePolicy(const SizePolicy& policy);
     void setSizePolicy(SizePolicy::Policy horizontal, SizePolicy::Policy vertical);
@@ -643,7 +645,7 @@ public:
     void childNeedsRedraw();
     void parentMustRedraw();
     void geometryChanged();
-    void toTop(Widget* w=NULL);
+    void toTop(Widget* w = NULL);
     void toTop(Widget& w);
     void draw(Drawable& d);
     void redraw(Drawable& d);
@@ -700,25 +702,25 @@ private:
 
 public:
     enum WindowFlags {
-        NoBorder					=	0x00000001,
-        Resizeable					=	0x00000002,
-        Maximized					=	0x00000004,
-        Minimized					=	0x00000008,
-        TopMost						=	0x00000010,
-        Fullscreen					=	0x00000020,
-        FullscreenDesktop			=	0x00000040,
-        WaitVsync					=	0x00200000,
-        ZBuffer						=	0x00400000,
-        StencilBuffer				=	0x00800000,
-        SoftwareVertexProcessing	=	0x01000000,
-        OpenGL						=	0x08000000,
-        DefaultWindow				=	WaitVsync,
-        DefaultFullscreen			=	NoBorder | WaitVsync | Fullscreen | TopMost,
-        DefaultFullscreenDesktop	=	NoBorder | WaitVsync | FullscreenDesktop | TopMost,
+        NoBorder = 0x00000001,
+        Resizeable = 0x00000002,
+        Maximized = 0x00000004,
+        Minimized = 0x00000008,
+        TopMost = 0x00000010,
+        Fullscreen = 0x00000020,
+        FullscreenDesktop = 0x00000040,
+        WaitVsync = 0x00200000,
+        ZBuffer = 0x00400000,
+        StencilBuffer = 0x00800000,
+        SoftwareVertexProcessing = 0x01000000,
+        OpenGL = 0x08000000,
+        DefaultWindow = WaitVsync,
+        DefaultFullscreen = NoBorder | WaitVsync | Fullscreen | TopMost,
+        DefaultFullscreenDesktop = NoBorder | WaitVsync | FullscreenDesktop | TopMost,
     };
 
     enum class WindowMode {
-        Window=0,
+        Window = 0,
         Fullscreen,
         FullscreenDesktop
     };
@@ -739,7 +741,7 @@ public:
     void setWindowSize(int width, int height);
     void setWindowSize(const Size& size);
     const Size& windowSize() const;
-    void enableFixedUiSize(bool enable, int width=0, int height=0);
+    void enableFixedUiSize(bool enable, int width = 0, int height = 0);
     bool hasFixedUiSize() const;
     const Size& uiSize() const;
     void setFlags(uint32_t flags);
@@ -816,26 +818,26 @@ public:
 
     virtual void createWindow(Window& w) = 0;
     virtual void destroyWindow(Window& w) = 0;
-    virtual void setWindowPosition(Window& w, int x, int y) =0;
-    virtual void resizeWindow(Window& w, int width, int height)=0;
-    virtual void setWindowDisplayMode(Window& w, const Window::DisplayMode& mode)=0;
+    virtual void setWindowPosition(Window& w, int x, int y) = 0;
+    virtual void resizeWindow(Window& w, int width, int height) = 0;
+    virtual void setWindowDisplayMode(Window& w, const Window::DisplayMode& mode) = 0;
 
-    virtual const Size& desktopResolution() const =0;
-    virtual const RGBFormat& desktopRGBFormat() const =0;
+    virtual const Size& desktopResolution() const = 0;
+    virtual const RGBFormat& desktopRGBFormat() const = 0;
 
-    virtual MouseState getMouseState() const =0;
-    virtual void getMouseState(Point& p, int& buttonMask) const=0;
+    virtual MouseState getMouseState() const = 0;
+    virtual void getMouseState(Point& p, int& buttonMask) const = 0;
     virtual void startEventLoop() = 0;
     virtual void handleEvents() = 0;
     virtual size_t numWindows() = 0;
     virtual void startClickEvent(Window* win) = 0;
-    virtual int startTimer(Widget* w, int intervall) =0;
-    virtual void removeTimer(int timer_id)=0;
+    virtual int startTimer(Widget* w, int intervall) = 0;
+    virtual void removeTimer(int timer_id) = 0;
     //virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int flags=Surface::DefaultSurface) = 0;
 
-    virtual void setClipboardText(const ppl7::String& text)=0;
-    virtual bool hasClipboardText() const=0;
-    virtual String getClipboardText() const=0;
+    virtual void setClipboardText(const ppl7::String& text) = 0;
+    virtual bool hasClipboardText() const = 0;
+    virtual String getClipboardText() const = 0;
 };
 
 WindowManager* GetWindowManager();
@@ -896,6 +898,62 @@ public:
     void* getSDLWindow(Window& w);
 };
 
+class WindowManager_SDL3 : public WindowManager
+{
+private:
+    RGBFormat	screenRGBFormat;
+    Size		screenSize;
+    int			screenRefreshRate;
+
+    List<Window*>	windows;
+    Window* lastWindowEnterEvent;
+
+    void DispatchSdlActiveEvent(void* e);
+    void DispatchSdlKeyEvent(void* e);
+    void DispatchMouseEvent(void* e);
+    void DispatchKeyEvent(void* e);
+    void DispatchSdlResizeEvent(void* e);
+    void DispatchEvent(void* e);
+    void DispatchQuitEvent(void* e);
+
+    void DispatchWindowEvent(void* e);
+
+    Window* getWindow(uint32_t id);
+
+public:
+    WindowManager_SDL3();
+    ~WindowManager_SDL3();
+    //virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int flags=Surface::DefaultSurface);
+    virtual void createWindow(Window& w);
+    virtual void destroyWindow(Window& w);
+    virtual void setWindowPosition(Window& w, int x, int y);
+    virtual void resizeWindow(Window& w, int width, int height);
+    virtual void setWindowDisplayMode(Window& w, const Window::DisplayMode& mode);
+
+    virtual const Size& desktopResolution() const;
+    virtual const RGBFormat& desktopRGBFormat() const;
+    virtual MouseState getMouseState() const;
+    virtual void getMouseState(Point& p, int& buttonMask) const;
+    virtual void startEventLoop();
+    virtual void handleEvents();
+    virtual size_t numWindows();
+    virtual void startClickEvent(Window* win);
+
+    virtual void setClipboardText(const ppl7::String& text);
+    virtual bool hasClipboardText() const;
+    virtual String getClipboardText() const;
+
+
+    int startTimer(Widget* w, int intervall);
+    void removeTimer(int timer_id);
+
+    void changeWindowMode(Window& w, Window::WindowMode mode);
+    Window::WindowMode getWindowMode(Window& w);
+    void* getSDLWindow(Window& w);
+};
+
+
+
 
 class Button : public Widget
 {
@@ -908,8 +966,8 @@ private:
     bool	is_checkable;
     bool	is_checked;
 public:
-    Button(const String& text=String(), const Drawable& icon=Drawable());
-    Button(int x, int y, int width, int height, const String& text=String(), const Drawable& icon=Drawable());
+    Button(const String& text = String(), const Drawable& icon = Drawable());
+    Button(int x, int y, int width, int height, const String& text = String(), const Drawable& icon = Drawable());
     virtual ~Button();
     const String& text() const;
     void setText(const String& text);
@@ -947,13 +1005,13 @@ private:
     Color	myBackground, myBorderColorLight, myBorderColorShadow;
 public:
     enum BorderStyle {
-        NoBorder=0,
+        NoBorder = 0,
         Normal,
         Upset,
         Inset
     };
-    Frame(BorderStyle style=Upset);
-    Frame(int x, int y, int width, int height, BorderStyle style=Upset);
+    Frame(BorderStyle style = Upset);
+    Frame(int x, int y, int width, int height, BorderStyle style = Upset);
     ~Frame();
     BorderStyle borderStyle() const;
     void setBorderStyle(BorderStyle s);
@@ -976,8 +1034,8 @@ private:
     Image	myIcon;
     Color	myColor;
 public:
-    Label(const String& text=String(), BorderStyle style=NoBorder);
-    Label(int x, int y, int width, int height, const String& text=String(), BorderStyle style=NoBorder);
+    Label(const String& text = String(), BorderStyle style = NoBorder);
+    Label(int x, int y, int width, int height, const String& text = String(), BorderStyle style = NoBorder);
     ~Label();
     const String& text() const;
     void setText(const String& text);
@@ -1027,10 +1085,10 @@ public:
     void removeTab(int index);
     int indexOf(Widget* widget) const;
 
-    int addTab(Widget* page, const String& label, const Drawable& icon=Drawable());
-    int addTab(const String& label, const Drawable& icon=Drawable());
-    int insertTab(int index, Widget* page, const String& label, const Drawable& icon=Drawable());
-    int insertTab(int index, const String& label, const Drawable& icon=Drawable());
+    int addTab(Widget* page, const String& label, const Drawable& icon = Drawable());
+    int addTab(const String& label, const Drawable& icon = Drawable());
+    int insertTab(int index, Widget* page, const String& label, const Drawable& icon = Drawable());
+    int insertTab(int index, const String& label, const Drawable& icon = Drawable());
     int count() const;
     int currentIndex() const;
     Widget* currentWidget() const;
@@ -1085,8 +1143,8 @@ public:
 class InputValidator
 {
 public:
-    virtual bool validateText(const ppl7::WideString& text)=0;
-    virtual bool validateInput(const ppl7::WideString& text)=0;
+    virtual bool validateText(const ppl7::WideString& text) = 0;
+    virtual bool validateInput(const ppl7::WideString& text) = 0;
 };
 
 class LineInput : public Frame
@@ -1132,7 +1190,7 @@ private:
     void deleteSelection();
 public:
     LineInput();
-    LineInput(int x, int y, int width, int height, const String& text=String());
+    LineInput(int x, int y, int width, int height, const String& text = String());
     ~LineInput();
     const WideString& text() const;
     void setText(const String& text);
@@ -1271,7 +1329,7 @@ private:
 
 public:
     TextEdit();
-    TextEdit(int x, int y, int width, int height, const String& text=String());
+    TextEdit(int x, int y, int width, int height, const String& text = String());
     ~TextEdit();
 
     void setText(const ppl7::WideString& text);
@@ -1314,7 +1372,7 @@ private:
 
 public:
     CheckBox();
-    CheckBox(int x, int y, int width, int height, const ppl7::String& text=ppl7::String(), bool checked=false);
+    CheckBox(int x, int y, int width, int height, const ppl7::String& text = ppl7::String(), bool checked = false);
     ~CheckBox();
     bool checked() const;
     void setChecked(bool checked);
@@ -1331,7 +1389,7 @@ private:
 
 public:
     RadioButton();
-    RadioButton(int x, int y, int width, int height, const ppl7::String& text=ppl7::String(), bool checked=false);
+    RadioButton(int x, int y, int width, int height, const ppl7::String& text = ppl7::String(), bool checked = false);
     ~RadioButton();
     bool checked() const;
     void setChecked(bool checked);
@@ -1378,11 +1436,11 @@ public:
     bool hasText(const ppl7::String& text) const;
     void setSortingEnabled(bool enable);
     bool isSortingEnabled() const;
-    void sortItems(SortOrder sort=SortOrder::AscendingOrder);
+    void sortItems(SortOrder sort = SortOrder::AscendingOrder);
 
     void clear();
 
-    void add(const ppl7::String& text, const ppl7::String& identifier=ppl7::String());
+    void add(const ppl7::String& text, const ppl7::String& identifier = ppl7::String());
     void remove(size_t index);
     void remove(const ppl7::String& identifier);
 
@@ -1422,14 +1480,14 @@ public:
     void setCurrentIdentifier(const ppl7::String& identifier);
     ppl7::String currentText() const;
     ppl7::String currentIdentifier() const;
-    void sortItems(SortOrder sort=SortOrder::AscendingOrder);
+    void sortItems(SortOrder sort = SortOrder::AscendingOrder);
 
     void setCurrentIndex(size_t index);
     size_t currentIndex() const;
 
     void clear();
 
-    void add(const ppl7::String& text, const ppl7::String& identifier=ppl7::String());
+    void add(const ppl7::String& text, const ppl7::String& identifier = ppl7::String());
 
     ppl7::String widgetType() const override;
     void paint(ppl7::grafix::Drawable& draw) override;
@@ -1454,7 +1512,7 @@ private:
 
 public:
     AbstractSpinBox();
-    AbstractSpinBox(int x, int y, int width, int height, const String& text=String());
+    AbstractSpinBox(int x, int y, int width, int height, const String& text = String());
     ~AbstractSpinBox();
 
     const Color& color() const;
@@ -1482,8 +1540,8 @@ public:
     void keyUpEvent(KeyEvent* event) override;
     void textChangedEvent(Event* event, const String& text) override;
 
-    virtual void stepUp()=0;
-    virtual void stepDown()=0;
+    virtual void stepUp() = 0;
+    virtual void stepDown() = 0;
 
 };
 
@@ -1496,7 +1554,7 @@ private:
 
 public:
     SpinBox();
-    SpinBox(int x, int y, int width, int height, int64_t value=0);
+    SpinBox(int x, int y, int width, int height, int64_t value = 0);
     virtual String widgetType() const;
 
     void setValue(int64_t value);
@@ -1527,7 +1585,7 @@ private:
 
 public:
     DoubleSpinBox();
-    DoubleSpinBox(int x, int y, int width, int height, double value=0.0f, int decimals=2);
+    DoubleSpinBox(int x, int y, int width, int height, double value = 0.0f, int decimals = 2);
     virtual String widgetType() const;
 
     void setValue(double value);
@@ -1561,7 +1619,7 @@ private:
     int64_t current_value;
     int64_t my_steps;
 protected:
-    virtual void sliderValueChanged(int64_t value)=0;
+    virtual void sliderValueChanged(int64_t value) = 0;
 
 public:
     AbstractSlider(int x, int y, int width, int height);
@@ -1591,7 +1649,7 @@ private:
     double current_value;
     double my_steps;
 protected:
-    virtual void sliderValueChanged(double value)=0;
+    virtual void sliderValueChanged(double value) = 0;
 
 public:
     DoubleAbstractSlider(int x, int y, int width, int height);
@@ -1626,7 +1684,7 @@ private:
 public:
     HorizontalSlider(int x, int y, int width, int height);
     ~HorizontalSlider();
-    void enableSpinBox(bool enabled, int64_t stepsize=1, int width=100);
+    void enableSpinBox(bool enabled, int64_t stepsize = 1, int width = 100);
 
     void paint(ppl7::grafix::Drawable& draw) override;
     void mouseDownEvent(ppltk::MouseEvent* event) override;
@@ -1655,7 +1713,7 @@ private:
 public:
     DoubleHorizontalSlider(int x, int y, int width, int height);
     ~DoubleHorizontalSlider();
-    void enableSpinBox(bool enabled, double stepsize=0.1f, int decimals=2, int width=100);
+    void enableSpinBox(bool enabled, double stepsize = 0.1f, int decimals = 2, int width = 100);
 
     void paint(ppl7::grafix::Drawable& draw) override;
     void mouseDownEvent(ppltk::MouseEvent* event) override;
