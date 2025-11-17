@@ -45,7 +45,6 @@ AC_CONFIG_HEADERS([include/ppltk_config.h])
 # Includes
 ###############################################################################
 #sinclude(autoconf/ax_cxx_compile_stdcxx.m4)
-sinclude(autoconf/sdl2.m4)
 sinclude(autoconf/sdl3.m4)
 sinclude(autoconf/ppl7.m4)
 #sinclude(autoconf/lib-link.m4)
@@ -56,7 +55,7 @@ sinclude(autoconf/ppl7.m4)
 #sinclude(autoconf/ax_gcc_archflag.m4)
 
 
-report_have_sdl2="no"
+report_have_sdl3="no"
 
 
 AC_CANONICAL_TARGET
@@ -153,17 +152,6 @@ AC_CHECK_TYPE(wchar_t, unsigned)
 
 
 
-dnl Check for SDL2
-report_have_sdl2="no"
-AM_PATH_SDL2([2.0.0],
-            AC_DEFINE(HAVE_SDL2, 1, [ Define if you have libsdl2. ])
-            report_have_sdl2="yes"
-			AC_SUBST(SDL2_CFLAGS)
-			AC_SUBST(SDL2_LIBS)
-            ,
-			AC_MSG_ERROR([libsdl2 is required])
-			:)
-AC_SUBST(report_have_sdl2)
 
 dnl Check for SDL3
 report_have_sdl3="no"
@@ -212,7 +200,6 @@ AC_MSG_RESULT([
 ** Target: $target_os        CPU: $target_cpu
 ******************************************************************************
 **
-**   SDL2 library:         $report_have_sdl2
 **   SDL3 library:         $report_have_sdl3
 **   PPL7 library:         $report_have_sdl2
 **

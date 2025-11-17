@@ -31,7 +31,7 @@
 CXX                     = @CXX@
 EXTRA_CFLAGS =
 INCLUDE	= -I include
-CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@ -Dmain=SDL_main 
+CFLAGS	= -ggdb -O3 -march=native -Wall  $(INCLUDE) $(EXTRA_CFLAGS) @LIBPPL7_CFLAGS@
 LIB		= @LIBPPL7_LIBS@  @SDL3_LIBS@ -lstdc++
 LIBDEP	:= @LIBPPL7@
 LIBNAME = libppltk
