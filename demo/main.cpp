@@ -63,10 +63,12 @@ int start(int agrc, char** argv)
         while (wm.numWindows() > 0) {
             win.updateFrameRate();
             win.clearScreen();
+            //win.needsRedraw();
             win.drawWidgets();
             win.presentScreen();
 
             wm.handleEvents();
+            ppl7::MSleep(200);
 
         }
     }
@@ -114,7 +116,7 @@ MainWindow::~MainWindow()
 void MainWindow::create(int width, int height, bool fullscreen)
 {
     setWindowSize(width, height);
-    enableFixedUiSize(true, width, height);
+    //enableFixedUiSize(true, width, height);
     setBackgroundColor(ppl7::grafix::Color(92, 92, 92, 92));
 
     ppl7::String debugText;
@@ -183,15 +185,15 @@ void MainWindow::create(int width, int height, bool fullscreen)
     testframe->addChild(input);
 
 
-    ppltk::Label* label = new ppltk::Label("FPS:");
-    layout_menue->addWidget(label);
+    ppltk::Label* label = new ppltk::Label(0, 0, 40, 30, "FPS:");
+    menue->addChild(label);
 
-    fpsLabel = new ppltk::Label("0", ppltk::Label::Inset);
-    layout_menue->addWidget(fpsLabel);
+    fpsLabel = new ppltk::Label(40, 0, 100, 30, "0", ppltk::Label::Inset);
+    menue->addChild(fpsLabel);
 
-    exitButton = new ppltk::Button("Exit", wm->Toolbar.getDrawable(68));
+    exitButton = new ppltk::Button(menue->width() - 80, 0, 80, 30, "Exit", wm->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
-    layout_menue->addWidget(exitButton);
+    menue->addChild(exitButton);
 
 }
 

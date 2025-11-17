@@ -53,7 +53,7 @@ BoxLayout::Item::Item(Layout* l)
 BoxLayout::BoxLayout(Direction dir, Widget* parent)
     : Layout(parent)
 {
-    myDirection=dir;
+    myDirection = dir;
 }
 
 BoxLayout::~BoxLayout()
@@ -69,7 +69,7 @@ BoxLayout::Direction BoxLayout::direction() const
 
 void BoxLayout::setSpacing(int spacing)
 {
-    mySpacing=spacing;
+    mySpacing = spacing;
 }
 
 int BoxLayout::spacing() const
@@ -123,11 +123,11 @@ ppl7::grafix::Size BoxLayout::minimumSize() const
 void BoxLayout::update()
 {
     std::list<Item>::iterator it;
-    const Margins& m=contentsMargins();
-    int x=m.left();
-    int y=m.top();
-    for (it=item_list.begin();it != item_list.end();++it) {
-        x+=mySpacing;
+    const Margins& m = contentsMargins();
+    int x = m.left();
+    int y = m.top();
+    for (it = item_list.begin();it != item_list.end();++it) {
+        x += mySpacing;
         if (it->type == ItemType::Widget) {
             it->widget->setPos(x, y);
             it->widget->setSize(50, 30);

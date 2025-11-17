@@ -317,6 +317,7 @@ static void sdlDrawWindowSurface(void* privatedata)
         SDL_RenderTexture(priv->renderer, priv->gui, NULL, &dest);
     }
     else {
+        ppl7::PrintDebugTime("sdlDrawWindowSurface\n");
         SDL_RenderTexture(priv->renderer, priv->gui, NULL, NULL);
     }
 }

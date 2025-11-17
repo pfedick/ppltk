@@ -49,7 +49,7 @@ static void* getRenderer(void* privatedata) { return NULL; }
 static void clearScreen(void* privatedata) {}
 static void presentScreen(void* privatedata) {}
 
-static PRIV_WINDOW_FUNCTIONS defWmFunctions ={
+static PRIV_WINDOW_FUNCTIONS defWmFunctions = {
 		setWindowTitle,
 		setWindowIcon,
 		createSurface,
@@ -65,32 +65,32 @@ static PRIV_WINDOW_FUNCTIONS defWmFunctions ={
 
 Window::DisplayMode::DisplayMode()
 {
-	width=0;
-	height=0;
-	refresh_rate=0;
+	width = 0;
+	height = 0;
+	refresh_rate = 0;
 }
 
 Window::DisplayMode::DisplayMode(const ppl7::grafix::RGBFormat& format, int width, int height, int refresh_rate)
 {
-	this->format=format;
-	this->width=width;
-	this->height=height;
-	this->refresh_rate=refresh_rate;
+	this->format = format;
+	this->width = width;
+	this->height = height;
+	this->refresh_rate = refresh_rate;
 }
 
 
 Window::Window()
 {
-	const WidgetStyle& style=GetWidgetStyle();
-	windowFlags=DefaultWindow;
-	WindowTitle="PPL7 Window";
-	fn=&defWmFunctions;
+	const WidgetStyle& style = GetWidgetStyle();
+	windowFlags = DefaultWindow;
+	WindowTitle = "PPL7 Window";
+	fn = &defWmFunctions;
 	setSize(640, 480);
-	privateData=NULL;
-	wm=NULL;
-	myBackground=style.windowBackgroundColor;
-	keyfocus=this;
-	uiSizeIsFixed=false;
+	privateData = NULL;
+	wm = NULL;
+	myBackground = style.windowBackgroundColor;
+	keyfocus = this;
+	uiSizeIsFixed = false;
 }
 
 Window::~Window()
@@ -100,8 +100,8 @@ Window::~Window()
 
 void Window::setWindowSize(int width, int height)
 {
-	myWindowSize.width=width;
-	myWindowSize.height=height;
+	myWindowSize.width = width;
+	myWindowSize.height = height;
 	if (!uiSizeIsFixed) {
 		setSize(myWindowSize);
 	}
@@ -109,7 +109,7 @@ void Window::setWindowSize(int width, int height)
 
 void Window::setWindowSize(const Size& size)
 {
-	myWindowSize=size;
+	myWindowSize = size;
 	if (!uiSizeIsFixed) {
 		setSize(myWindowSize);
 	}
@@ -150,10 +150,10 @@ void* Window::getPrivateData()
  */
 void Window::setPrivateData(void* data, WindowManager* wm, PRIV_WINDOW_FUNCTIONS* fn)
 {
-	privateData=data;
-	this->wm=wm;
-	if (fn == NULL) this->fn=&defWmFunctions;
-	else this->fn=fn;
+	privateData = data;
+	this->wm = wm;
+	if (fn == NULL) this->fn = &defWmFunctions;
+	else this->fn = fn;
 }
 
 void* Window::getRenderer()
@@ -178,7 +178,7 @@ const RGBFormat& Window::rgbFormat() const
 
 void Window::setRGBFormat(const RGBFormat& format)
 {
-	WindowRGBFormat=format;
+	WindowRGBFormat = format;
 }
 
 
@@ -189,14 +189,14 @@ uint32_t Window::flags() const
 
 void Window::setFlags(uint32_t flags)
 {
-	windowFlags=flags;
+	windowFlags = flags;
 }
 
 void Window::enableFixedUiSize(bool enable, int width, int height)
 {
-	uiSizeIsFixed=enable;
-	myUiSize.width=width;
-	myUiSize.height=height;
+	uiSizeIsFixed = enable;
+	myUiSize.width = width;
+	myUiSize.height = height;
 }
 
 
@@ -218,7 +218,7 @@ const String& Window::windowTitle() const
 
 void Window::setWindowTitle(const String& title)
 {
-	WindowTitle=title;
+	WindowTitle = title;
 	fn->setWindowTitle(privateData, title);
 }
 
@@ -229,7 +229,7 @@ const Drawable& Window::windowIcon() const
 
 void Window::setWindowIcon(const Drawable& icon)
 {
-	WindowIcon=icon;
+	WindowIcon = icon;
 	fn->setWindowIcon(privateData, icon);
 }
 
@@ -240,7 +240,7 @@ const Color& Window::backgroundColor() const
 
 void Window::setBackgroundColor(const Color& c)
 {
-	myBackground=c;
+	myBackground = c;
 	needsRedraw();
 }
 
@@ -252,7 +252,8 @@ String Window::widgetType() const
 void Window::drawWidgets()
 {
 	if (redrawRequired()) {
-		Drawable d=fn->lockWindowSurface(privateData);
+		ppl7::PrintDebugTime("Window::drawWidgets => redraw\n");
+		Drawable d = fn->lockWindowSurface(privateData);
 		draw(d);
 		fn->unlockWindowSurface(privateData);
 	}
@@ -267,7 +268,7 @@ MouseState Window::getMouseState()
 void Window::redrawWidgets()
 {
 	if (redrawRequired()) {
-		Drawable d=fn->lockWindowSurface(privateData);
+		Drawable d = fn->lockWindowSurface(privateData);
 		redraw(d);
 		fn->unlockWindowSurface(privateData);
 	}
