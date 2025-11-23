@@ -568,7 +568,7 @@ namespace ppltk
         }
 
         SDL_SetPointerProperty(SDL_GetWindowProperties(priv->win), "WindowClass", &w);
-        priv->renderer = SDL_CreateRenderer(priv->win, NULL);
+        priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
         if (priv->renderer == 0)
         {
             const char *e = SDL_GetError();
@@ -576,6 +576,7 @@ namespace ppltk
             free(priv);
             throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
         }
+        ppl7::PrintDebug("SDL Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
 
         SDL_StartTextInput(priv->win);
 

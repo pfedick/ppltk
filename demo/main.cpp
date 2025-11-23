@@ -58,10 +58,24 @@ int start(int agrc, char **argv)
         ppl7::grafix::Grafix gfx;
         ppltk::WindowManager_SDL3 wm;
 
+        // Iterate over SDL Renderer
+        int num_render_drivers = SDL_GetNumRenderDrivers();
+        for (int i = 0; i < num_render_drivers; i++)
+        {
+            printf("Driver Name: %s\n", SDL_GetRenderDriver(i));
+        }
+        fflush(stdout);
+
+        int num_gpu_devices = SDL_GetNumGPUDrivers();
+        for (int i = 0; i < num_gpu_devices; i++)
+        {
+            printf("GPU Driver Name: %s\n", SDL_GetGPUDriver(i));
+        }
+
         MainWindow win;
         win.create(1280, 720, false);
 
-        // SDL_Renderer *renderer=(SDL_Renderer*)win.getRenderer();
+                // SDL_Renderer *renderer=(SDL_Renderer*)win.getRenderer();
         while (wm.numWindows() > 0)
         {
             win.updateFrameRate();
