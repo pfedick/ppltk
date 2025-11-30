@@ -41,23 +41,23 @@ using namespace ppl7::grafix;
 Label::Label(const String& text, BorderStyle style)
 	:Frame(style)
 {
-	const WidgetStyle& widgetstyle=GetWidgetStyle();
-	myColor=widgetstyle.labelFontColor;
-	myFont=widgetstyle.labelFont;
+	const WidgetStyle& widgetstyle = GetWidgetStyle();
+	myColor = widgetstyle.labelFontColor;
+	myFont = widgetstyle.labelFont;
 	setTransparent(true);
-	myText=text;
+	myText = text;
 
 }
 
 Label::Label(int x, int y, int width, int height, const String& text, BorderStyle style)
 	:Frame(x, y, width, height)
 {
-	const WidgetStyle& wstyle=GetWidgetStyle();
+	const WidgetStyle& wstyle = GetWidgetStyle();
 	setBorderStyle(style);
-	myColor=wstyle.labelFontColor;
-	myFont=wstyle.labelFont;
+	myColor = wstyle.labelFontColor;
+	myFont = wstyle.labelFont;
 	setTransparent(true);
-	myText=text;
+	myText = text;
 }
 
 Label::~Label()
@@ -73,7 +73,7 @@ const String& Label::text() const
 void Label::setText(const String& text)
 {
 	if (text == myText) return;
-	myText=text;
+	myText = text;
 	needsRedraw();
 	geometryChanged();
 }
@@ -86,7 +86,7 @@ const Color& Label::color() const
 void Label::setColor(const Color& c)
 {
 	if (c == myColor) return;
-	myColor=c;
+	myColor = c;
 	needsRedraw();
 }
 
@@ -97,7 +97,7 @@ const Drawable& Label::icon() const
 
 void Label::setIcon(const Drawable& icon)
 {
-	myIcon=icon;
+	myIcon = icon;
 	needsRedraw();
 	geometryChanged();
 }
@@ -109,7 +109,7 @@ const Font& Label::font() const
 
 void Label::setFont(const Font& font)
 {
-	myFont=font;
+	myFont = font;
 	needsRedraw();
 	geometryChanged();
 }
@@ -131,14 +131,38 @@ Size Label::contentSize() const
 
 ppl7::grafix::Size Label::sizeHint() const
 {
-	// TODO
-	return ppl7::grafix::Size::invalid();
+	ppl7::grafix::Size s(6, 6);
+	ppl7::grafix::Size is = myIcon.size();
+	ppl7::grafix::Size ts = myFont.measure(myText);
+	s.width += is.width;
+	s.width += ts.width;
+	int h = 0;
+	if (is.width > 0)
+	{
+		s.width += 8 + is.width;
+		h = 2 + is.height;
+	}
+	if (ts.width > 0)
+	{
+		s.width += 4 + ts.width;
+		if (h < 2 + ts.height)
+			h = 2 + ts.height;
+	}
+	s.height += h;
+
+	ppl7::grafix::Size min = minSize();
+	if (s.width < min.width) s.width = min.width;
+	if (s.height < min.height) s.height = min.height;
+
+	ppl7::grafix::Size max = maxSize();
+	if (max.width > 0 && s.width > max.width) s.width = max.width;
+	if (max.height > 0 && s.height > max.height) s.height = max.height;
+	return s;
 }
 
 ppl7::grafix::Size Label::minimumSizeHint() const
 {
-	// TODO
-	return ppl7::grafix::Size::invalid();
+	return sizeHint();
 }
 
 
@@ -152,22 +176,23 @@ String Label::widgetType() const
 void Label::paint(Drawable& draw)
 {
 	Frame::paint(draw);
-	Drawable d=clientDrawable(draw);
+	Drawable d = clientDrawable(draw);
 	//printf ("Text: %s, width: %i, height: %i\n",(const char*)myText, d.width(), d.height());
-	int x=0;
+	int x = 0;
 	if (myIcon.isEmpty() == false) {
 		if (myText.isEmpty()) {
 			d.bltAlpha(myIcon, (d.width()) / 2 - myIcon.width() / 2, (d.height()) / 2 - myIcon.height() / 2);
 			return;
 
-		} else {
+		}
+		else {
 			d.bltAlpha(myIcon, x, (d.height()) / 2 - myIcon.height() / 2);
-			x+=4 + myIcon.width();
+			x += 4 + myIcon.width();
 		}
 	}
 	myFont.setColor(myColor);
 	myFont.setOrientation(Font::TOP);
-	Size s=myFont.measure(myText);
+	Size s = myFont.measure(myText);
 	d.print(myFont, x, (d.height() - s.height) >> 1, myText);
 }
 

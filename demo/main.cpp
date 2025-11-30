@@ -192,15 +192,19 @@ void MainWindow::create(int width, int height, bool fullscreen)
     testframe->addChild(input);
 
     ppltk::Label* label = new ppltk::Label(0, 0, 40, 30, "FPS:");
+    ppl7::grafix::Size ss = label->sizeHint();
+    ppl7::PrintDebug("FPS Label: %d x %d\n", ss.width, ss.height);
     layout_menue->addWidget(label);
 
     fpsLabel = new ppltk::Label(40, 0, 80, 30, "0", ppltk::Label::Inset);
+    ss = fpsLabel->sizeHint();
+    ppl7::PrintDebug("FPS: %d x %d\n", ss.width, ss.height);
     layout_menue->addWidget(fpsLabel);
 
     exitButton = new ppltk::Button(menue->width() - 100, 0, 100, 30, "Exit", wm->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
-    ppl7::grafix::Size btnSize = exitButton->sizeHint();
-    ppl7::PrintDebug("Button Size: %dx%d\n", btnSize.width, btnSize.height);
+    ss = exitButton->sizeHint();
+    ppl7::PrintDebug("Button Size: %dx%d\n", ss.width, ss.height);
     layout_menue->addWidget(exitButton);
 }
 

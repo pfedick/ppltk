@@ -219,6 +219,15 @@ ppl7::grafix::Size Button::sizeHint() const
 	}
 	s.height += h;
 
+	ppl7::grafix::Size min = minSize();
+	if (s.width < min.width) s.width = min.width;
+	if (s.height < min.height) s.height = min.height;
+
+	ppl7::grafix::Size max = maxSize();
+	if (max.width > 0 && s.width > max.width) s.width = max.width;
+	if (max.height > 0 && s.height > max.height) s.height = max.height;
+
+
 	return s;
 }
 
