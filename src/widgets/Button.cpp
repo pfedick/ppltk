@@ -28,49 +28,45 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-
 #include "ppltk.h"
 
-
-namespace ppltk {
+namespace ppltk
+{
 
 using namespace ppl7;
 using namespace ppl7::grafix;
 
-
 Button::Button(const String& text, const Drawable& icon)
 {
-	const WidgetStyle& style=GetWidgetStyle();
-	background=style.buttonBackgroundColor;
-	foreground=style.buttonFontColor;
-	myFont=style.buttonFont;
+	const WidgetStyle& style = GetWidgetStyle();
+	background = style.buttonBackgroundColor;
+	foreground = style.buttonFontColor;
+	myFont = style.buttonFont;
 	setClientOffset(3, 3, 3, 3);
-	isDown=false;
-	is_checkable=false;
-	is_checked=false;
-	Text=text;
-	Icon=icon;
+	isDown = false;
+	is_checkable = false;
+	is_checked = false;
+	Text = text;
+	Icon = icon;
 }
 
 Button::Button(int x, int y, int width, int height, const String& text, const Drawable& icon)
 {
-	const WidgetStyle& style=GetWidgetStyle();
-	background=style.buttonBackgroundColor;
-	foreground=style.buttonFontColor;
-	myFont=style.buttonFont;
+	const WidgetStyle& style = GetWidgetStyle();
+	background = style.buttonBackgroundColor;
+	foreground = style.buttonFontColor;
+	myFont = style.buttonFont;
 	create(x, y, width, height);
 	setClientOffset(3, 3, 3, 3);
-	isDown=false;
-	Text=text;
-	Icon=icon;
-	is_checkable=false;
-	is_checked=false;
-
+	isDown = false;
+	Text = text;
+	Icon = icon;
+	is_checkable = false;
+	is_checked = false;
 }
 
 Button::~Button()
 {
-
 }
 
 const String& Button::text() const
@@ -80,7 +76,7 @@ const String& Button::text() const
 
 void Button::setText(const String& text)
 {
-	Text=text;
+	Text = text;
 	needsRedraw();
 	geometryChanged();
 }
@@ -92,10 +88,9 @@ const Drawable& Button::icon() const
 
 void Button::setIcon(const Drawable& icon)
 {
-	Icon=icon;
+	Icon = icon;
 	needsRedraw();
 	geometryChanged();
-
 }
 
 int Button::style() const
@@ -110,7 +105,7 @@ bool Button::isCheckable() const
 
 void Button::setCheckable(bool flag)
 {
-	is_checkable=flag;
+	is_checkable = flag;
 }
 
 bool Button::isChecked() const
@@ -120,9 +115,8 @@ bool Button::isChecked() const
 
 void Button::setChecked(bool flag)
 {
-	is_checked=flag;
+	is_checked = flag;
 }
-
 
 const Color& Button::color() const
 {
@@ -131,7 +125,7 @@ const Color& Button::color() const
 
 void Button::setColor(const Color& c)
 {
-	foreground=c;
+	foreground = c;
 	needsRedraw();
 }
 
@@ -142,7 +136,7 @@ const Color& Button::backgroundColor() const
 
 void Button::setBackgroundColor(const Color& c)
 {
-	background=c;
+	background = c;
 	needsRedraw();
 }
 
@@ -153,7 +147,7 @@ const Font& Button::font() const
 
 void Button::setFont(const Font& font)
 {
-	myFont=font;
+	myFont = font;
 	needsRedraw();
 	geometryChanged();
 }
@@ -165,23 +159,27 @@ String Button::widgetType() const
 
 void Button::mouseDownEvent(MouseEvent* event)
 {
-	if (is_checkable) {
-		is_checked=!is_checked;
+	if (is_checkable)
+	{
+		is_checked = !is_checked;
 		ppltk::Event ev(ppltk::Event::Toggled);
 		ev.setWidget(this);
 		toggledEvent(&ev, is_checked);
 	}
-	isDown=true;
+	isDown = true;
 	needsRedraw();
 	EventHandler::mouseDownEvent(event);
 }
 
 void Button::mouseUpEvent(MouseEvent* event)
 {
-	if (is_checkable) {
-		isDown=is_checked;
-	} else {
-		isDown=false;
+	if (is_checkable)
+	{
+		isDown = is_checked;
+	}
+	else
+	{
+		isDown = false;
 	}
 	needsRedraw();
 	EventHandler::mouseUpEvent(event);
@@ -189,9 +187,11 @@ void Button::mouseUpEvent(MouseEvent* event)
 
 void Button::mouseLeaveEvent(MouseEvent* event)
 {
-	if (!is_checkable) {
-		if (isDown) {
-			isDown=false;
+	if (!is_checkable)
+	{
+		if (isDown)
+		{
+			isDown = false;
 			needsRedraw();
 		}
 	}
@@ -200,16 +200,32 @@ void Button::mouseLeaveEvent(MouseEvent* event)
 
 ppl7::grafix::Size Button::sizeHint() const
 {
-	// TODO
-	return ppl7::grafix::Size::invalid();
+	ppl7::grafix::Size s(6, 6);
+	ppl7::grafix::Size is = Icon.size();
+	ppl7::grafix::Size ts = myFont.measure(Text);
+	s.width += is.width;
+	s.width += ts.width;
+	int h = 0;
+	if (is.width > 0)
+	{
+		s.width += 8 + is.width;
+		h = 2 + is.height;
+	}
+	if (ts.width > 0)
+	{
+		s.width += 4 + ts.width;
+		if (h < 2 + ts.height)
+			h = 2 + ts.height;
+	}
+	s.height += h;
+
+	return s;
 }
 
 ppl7::grafix::Size Button::minimumSizeHint() const
 {
-	// TODO
-	return ppl7::grafix::Size::invalid();
+	return sizeHint();
 }
-
 
 /*
 Size Button::contentSize() const
@@ -228,68 +244,77 @@ Size Button::contentSize() const
 
 void Button::paint(Drawable& draw)
 {
-	Color light=background * 1.8f;
-	Color shadow=background * 0.4f;
-	Color shade1=background * 1.05f;
-	Color shade2=background * 0.95f;
-	Color shade3=background * 0.90f;
-	Color shade4=background * 0.85f;
+	Color light = background * 1.8f;
+	Color shadow = background * 0.4f;
+	Color shade1 = background * 1.05f;
+	Color shade2 = background * 0.95f;
+	Color shade3 = background * 0.90f;
+	Color shade4 = background * 0.85f;
 
-	int w=width() - 1;
-	int h=height() - 1;
-	//draw.cls(background);
+	int w = width() - 1;
+	int h = height() - 1;
+	// draw.cls(background);
 
-	if (isDown) {
-		shade1=background * 1.00f;
-		shade2=background * 0.90f;
-		shade3=background * 0.85f;
-		shade4=background * 0.80f;
+	if (isDown)
+	{
+		shade1 = background * 1.00f;
+		shade2 = background * 0.90f;
+		shade3 = background * 0.85f;
+		shade4 = background * 0.80f;
 	}
 
-	Rect r1=draw.rect();
-	Rect r2=draw.rect();
-	r1.y2-=((r1.y2 - r1.y1) / 2);
-	if (isDown) r1.y2++;
-	r2.y1=r1.y2;
-
+	Rect r1 = draw.rect();
+	Rect r2 = draw.rect();
+	r1.y2 -= ((r1.y2 - r1.y1) / 2);
+	if (isDown)
+		r1.y2++;
+	r2.y1 = r1.y2;
 
 	draw.colorGradient(r1, shade1, shade2, 1);
 	draw.colorGradient(r2, shade3, shade4, 1);
 
-	int x=0;
-	int y=0;
-	if (isDown) {
+	int x = 0;
+	int y = 0;
+	if (isDown)
+	{
 		draw.line(0, 0, w, 0, shadow);
 		draw.line(0, 0, 0, h, shadow);
 		draw.line(0, h, w, h, light);
 		draw.line(w, 0, w, h, light);
 		x++;
 		y++;
-	} else {
+	}
+	else
+	{
 		draw.line(0, 0, w, 0, light);
 		draw.line(0, 0, 0, h, light);
 		draw.line(0, h, w, h, shadow);
 		draw.line(w, 0, w, h, shadow);
 	}
-	Drawable d=clientDrawable(draw);
-	if (Icon.isEmpty() == false) {
-		int icon_x=x + 2;
-		if (Text.isEmpty()) icon_x=(d.width() - Icon.width()) / 2;
+	Drawable d = clientDrawable(draw);
+	if (Icon.isEmpty() == false)
+	{
+		int icon_x = x + 2;
+		if (Text.isEmpty())
+			icon_x = (d.width() - Icon.width()) / 2;
 
-		if (this->isEnabled()) d.bltAlpha(Icon, icon_x, y + (d.height() - Icon.height()) / 2);
-		else d.bltBlend(Icon, 0.5f, icon_x, y + (d.height() - Icon.height()) / 2);
-		x+=6 + Icon.width();
+		if (this->isEnabled())
+			d.bltAlpha(Icon, icon_x, y + (d.height() - Icon.height()) / 2);
+		else
+			d.bltBlend(Icon, 0.5f, icon_x, y + (d.height() - Icon.height()) / 2);
+		x += 6 + Icon.width();
 	}
-	if (Text.notEmpty()) {
-		if (this->isEnabled()) myFont.setColor(foreground);
-		else myFont.setColor(Color::getBlendedf(background, foreground, 0.5f));
+	if (Text.notEmpty())
+	{
+		if (this->isEnabled())
+			myFont.setColor(foreground);
+		else
+			myFont.setColor(Color::getBlendedf(background, foreground, 0.5f));
 		myFont.setOrientation(Font::TOP);
 
-		Size s=myFont.measure(Text);
+		Size s = myFont.measure(Text);
 		d.print(myFont, x, y + ((d.height() - s.height) >> 1), Text);
 	}
-
 }
 
-
-}	// EOF namespace ppltk
+} // EOF namespace ppltk

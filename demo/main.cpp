@@ -35,7 +35,7 @@
 
 #include <SDL3/SDL.h>
 
-int start(int agrc, char **argv)
+int start(int agrc, char** argv)
 {
 
 #ifdef WIN32
@@ -75,7 +75,7 @@ int start(int agrc, char **argv)
         MainWindow win;
         win.create(1280, 720, false);
 
-                // SDL_Renderer *renderer=(SDL_Renderer*)win.getRenderer();
+        // SDL_Renderer *renderer=(SDL_Renderer*)win.getRenderer();
         while (wm.numWindows() > 0)
         {
             win.updateFrameRate();
@@ -87,7 +87,7 @@ int start(int agrc, char **argv)
             wm.handleEvents();
         }
     }
-    catch (ppl7::Exception &e)
+    catch (ppl7::Exception& e)
     {
         e.print();
         return 1;
@@ -132,11 +132,11 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
     ppl7::String debugText;
     debugText.set("Dies ist ein Demo-Text, der über mehrere Zeilen geht.\n"
-                  "Hier die zweite Zeile, danach eine Leerzeile\n\n"
-                  "Und jetzt kommt ein etwas längerer Text ohne Zeilenumbruch. Dieser muss von selbst umbrechen, "
-                  "insbesondere auch, wenn das Fenster verkleinert oder vergrößert wird. Mal schauen, wie gut das "
-                  "klappt, wie man es rendert, und wie man da drin navigieren kann. Ok, das sollte jetzt lang "
-                  "genug sein.");
+        "Hier die zweite Zeile, danach eine Leerzeile\n\n"
+        "Und jetzt kommt ein etwas längerer Text ohne Zeilenumbruch. Dieser muss von selbst umbrechen, "
+        "insbesondere auch, wenn das Fenster verkleinert oder vergrößert wird. Mal schauen, wie gut das "
+        "klappt, wie man es rendert, und wie man da drin navigieren kann. Ok, das sollte jetzt lang "
+        "genug sein.");
 
     int flags = ppltk::Window::DefaultWindow;
     flags |= ppltk::Window::Resizeable;
@@ -150,10 +150,10 @@ void MainWindow::create(int width, int height, bool fullscreen)
 
     menue = new ppltk::Frame(0, 0, this->width(), 32);
     addChild(menue);
-    // ppl7::grafix::Size menueSize=menue->clientSize();
+    // ppl7::grafix::Size menueSize = menue->clientSize();
 
-    // layout_menue = new ppltk::HBoxLayout();
-    // menue->setLayout(layout_menue);
+    layout_menue = new ppltk::HBoxLayout();
+    menue->setLayout(layout_menue);
 
     tab = new ppltk::TabWidget(64, 64, this->width() - 128, this->height() - 92);
     addChild(tab);
@@ -163,7 +163,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     // addChild(testframe);
     tab->addTab(testframe, "Text Input", wm->Toolbar.getDrawable(68));
 
-    ppltk::Widget *w = new ppltk::Widget();
+    ppltk::Widget* w = new ppltk::Widget();
     tab->addTab(w, "zweites Widget");
     smalltext = new ppltk::TextEdit(0, 40, 200, 400);
     smalltext->setText(debugText);
@@ -175,7 +175,7 @@ void MainWindow::create(int width, int height, bool fullscreen)
     w = new ppltk::Widget();
     tab->addTab(w, "drittes Widget");
 
-    ppltk::Scrollbar *scroll = new ppltk::Scrollbar(0, 0, 25, 500);
+    ppltk::Scrollbar* scroll = new ppltk::Scrollbar(0, 0, 25, 500);
     scroll->setSize(100);
     scroll->setVisibleItems(25);
     w->addChild(scroll);
@@ -191,36 +191,38 @@ void MainWindow::create(int width, int height, bool fullscreen)
     input = new ppltk::LineInput(0, 0, testframe->clientSize().width, 30, "Ein einzeiliger Test Text");
     testframe->addChild(input);
 
-    ppltk::Label *label = new ppltk::Label(0, 0, 40, 30, "FPS:");
-    menue->addChild(label);
+    ppltk::Label* label = new ppltk::Label(0, 0, 40, 30, "FPS:");
+    layout_menue->addWidget(label);
 
     fpsLabel = new ppltk::Label(40, 0, 80, 30, "0", ppltk::Label::Inset);
-    menue->addChild(fpsLabel);
+    layout_menue->addWidget(fpsLabel);
 
     exitButton = new ppltk::Button(menue->width() - 100, 0, 100, 30, "Exit", wm->Toolbar.getDrawable(68));
     exitButton->setEventHandler(this);
-    menue->addChild(exitButton);
+    ppl7::grafix::Size btnSize = exitButton->sizeHint();
+    ppl7::PrintDebug("Button Size: %dx%d\n", btnSize.width, btnSize.height);
+    layout_menue->addWidget(exitButton);
 }
 
-void MainWindow::closeEvent(ppltk::Event *event)
+void MainWindow::closeEvent(ppltk::Event* event)
 {
-    ppltk::WindowManager *wm = ppltk::GetWindowManager();
+    ppltk::WindowManager* wm = ppltk::GetWindowManager();
     wm->destroyWindow(*this);
     event->accept();
 }
 
-void MainWindow::mouseClickEvent(ppltk::MouseEvent *event)
+void MainWindow::mouseClickEvent(ppltk::MouseEvent* event)
 {
-    Widget *w = event->widget();
+    Widget* w = event->widget();
     if (w == exitButton)
     {
-        ppltk::WindowManager *wm = ppltk::GetWindowManager();
+        ppltk::WindowManager* wm = ppltk::GetWindowManager();
         wm->destroyWindow(*this);
         event->accept();
     }
 }
 
-void MainWindow::resizeEvent(ppltk::ResizeEvent *event)
+void MainWindow::resizeEvent(ppltk::ResizeEvent* event)
 {
     return;
     if (tab)
@@ -279,7 +281,7 @@ int WinMain()
 }
 #endif
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     return start(argc, argv);
 }

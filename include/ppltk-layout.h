@@ -40,9 +40,8 @@
 
 #include <list>
 
-
-
-namespace ppltk {
+namespace ppltk
+{
 
 class Widget;
 
@@ -50,6 +49,7 @@ class Margins
 {
 private:
     int _left, _right, _top, _bottom;
+
 public:
     Margins();
     Margins(int left, int top, int right, int bottom);
@@ -89,18 +89,17 @@ Margins operator/(const Margins& margins, int divisor);
 Margins operator/(const Margins& margins, float divisor);
 Margins operator|(const Margins& m1, const Margins& m2);
 
-
-
 class Layout
 {
     friend class Widget;
+
 private:
     Widget* myParent;
     Margins myMargins;
     bool isValid;
 
 public:
-    Layout(Widget* parent=NULL);
+    Layout(Widget* parent = NULL);
     virtual ~Layout();
     Widget* parent() const;
 
@@ -110,41 +109,42 @@ public:
     void invalidate();
     void recalculate();
 
-    virtual void update()=0;
+    virtual void update() = 0;
 
-    virtual int count() const=0;
-    virtual ppl7::grafix::Size sizeHint() const=0;
-    virtual ppl7::grafix::Size maximumSize() const=0;
-    virtual ppl7::grafix::Size minimumSize() const=0;
-
-
-
-
+    virtual int count() const = 0;
+    virtual ppl7::grafix::Size sizeHint() const = 0;
+    virtual ppl7::grafix::Size maximumSize() const = 0;
+    virtual ppl7::grafix::Size minimumSize() const = 0;
 };
 
 class BoxLayout : public Layout
 {
 public:
-    enum class Direction {
-        LeftToRight=0,
-        TopToBottom=2
+    enum class Direction
+    {
+        LeftToRight = 0,
+        TopToBottom = 2
     };
 
 private:
-    enum class ItemType {
+    enum class ItemType
+    {
         Widget,
         Layout
     };
 
-    class SpaceItem {
+    class SpaceItem
+    {
     public:
         int size;
     };
 
-    class Item {
+    class Item
+    {
     public:
         ItemType type;
-        union {
+        union
+        {
             Widget* widget;
             Layout* layout;
         };
@@ -156,12 +156,12 @@ private:
     int mySpacing;
 
 public:
-    BoxLayout(Direction dir, Widget* parent=NULL);
+    BoxLayout(Direction dir, Widget* parent = NULL);
     virtual ~BoxLayout();
     void addWidget(Widget* widget);
     void addLayout(Layout* layout);
     void addSpacing(int size);
-    //void addStretch(int stretch=0);
+    // void addStretch(int stretch=0);
 
     void setSpacing(int spacing);
     int spacing() const;
@@ -171,8 +171,6 @@ public:
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size maximumSize() const override;
     ppl7::grafix::Size minimumSize() const override;
-
-
 };
 
 class HBoxLayout : public BoxLayout
@@ -182,7 +180,6 @@ public:
     HBoxLayout();
     HBoxLayout(Widget* parent);
     virtual ~HBoxLayout();
-
 };
 
 class VBoxLayout : public BoxLayout
