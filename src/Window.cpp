@@ -28,15 +28,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-
 #include "ppltk.h"
 
-
-namespace ppltk {
+namespace ppltk
+{
 
 using namespace ppl7;
 using namespace ppl7::grafix;
-
 
 static void setWindowTitle(void* privatedata, const String& Title) {}
 static void setWindowIcon(void* privatedata, const Drawable& Icon) {}
@@ -50,18 +48,16 @@ static void clearScreen(void* privatedata) {}
 static void presentScreen(void* privatedata) {}
 
 static PRIV_WINDOW_FUNCTIONS defWmFunctions = {
-		setWindowTitle,
-		setWindowIcon,
-		createSurface,
-		createTexture,
-		lockWindowSurface,
-		unlockWindowSurface,
-		drawWindowSurface,
-		getRenderer,
-		clearScreen,
-		presentScreen
-};
-
+	setWindowTitle,
+	setWindowIcon,
+	createSurface,
+	createTexture,
+	lockWindowSurface,
+	unlockWindowSurface,
+	drawWindowSurface,
+	getRenderer,
+	clearScreen,
+	presentScreen };
 
 Window::DisplayMode::DisplayMode()
 {
@@ -77,7 +73,6 @@ Window::DisplayMode::DisplayMode(const ppl7::grafix::RGBFormat& format, int widt
 	this->height = height;
 	this->refresh_rate = refresh_rate;
 }
-
 
 Window::Window()
 {
@@ -95,14 +90,16 @@ Window::Window()
 
 Window::~Window()
 {
-	if (wm != NULL && privateData != NULL) wm->destroyWindow(*this);
+	if (wm != NULL && privateData != NULL)
+		wm->destroyWindow(*this);
 }
 
 void Window::setWindowSize(int width, int height)
 {
 	myWindowSize.width = width;
 	myWindowSize.height = height;
-	if (!uiSizeIsFixed) {
+	if (!uiSizeIsFixed)
+	{
 		setSize(myWindowSize);
 	}
 }
@@ -110,7 +107,8 @@ void Window::setWindowSize(int width, int height)
 void Window::setWindowSize(const Size& size)
 {
 	myWindowSize = size;
-	if (!uiSizeIsFixed) {
+	if (!uiSizeIsFixed)
+	{
 		setSize(myWindowSize);
 	}
 }
@@ -119,8 +117,6 @@ const Size& Window::windowSize() const
 {
 	return myWindowSize;
 }
-
-
 
 /*!\brief Private Daten des Window-Managers
  *
@@ -152,8 +148,10 @@ void Window::setPrivateData(void* data, WindowManager* wm, PRIV_WINDOW_FUNCTIONS
 {
 	privateData = data;
 	this->wm = wm;
-	if (fn == NULL) this->fn = &defWmFunctions;
-	else this->fn = fn;
+	if (fn == NULL)
+		this->fn = &defWmFunctions;
+	else
+		this->fn = fn;
 }
 
 void* Window::getRenderer()
@@ -181,7 +179,6 @@ void Window::setRGBFormat(const RGBFormat& format)
 	WindowRGBFormat = format;
 }
 
-
 uint32_t Window::flags() const
 {
 	return windowFlags;
@@ -199,7 +196,6 @@ void Window::enableFixedUiSize(bool enable, int width, int height)
 	myUiSize.height = height;
 }
 
-
 bool Window::hasFixedUiSize() const
 {
 	return uiSizeIsFixed;
@@ -207,7 +203,8 @@ bool Window::hasFixedUiSize() const
 
 const Size& Window::uiSize() const
 {
-	if (uiSizeIsFixed) return myUiSize;
+	if (uiSizeIsFixed)
+		return myUiSize;
 	return size();
 }
 
@@ -251,8 +248,9 @@ String Window::widgetType() const
 
 void Window::drawWidgets()
 {
-	if (redrawRequired()) {
-		ppl7::PrintDebugTime("Window::drawWidgets => redraw\n");
+	if (redrawRequired())
+	{
+		// ppl7::PrintDebugTime("Window::drawWidgets => redraw\n");
 		Drawable d = fn->lockWindowSurface(privateData);
 		draw(d);
 		fn->unlockWindowSurface(privateData);
@@ -267,7 +265,8 @@ MouseState Window::getMouseState()
 
 void Window::redrawWidgets()
 {
-	if (redrawRequired()) {
+	if (redrawRequired())
+	{
 		Drawable d = fn->lockWindowSurface(privateData);
 		redraw(d);
 		fn->unlockWindowSurface(privateData);
@@ -283,7 +282,8 @@ void Window::paint(Drawable& draw)
 void Window::setPos(int x, int y)
 {
 	Widget::setPos(x, y);
-	if (wm) {
+	if (wm)
+	{
 		wm->setWindowPosition(*this, x, y);
 	}
 }
@@ -295,10 +295,9 @@ void Window::setPos(const Point& p)
 
 void Window::setWindowDisplayMode(const DisplayMode& mode)
 {
-	if (!wm) return;
+	if (!wm)
+		return;
 	wm->setWindowDisplayMode(*this, mode);
 }
 
-
-
-}	// EOF namespace ppltk
+} // EOF namespace ppltk
