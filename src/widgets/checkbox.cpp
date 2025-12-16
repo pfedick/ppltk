@@ -40,13 +40,14 @@ using namespace ppl7::grafix;
 CheckBox::CheckBox()
 	: ppltk::Label()
 {
-	ischecked=false;
+	ischecked = false;
 }
 
 CheckBox::CheckBox(int x, int y, int width, int height, const ppl7::String& text, bool checked) // @suppress("Class members should be properly initialized")
 	: ppltk::Label(x, y, width, height, text)
 {
-	ischecked=checked;
+	ischecked = checked;
+	setName("CheckBox");
 }
 
 CheckBox::~CheckBox()
@@ -66,7 +67,7 @@ bool CheckBox::checked() const
 
 void CheckBox::setChecked(bool checked)
 {
-	ischecked=checked;
+	ischecked = checked;
 	needsRedraw();
 	parentMustRedraw();
 }
@@ -74,16 +75,16 @@ void CheckBox::setChecked(bool checked)
 
 void CheckBox::paint(ppl7::grafix::Drawable& draw)
 {
-	int s=draw.height() * 3 / 5;
-	int sh=s / 2;
+	int s = draw.height() * 3 / 5;
+	int sh = s / 2;
 	//draw.drawRect(0, 0, draw.width(), draw.height(), ppl7::grafix::Color(255, 0, 0, 255));
-	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
-	int x=s + (s / 3);
-	ppl7::grafix::Drawable d=draw.getDrawable(x, 0, draw.width(), draw.height());
+	const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
+	int x = s + (s / 3);
+	ppl7::grafix::Drawable d = draw.getDrawable(x, 0, draw.width(), draw.height());
 	//d.cls();
 	Label::paint(d);
-	int y1=draw.height() / 2 - sh;
-	int y2=draw.height() / 2 + sh;
+	int y1 = draw.height() / 2 - sh;
+	int y2 = draw.height() / 2 + sh;
 	draw.drawRect(2, y1, 2 + s, y2, style.frameBorderColorLight);
 	draw.drawRect(3, y1 + 1, 1 + s, y2 - 1, style.frameBorderColorLight);
 	if (ischecked) draw.fillRect(5, y1 + 3, 2 + s - 3, y2 - 3, this->color());
@@ -91,7 +92,7 @@ void CheckBox::paint(ppl7::grafix::Drawable& draw)
 
 void CheckBox::mouseDownEvent(ppltk::MouseEvent* event)
 {
-	ischecked=!ischecked;
+	ischecked = !ischecked;
 	needsRedraw();
 	ppltk::Event ev(ppltk::Event::Toggled);
 	ev.setWidget(this);

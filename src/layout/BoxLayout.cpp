@@ -106,12 +106,14 @@ void BoxLayout::addWidget(Widget* widget)
     parent()->addChild(widget);
 }
 
+/*
 void BoxLayout::addLayout(Layout* layout)
 {
     if (!parent()) return; // Wieso?
     item_list.push_back(Item(layout));
     invalidate();
 }
+*/
 
 void BoxLayout::addSpacing(int size)
 {
@@ -150,18 +152,77 @@ ppl7::grafix::Size BoxLayout::minimumSize() const
 
 void BoxLayout::update()
 {
+    //ppl7::PrintDebug("BoxLayout::update() called for layout");
     std::list<Item>::iterator it;
     const Margins& m = contentsMargins();
+    Size totalSize = parent()->clientSize();
+    //ppl7::PrintDebug("Client Size: %d x %d\n", totalSize.width, totalSize.height);
+    //ppl7::PrintDebug("Margins: L:%d T:%d R:%d B:%d, mySpacing:%d\n", m.left(), m.top(), m.right(), m.bottom(), mySpacing);
+    totalSize.width -= (m.left() + m.right());
+    totalSize.height -= (m.top() + m.bottom());
+    //ppl7::PrintDebug("Usable Size: %d x %d\n", totalSize.width, totalSize.height);
+
     int x = m.left();
     int y = m.top();
-    for (it = item_list.begin();it != item_list.end();++it) {
-        x += mySpacing;
+    // Evaluate sizes
+    int items_total_width = 0;
+    int spacers_count = 0;
+    int item_count = 0;
+    for (auto it = item_list.begin();it != item_list.end();++it) {
         if (it->type == ItemType::Widget) {
-            it->widget->setPos(x, y);
-            it->widget->setSize(50, 30);
+            Size s = it->widget->sizeHint();
+            //ppl7::PrintDebug("Item Size Hint: %d x %d\n", s.width, s.height);
+            items_total_width += s.width;
+            items_total_width += mySpacing;
+            it->sizeHint = s;
+            item_count++;
+        }
+        else if (it->type == ItemType::Spacer) {
+            if (it->spacer->hPolicy == SizePolicy::Fixed) {
+                items_total_width += it->spacer->width;
+                items_total_width += mySpacing;
+                it->sizeHint.setWidth(it->spacer->width);
+            }
+            else {
+                spacers_count++;
+            }
         }
     }
+    //ppl7::PrintDebug("Items total width: %d\n", items_total_width);
+    // Set positions and sizes
 
+    int freespace = totalSize.width - items_total_width;
+    if (freespace < 0) freespace = 0;
+    //ppl7::PrintDebug("Freespace: %d\n", freespace);
+
+    int remaining_width = totalSize.width;
+
+    for (it = item_list.begin();it != item_list.end();++it) {
+        if (it->type == ItemType::Widget) {
+            it->widget->setPos(x, y);
+            int w = it->sizeHint.width;
+            if (!spacers_count) {
+                // Verteile den freien Platz auf die Widgets
+                w = remaining_width / item_count;
+                if (w < it->sizeHint.width) w = it->sizeHint.width;
+                item_count--;
+                remaining_width -= w;
+            }
+            it->widget->setSize(w, totalSize.height);
+            x += (w + mySpacing);
+        }
+        else if (it->type == ItemType::Spacer) {
+            if (it->spacer->hPolicy == SizePolicy::Fixed) {
+                x += it->spacer->width;
+                x += mySpacing;
+            }
+            else {
+                int spacer_width = freespace / spacers_count;
+                x += spacer_width;
+                x += mySpacing;
+            }
+        }
+    }
 }
 
 }	// EOF namespace ppltk

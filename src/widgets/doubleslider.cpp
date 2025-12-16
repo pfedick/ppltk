@@ -41,42 +41,48 @@ using namespace ppl7::grafix;
 DoubleAbstractSlider::DoubleAbstractSlider(int x, int y, int width, int height)
     : ppltk::Widget()
 {
+    setName("DoubleAbstractSlider");
     create(x, y, width, height);
     setClientOffset(0, 0, 0, 0);
-    min=0.0f;
-    max=1.0f;
-    current_value=0.0f;
-    my_steps=0.1f;
+    min = 0.0f;
+    max = 1.0f;
+    current_value = 0.0f;
+    my_steps = 0.1f;
 }
 
 
+String DoubleAbstractSlider::widgetType() const
+{
+    return String("DoubleAbstractSlider");
+}
+
 void DoubleAbstractSlider::setMinimum(double value)
 {
-    min=value;
+    min = value;
 }
 
 void DoubleAbstractSlider::setMaximum(double value)
 {
-    max=value;
+    max = value;
 }
 
 void DoubleAbstractSlider::setSteps(double value)
 {
-    my_steps=value;
+    my_steps = value;
 }
 
 void DoubleAbstractSlider::setLimits(double min, double max)
 {
-    this->min=min;
-    this->max=max;
+    this->min = min;
+    this->max = max;
 }
 
 void DoubleAbstractSlider::setValue(double value)
 {
     if (value == current_value) return;
-    if (value >= min && value <= max) current_value=value;
-    if (value < min) current_value=min;
-    if (value > max) current_value=max;
+    if (value >= min && value <= max) current_value = value;
+    if (value < min) current_value = min;
+    if (value > max) current_value = max;
     parentMustRedraw();
     needsRedraw();
     sliderValueChanged(current_value);
@@ -104,8 +110,8 @@ double DoubleAbstractSlider::steps() const
 
 double DoubleAbstractSlider::stepSize() const
 {
-    int step=(max - min) / my_steps;
-    if (step < 1) step=1;
+    int step = (max - min) / my_steps;
+    if (step < 1) step = 1;
     return step;
 }
 
@@ -114,27 +120,33 @@ double DoubleAbstractSlider::stepSize() const
 DoubleHorizontalSlider::DoubleHorizontalSlider(int x, int y, int width, int height)
     : DoubleAbstractSlider(x, y, width, height)
 {
-    drag_started=false;
-    start_x=0;
-    spinbox=NULL;
+    setName("DoubleHorizontalSlider");
+    drag_started = false;
+    start_x = 0;
+    spinbox = NULL;
 }
 
 DoubleHorizontalSlider::~DoubleHorizontalSlider()
 {
     if (drag_started) {
-        drag_started=false;
+        drag_started = false;
         ppltk::GetWindowManager()->releaseMouse(this);
     }
+}
+
+String DoubleHorizontalSlider::widgetType() const
+{
+    return String("DoubleHorizontalSlider");
 }
 
 void DoubleHorizontalSlider::enableSpinBox(bool enabled, double stepsize, int decimals, int width)
 {
     if (spinbox) delete spinbox;
-    spinbox=NULL;
-    start_x=0;
+    spinbox = NULL;
+    start_x = 0;
     if (enabled) {
-        start_x=width + 10;
-        spinbox=new DoubleSpinBox(0, 0, width, height(), value(), decimals);
+        start_x = width + 10;
+        spinbox = new DoubleSpinBox(0, 0, width, height(), value(), decimals);
         spinbox->setLimits(minimum(), maximum());
         spinbox->setStepSize(stepsize);
         spinbox->setValue(value());
@@ -166,32 +178,33 @@ void DoubleHorizontalSlider::valueChangedEvent(ppltk::Event* event, double value
 
 void DoubleHorizontalSlider::paint(ppl7::grafix::Drawable& draw)
 {
-    const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
+    const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
 
-    bool has_focus=hasFocus();
-    int y1=draw.height() * 1 / 5;
-    int y2=draw.height() * 4 / 5;
-    int h=y2 - y1;
-    int draw_range=draw.width() - h - start_x;
-    double slider_range=maximum() - minimum();
-    int x1=start_x + (value() - minimum()) * draw_range / slider_range;
-    int x2=x1 + h;
+    bool has_focus = hasFocus();
+    int y1 = draw.height() * 1 / 5;
+    int y2 = draw.height() * 4 / 5;
+    int h = y2 - y1;
+    int draw_range = draw.width() - h - start_x;
+    double slider_range = maximum() - minimum();
+    int x1 = start_x + (value() - minimum()) * draw_range / slider_range;
+    int x2 = x1 + h;
     slider_pos.setRect(x1, y1, h, h);
 
 
-    y1=draw.height() * 2 / 5;
-    y2=draw.height() * 3 / 5;
+    y1 = draw.height() * 2 / 5;
+    y2 = draw.height() * 3 / 5;
 
     draw.fillRect(start_x, y1, draw.width(), y2, style.buttonBackgroundColor);
     draw.fillRect(start_x, y1, x1, y2, style.sliderHighlightColor);
     draw.drawRect(start_x, y1, draw.width(), y2, style.frameBorderColorLight);
 
-    y1=draw.height() * 1 / 5;
-    y2=draw.height() * 4 / 5;
+    y1 = draw.height() * 1 / 5;
+    y2 = draw.height() * 4 / 5;
 
     if (has_focus) {
         draw.fillRect(x1, y1, x2, y2, style.sliderSelectedColor);
-    } else {
+    }
+    else {
         draw.fillRect(x1, y1, x2, y2, style.windowBackgroundColor);
     }
     draw.drawRect(x1, y1, x2, y2, style.frameBorderColorLight);
@@ -204,16 +217,18 @@ void DoubleHorizontalSlider::mouseDownEvent(ppltk::MouseEvent* event)
     if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
         //printf("HorizontalSlider::mouseDownEvent: %d, %d\n", event->p.x, event->p.y);
         if (event->p.inside(slider_pos)) {
-            drag_started=true;
-            drag_offset=event->p.x - slider_pos.x1 + start_x;
-            drag_start_pos=event->p;
+            drag_started = true;
+            drag_offset = event->p.x - slider_pos.x1 + start_x;
+            drag_start_pos = event->p;
             ppltk::GetWindowManager()->grabMouse(this);
-        } else if (event->p.x < slider_pos.x1 && event->p.x>start_x) {
+        }
+        else if (event->p.x < slider_pos.x1 && event->p.x>start_x) {
             setValue(value() - stepSize());
             ppltk::Event ev(ppltk::Event::ValueChanged);
             ev.setWidget(this);
             valueChangedEvent(&ev, value());
-        } else if (event->p.x > slider_pos.x2) {
+        }
+        else if (event->p.x > slider_pos.x2) {
             setValue(value() + stepSize());
             ppltk::Event ev(ppltk::Event::ValueChanged);
             ev.setWidget(this);
@@ -225,7 +240,7 @@ void DoubleHorizontalSlider::mouseDownEvent(ppltk::MouseEvent* event)
 void DoubleHorizontalSlider::lostFocusEvent(ppltk::FocusEvent* event)
 {
     if (drag_started) {
-        drag_started=false;
+        drag_started = false;
         ppltk::GetWindowManager()->releaseMouse(this);
     }
 }
@@ -233,7 +248,7 @@ void DoubleHorizontalSlider::lostFocusEvent(ppltk::FocusEvent* event)
 void DoubleHorizontalSlider::mouseUpEvent(ppltk::MouseEvent* event)
 {
     if (drag_started) {
-        drag_started=false;
+        drag_started = false;
         ppltk::GetWindowManager()->releaseMouse(this);
     }
 }
@@ -242,19 +257,20 @@ void DoubleHorizontalSlider::mouseMoveEvent(ppltk::MouseEvent* event)
 {
     if (event->buttonMask & ppltk::MouseEvent::MouseButton::Left) {
         if (drag_started) {
-            int y1=height() * 1 / 5;
-            int y2=height() * 4 / 5;
-            int h=y2 - y1;
-            int draw_range=width() - h - start_x;
-            double v=minimum() + (event->p.x - drag_offset) * (maximum() - minimum()) / draw_range;
+            int y1 = height() * 1 / 5;
+            int y2 = height() * 4 / 5;
+            int h = y2 - y1;
+            int draw_range = width() - h - start_x;
+            double v = minimum() + (event->p.x - drag_offset) * (maximum() - minimum()) / draw_range;
             setValue(v);
             ppltk::Event ev(ppltk::Event::ValueChanged);
             ev.setWidget(this);
             valueChangedEvent(&ev, value());
 
         }
-    } else if (drag_started) {
-        drag_started=false;
+    }
+    else if (drag_started) {
+        drag_started = false;
         ppltk::GetWindowManager()->releaseMouse(this);
     }
 
@@ -267,7 +283,8 @@ void DoubleHorizontalSlider::mouseWheelEvent(ppltk::MouseEvent* event)
         ppltk::Event ev(ppltk::Event::ValueChanged);
         ev.setWidget(this);
         valueChangedEvent(&ev, value());
-    } else if (event->wheel.y > 0 && value() < maximum()) {
+    }
+    else if (event->wheel.y > 0 && value() < maximum()) {
         setValue(value() + stepSize());
         ppltk::Event ev(ppltk::Event::ValueChanged);
         ev.setWidget(this);

@@ -40,23 +40,25 @@ using namespace ppl7::grafix;
 
 Frame::Frame(BorderStyle style)
 {
-	const WidgetStyle& widgetstyle=GetWidgetStyle();
-	myBorderStyle=Upset;
-	myBackground=widgetstyle.frameBackgroundColor;
-	myBorderColorLight=widgetstyle.frameBorderColorLight;
-	myBorderColorShadow=widgetstyle.frameBorderColorShadow;
-	myBorderStyle=style;
+	setName("Frame");
+	const WidgetStyle& widgetstyle = GetWidgetStyle();
+	myBorderStyle = Upset;
+	myBackground = widgetstyle.frameBackgroundColor;
+	myBorderColorLight = widgetstyle.frameBorderColorLight;
+	myBorderColorShadow = widgetstyle.frameBorderColorShadow;
+	myBorderStyle = style;
 	setTransparent(false);
 	setClientOffset(3, 3, 3, 3);
 }
 
 Frame::Frame(int x, int y, int width, int height, BorderStyle style)
 {
-	const WidgetStyle& wstyle=GetWidgetStyle();
-	myBorderStyle=style;
-	myBackground=wstyle.frameBackgroundColor;
-	myBorderColorLight=wstyle.frameBorderColorLight;
-	myBorderColorShadow=wstyle.frameBorderColorShadow;
+	setName("Frame");
+	const WidgetStyle& wstyle = GetWidgetStyle();
+	myBorderStyle = style;
+	myBackground = wstyle.frameBackgroundColor;
+	myBorderColorLight = wstyle.frameBorderColorLight;
+	myBorderColorShadow = wstyle.frameBorderColorShadow;
 	create(x, y, width, height);
 	setTransparent(false);
 	setClientOffset(3, 3, 3, 3);
@@ -74,7 +76,7 @@ Frame::BorderStyle Frame::borderStyle() const
 
 void Frame::setBorderStyle(BorderStyle s)
 {
-	myBorderStyle=s;
+	myBorderStyle = s;
 	needsRedraw();
 }
 
@@ -85,7 +87,7 @@ const Color& Frame::backgroundColor() const
 
 void Frame::setBackgroundColor(const Color& c)
 {
-	myBackground=c;
+	myBackground = c;
 	needsRedraw();
 }
 
@@ -96,50 +98,50 @@ const Color& Frame::borderColorLight() const
 
 void Frame::setBorderColorLight(const Color& c)
 {
-	myBorderColorLight=c;
+	myBorderColorLight = c;
 	needsRedraw();
 }
 
 void Frame::setBorderColorShadow(const Color& c)
 {
-	myBorderColorShadow=c;
+	myBorderColorShadow = c;
 	needsRedraw();
 }
 
 void Frame::paint(Drawable& draw)
 {
 	Color bg;
-	int w=width() - 1;
-	int h=height() - 1;
-	bool myTransparent=isTransparent();
+	int w = width() - 1;
+	int h = height() - 1;
+	bool myTransparent = isTransparent();
 	switch (myBorderStyle) {
-		case NoBorder:
-			if (!myTransparent) draw.cls(myBackground);
-			break;
-		case Normal:
-			if (!myTransparent) draw.cls(myBackground);
-			draw.drawRect(0, 0, w, h, myBorderColorShadow);
-			break;
-		case Upset:
-			if (!myTransparent) {
-				bg=myBackground;
-				draw.cls(bg);
-			}
-			draw.line(0, 0, w, 0, myBorderColorLight);
-			draw.line(0, 0, 0, h, myBorderColorLight);
-			draw.line(0, h, w, h, myBorderColorShadow);
-			draw.line(w, 0, w, h, myBorderColorShadow);
-			break;
-		case Inset:
-			if (!myTransparent) {
-				bg=myBackground;
-				draw.cls(bg);
-			}
-			draw.line(0, 0, w, 0, myBorderColorShadow);
-			draw.line(0, 0, 0, h, myBorderColorShadow);
-			draw.line(0, h, w, h, myBorderColorLight);
-			draw.line(w, 0, w, h, myBorderColorLight);
-			break;
+	case NoBorder:
+		if (!myTransparent) draw.cls(myBackground);
+		break;
+	case Normal:
+		if (!myTransparent) draw.cls(myBackground);
+		draw.drawRect(0, 0, w, h, myBorderColorShadow);
+		break;
+	case Upset:
+		if (!myTransparent) {
+			bg = myBackground;
+			draw.cls(bg);
+		}
+		draw.line(0, 0, w, 0, myBorderColorLight);
+		draw.line(0, 0, 0, h, myBorderColorLight);
+		draw.line(0, h, w, h, myBorderColorShadow);
+		draw.line(w, 0, w, h, myBorderColorShadow);
+		break;
+	case Inset:
+		if (!myTransparent) {
+			bg = myBackground;
+			draw.cls(bg);
+		}
+		draw.line(0, 0, w, 0, myBorderColorShadow);
+		draw.line(0, 0, 0, h, myBorderColorShadow);
+		draw.line(0, h, w, h, myBorderColorLight);
+		draw.line(w, 0, w, h, myBorderColorLight);
+		break;
 	}
 	//Rect r=this->clientRect();
 	//draw.drawRect(r,Color(255,0,0,255));

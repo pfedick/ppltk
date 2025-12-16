@@ -41,6 +41,7 @@ using namespace ppl7::grafix;
 Label::Label(const String& text, BorderStyle style)
 	:Frame(style)
 {
+	setName("Label");
 	const WidgetStyle& widgetstyle = GetWidgetStyle();
 	myColor = widgetstyle.labelFontColor;
 	myFont = widgetstyle.labelFont;
@@ -52,6 +53,7 @@ Label::Label(const String& text, BorderStyle style)
 Label::Label(int x, int y, int width, int height, const String& text, BorderStyle style)
 	:Frame(x, y, width, height)
 {
+	setName("Label");
 	const WidgetStyle& wstyle = GetWidgetStyle();
 	setBorderStyle(style);
 	myColor = wstyle.labelFontColor;
@@ -134,8 +136,8 @@ ppl7::grafix::Size Label::sizeHint() const
 	ppl7::grafix::Size s(6, 6);
 	ppl7::grafix::Size is = myIcon.size();
 	ppl7::grafix::Size ts = myFont.measure(myText);
-	s.width += is.width;
-	s.width += ts.width;
+	//s.width += is.width;
+	//s.width += ts.width;
 	int h = 0;
 	if (is.width > 0)
 	{

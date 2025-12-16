@@ -56,7 +56,7 @@ Widget::Widget()
 	MinSize.width = 0;
 	MinSize.height = 0;
 	use_own_drawbuffer = false;
-	myName.set("unknown");
+	myName.set("Widget");
 }
 
 Widget::Widget(int x, int y, int width, int height)
@@ -77,7 +77,7 @@ Widget::Widget(int x, int y, int width, int height)
 	MinSize.width = 0;
 	MinSize.height = 0;
 	use_own_drawbuffer = false;
-	myName.set("unknown");
+	myName.set("Widget");
 	create(x, y, width, height);
 }
 
@@ -91,6 +91,10 @@ Widget::~Widget()
 		delete(child);
 	}
 	childs.clear();
+	if (layoutParams.myLayout) {
+		delete layoutParams.myLayout;
+		layoutParams.myLayout = NULL;
+	}
 }
 
 void Widget::setLayout(Layout* layout)
@@ -105,27 +109,6 @@ void Widget::setDebugPaint(bool debug)
 {
 	depug_paint = debug;
 }
-
-Layout* Widget::layout() const
-{
-	return layoutParams.myLayout;
-}
-
-void Widget::invalidateLayout()
-{
-	if (layoutParams.isValid) {
-		layoutParams.isValid = false;
-		if (layoutParams.myLayout) layoutParams.myLayout->isValid = false;
-		needsRedraw();
-		if (parent) parent->invalidateLayout();
-	}
-}
-
-void Widget::recalculateLayout()
-{
-
-}
-
 
 void Widget::updateDrawbuffer()
 {
@@ -599,7 +582,6 @@ Size Widget::clientSize() const
 void Widget::draw(Drawable& d)
 {
 	if (!visible) return;
-	if (layoutParams.myLayout && layoutParams.myLayout->isValid == false) layoutParams.myLayout->recalculate();
 	if (needsredraw == false && child_needsredraw == false) return;
 	std::list<Widget*>::iterator it;
 	Drawable mycd = drawable(d);
@@ -763,5 +745,38 @@ bool Widget::hasFocus() const
 	if (GetWindowManager()->getKeyboardFocus() == this) return true;
 	return false;
 }
+
+
+Layout* Widget::layout() const
+{
+	return layoutParams.myLayout;
+}
+
+void Widget::invalidateLayout()
+{
+	if (layoutParams.isValid) {
+		layoutParams.isValid = false;
+		if (layoutParams.myLayout) layoutParams.myLayout->isValid = false;
+		needsRedraw();
+		if (parent) parent->invalidateLayout();
+	}
+}
+
+void Widget::recalculateLayout()
+{
+	//ppl7::PrintDebug("Widget::recalculateLayout() called for widget %s, Type: %s\n", myName.c_str(), widgetType().c_str());
+	if (!layoutParams.isValid) {
+		if (layoutParams.myLayout) {
+			layoutParams.myLayout->recalculate();
+		}
+		layoutParams.isValid = true;
+	}
+	for (auto it = childs.begin();it != childs.end();++it) {
+		Widget* child = *it;
+		child->recalculateLayout();
+	}
+}
+
+
 
 }	// EOF namespace ppltk

@@ -79,6 +79,7 @@ Window::Window()
 	const WidgetStyle& style = GetWidgetStyle();
 	windowFlags = DefaultWindow;
 	WindowTitle = "PPL7 Window";
+	setName("Window");
 	fn = &defWmFunctions;
 	setSize(640, 480);
 	privateData = NULL;
@@ -248,6 +249,7 @@ String Window::widgetType() const
 
 void Window::drawWidgets()
 {
+	recalculateLayout();
 	if (redrawRequired())
 	{
 		// ppl7::PrintDebugTime("Window::drawWidgets => redraw\n");

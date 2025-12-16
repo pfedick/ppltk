@@ -41,12 +41,13 @@ using namespace ppl7::grafix;
 ComboBox::ComboBox(int x, int y, int width, int height)
 	: ppltk::Widget()
 {
-	selection=NULL;
+	setName("ComboBox");
+	selection = NULL;
 	create(x, y, width, height);
-	ppltk::WindowManager* wm=ppltk::GetWindowManager();
-	myCurrentIndex=0;
+	ppltk::WindowManager* wm = ppltk::GetWindowManager();
+	myCurrentIndex = 0;
 
-	dropdown_button=new ppltk::Label(width - 24, 0, 20, height);
+	dropdown_button = new ppltk::Label(width - 24, 0, 20, height);
 	dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 	dropdown_button->setEventHandler(this);
 	this->addChild(dropdown_button);
@@ -59,16 +60,21 @@ ComboBox::~ComboBox()
 	if (selection) delete selection;
 }
 
+String ComboBox::widgetType() const
+{
+	return String("ComboBox");
+}
+
 
 void ComboBox::setCurrentText(const ppl7::String& text)
 {
 	if (text != myCurrentText) {
 		std::list<ComboBoxItem>::iterator it;
-		for (it=items.begin();it != items.end();++it) {
+		for (it = items.begin();it != items.end();++it) {
 			if ((*it).text == text) {
-				myCurrentIndex=(*it).index;
-				myCurrentText=(*it).text;
-				myCurrentIdentifier=(*it).identifier;
+				myCurrentIndex = (*it).index;
+				myCurrentText = (*it).text;
+				myCurrentIdentifier = (*it).identifier;
 				needsRedraw();
 			}
 		}
@@ -89,11 +95,11 @@ void ComboBox::setCurrentIndex(size_t index)
 {
 	if (index >= items.size()) return;
 	std::list<ComboBoxItem>::iterator it;
-	for (it=items.begin();it != items.end();++it) {
+	for (it = items.begin();it != items.end();++it) {
 		if ((*it).index == index) {
-			myCurrentIndex=index;
-			myCurrentText=(*it).text;
-			myCurrentIdentifier=(*it).identifier;
+			myCurrentIndex = index;
+			myCurrentText = (*it).text;
+			myCurrentIdentifier = (*it).identifier;
 			needsRedraw();
 		}
 	}
@@ -102,11 +108,11 @@ void ComboBox::setCurrentIndex(size_t index)
 void ComboBox::setCurrentIdentifier(const ppl7::String& identifier)
 {
 	std::list<ComboBoxItem>::iterator it;
-	for (it=items.begin();it != items.end();++it) {
+	for (it = items.begin();it != items.end();++it) {
 		if ((*it).identifier == identifier) {
-			myCurrentIndex=(*it).index;
-			myCurrentText=(*it).text;
-			myCurrentIdentifier=(*it).identifier;
+			myCurrentIndex = (*it).index;
+			myCurrentText = (*it).text;
+			myCurrentIdentifier = (*it).identifier;
 			needsRedraw();
 		}
 	}
@@ -120,9 +126,9 @@ size_t ComboBox::currentIndex() const
 void ComboBox::add(const ppl7::String& text, const ppl7::String& identifier)
 {
 	ComboBoxItem item;
-	item.text=text;
-	item.identifier=identifier;
-	item.index=items.size();
+	item.text = text;
+	item.identifier = identifier;
+	item.index = items.size();
 	items.push_back(item);
 	if (items.size() == 1) setCurrentIndex(0);
 	needsRedraw();
@@ -130,20 +136,21 @@ void ComboBox::add(const ppl7::String& text, const ppl7::String& identifier)
 
 void ComboBox::sortItems(SortOrder sort)
 {
-	ppl7::String current=currentIdentifier();
+	ppl7::String current = currentIdentifier();
 	std::map<ppl7::String, ComboBoxItem> sorted;
-	for (auto it=items.begin();it != items.end();++it) {
+	for (auto it = items.begin();it != items.end();++it) {
 		sorted.insert(std::pair<ppl7::String, ComboBoxItem>(it->text, *it));
 	}
 	items.clear();
 	if (sort == SortOrder::AscendingOrder) {
-		for (auto it=sorted.begin();it != sorted.end();++it) {
-			it->second.index=items.size();
+		for (auto it = sorted.begin();it != sorted.end();++it) {
+			it->second.index = items.size();
 			items.push_back(it->second);
 		}
-	} else {
-		for (auto it=sorted.rbegin();it != sorted.rend();++it) {
-			it->second.index=items.size();
+	}
+	else {
+		for (auto it = sorted.rbegin();it != sorted.rend();++it) {
+			it->second.index = items.size();
 			items.push_back(it->second);
 		}
 	}
@@ -157,29 +164,24 @@ void ComboBox::clear()
 	myCurrentIdentifier.clear();
 	items.clear();
 	if (selection) delete selection;
-	selection=NULL;
-	ppltk::WindowManager* wm=ppltk::GetWindowManager();
+	selection = NULL;
+	ppltk::WindowManager* wm = ppltk::GetWindowManager();
 	dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 
 	needsRedraw();
 }
 
-ppl7::String ComboBox::widgetType() const
-{
-	return "ComboBox";
-}
-
 void ComboBox::paint(ppl7::grafix::Drawable& draw)
 {
-	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
-	int w=width() - 1;
-	int h=height() - 1;
+	const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
+	int w = width() - 1;
+	int h = height() - 1;
 	draw.cls(style.comboBoxBackgroundColor);
 	draw.drawRect(0, 0, w, h, style.frameBorderColorLight);
-	ppl7::grafix::Font myFont=style.buttonFont;
+	ppl7::grafix::Font myFont = style.buttonFont;
 	myFont.setColor(style.labelFontColor);
 	myFont.setOrientation(ppl7::grafix::Font::TOP);
-	ppl7::grafix::Size s=myFont.measure(myCurrentText);
+	ppl7::grafix::Size s = myFont.measure(myCurrentText);
 	draw.print(myFont, 4, (draw.height() - s.height) >> 1, myCurrentText);
 
 
@@ -194,7 +196,8 @@ void ComboBox::mouseWheelEvent(ppltk::MouseEvent* event)
 		ev.setWidget(this);
 		valueChangedEvent(&ev, myCurrentIndex);
 
-	} else if (event->wheel.y > 0 && myCurrentIndex > 0) {
+	}
+	else if (event->wheel.y > 0 && myCurrentIndex > 0) {
 		setCurrentIndex(myCurrentIndex - 1);
 		ppltk::Event ev(ppltk::Event::ValueChanged);
 		ev.setWidget(this);
@@ -206,23 +209,24 @@ void ComboBox::mouseDownEvent(ppltk::MouseEvent* event)
 {
 	if (event->widget() == this || event->widget() == dropdown_button) {
 		//printf("ComboBox::mouseDownEvent\n");
-		ppltk::WindowManager* wm=ppltk::GetWindowManager();
+		ppltk::WindowManager* wm = ppltk::GetWindowManager();
 		if (selection) {
 			delete(selection);
-			selection=NULL;
+			selection = NULL;
 			dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
-		} else {
+		}
+		else {
 			// we need the absolute coordinates of this widget on window
 			// and create a new Frame with window as parent and topmost
-			ppl7::grafix::Point p=absolutePosition();
-			ppltk::Widget* window=getTopmostParent();
-			size_t maxsize=items.size();
-			if (maxsize > 10) maxsize=10;
-			selection=new ListWidget(p.x, p.y + this->height(), this->width(), maxsize * 30);
+			ppl7::grafix::Point p = absolutePosition();
+			ppltk::Widget* window = getTopmostParent();
+			size_t maxsize = items.size();
+			if (maxsize > 10) maxsize = 10;
+			selection = new ListWidget(p.x, p.y + this->height(), this->width(), maxsize * 30);
 			selection->setTopmost(true);
 			selection->setEventHandler(this);
 			std::list<ComboBoxItem>::const_iterator it;
-			for (it=items.begin();it != items.end();++it) {
+			for (it = items.begin();it != items.end();++it) {
 				selection->add((*it).text, (*it).identifier);
 			}
 			selection->setCurrentIndex(myCurrentIndex);
@@ -230,7 +234,8 @@ void ComboBox::mouseDownEvent(ppltk::MouseEvent* event)
 			dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(3));
 			wm->setMouseFocus(selection);
 		}
-	} else {
+	}
+	else {
 		EventHandler::mouseDownEvent(event);
 	}
 }
@@ -241,14 +246,15 @@ void ComboBox::valueChangedEvent(ppltk::Event* event, int value)
 	if (selection != NULL && event->widget() == selection) {
 		setCurrentIndex(selection->currentIndex());
 		selection->deleteLater();
-		selection=NULL;
-		ppltk::WindowManager* wm=ppltk::GetWindowManager();
+		selection = NULL;
+		ppltk::WindowManager* wm = ppltk::GetWindowManager();
 		dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 		needsRedraw();
 		ppltk::Event ev(ppltk::Event::ValueChanged);
 		ev.setWidget(this);
 		valueChangedEvent(&ev, myCurrentIndex);
-	} else {
+	}
+	else {
 		EventHandler::valueChangedEvent(event, value);
 	}
 }
@@ -259,8 +265,8 @@ void ComboBox::lostFocusEvent(ppltk::FocusEvent* event)
 	if (selection != NULL && event->newWidget() != selection && event->newWidget() != this && event->newWidget() != dropdown_button && !event->newWidget()->isChildOf(selection)) {
 		//ppl7::PrintDebug("delete\n");
 		selection->deleteLater();
-		selection=NULL;
-		ppltk::WindowManager* wm=ppltk::GetWindowManager();
+		selection = NULL;
+		ppltk::WindowManager* wm = ppltk::GetWindowManager();
 		dropdown_button->setIcon(wm->ButtonSymbols.getDrawable(4));
 
 	}

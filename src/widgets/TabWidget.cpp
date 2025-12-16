@@ -40,36 +40,38 @@ using namespace ppl7::grafix;
 
 TabWidget::TabItem::TabItem(const String& label, const Drawable& icon, Widget* widget)
 {
-	enabled=true;
-	visible=true;
-	this->widget=widget;
-	this->label=label;
-	this->icon=icon;
+	enabled = true;
+	visible = true;
+	this->widget = widget;
+	this->label = label;
+	this->icon = icon;
 }
 
 TabWidget::TabWidget()
 {
-	const WidgetStyle& style=GetWidgetStyle();
-	myFont=style.labelFont;
+	setName("TabWidget");
+	const WidgetStyle& style = GetWidgetStyle();
+	myFont = style.labelFont;
 	setTransparent(true);
-	Size s=myFont.measure(L" ");
-	tabHeight=s.height + 9;
+	Size s = myFont.measure(L" ");
+	tabHeight = s.height + 9;
 	setClientOffset(5, tabHeight + 9, 9, 9);
-	myIndex=-1;
-	current_widget=NULL;
+	myIndex = -1;
+	current_widget = NULL;
 }
 
 TabWidget::TabWidget(int x, int y, int width, int height)
 {
-	const WidgetStyle& style=GetWidgetStyle();
-	myFont=style.labelFont;
+	setName("TabWidget");
+	const WidgetStyle& style = GetWidgetStyle();
+	myFont = style.labelFont;
 	create(x, y, width, height);
 	setTransparent(true);
-	Size s=myFont.measure(L" ");
-	tabHeight=s.height + 9;
+	Size s = myFont.measure(L" ");
+	tabHeight = s.height + 9;
 	setClientOffset(5, tabHeight + 9, 9, 9);
-	myIndex=-1;
-	current_widget=NULL;
+	myIndex = -1;
+	current_widget = NULL;
 }
 
 TabWidget::~TabWidget()
@@ -87,9 +89,9 @@ void TabWidget::emmitCurrentChanged()
 void TabWidget::updateCurrentWidget()
 {
 	if (current_widget) removeChild(current_widget);
-	current_widget=NULL;
+	current_widget = NULL;
 	if (myIndex < 0 || myIndex >= (int)myTabs.size()) return;
-	current_widget=myTabs[myIndex].widget;
+	current_widget = myTabs[myIndex].widget;
 	current_widget->setPos(0, 0);
 	current_widget->setSize(clientSize());
 	addChild(current_widget);
@@ -99,13 +101,13 @@ void TabWidget::clear()
 {
 	if (current_widget) removeChild(current_widget);
 	std::vector<TabItem>::iterator it;
-	for (it=myTabs.begin();it != myTabs.end();++it) {
+	for (it = myTabs.begin();it != myTabs.end();++it) {
 		removeChild(it->widget);
 		delete it->widget;
 	}
 	myTabs.clear();
-	myIndex=-1;
-	current_widget=NULL;
+	myIndex = -1;
+	current_widget = NULL;
 	needsRedraw();
 }
 
@@ -113,7 +115,7 @@ void TabWidget::clear()
 void TabWidget::removeTab(int index)
 {
 	if (index < (int)myTabs.size()) {
-		TabItem& tab=myTabs[index];
+		TabItem& tab = myTabs[index];
 		removeChild(tab.widget);
 		delete tab.widget;
 		myTabs.erase(myTabs.begin() + index);
@@ -121,8 +123,9 @@ void TabWidget::removeTab(int index)
 			myIndex--;
 			updateCurrentWidget();
 			emmitCurrentChanged();
-		} else if (myIndex >= (int)myTabs.size()) {
-			myIndex=(int)myTabs.size() - 1;
+		}
+		else if (myIndex >= (int)myTabs.size()) {
+			myIndex = (int)myTabs.size() - 1;
 			updateCurrentWidget();
 			emmitCurrentChanged();
 		}
@@ -133,8 +136,8 @@ void TabWidget::removeTab(int index)
 int TabWidget::indexOf(Widget* widget) const
 {
 	std::vector<TabItem>::const_iterator it;
-	int c=0;
-	for (it=myTabs.begin();it != myTabs.end();++it) {
+	int c = 0;
+	for (it = myTabs.begin();it != myTabs.end();++it) {
 		if (it->widget == widget) return c;
 		c++;
 	}
@@ -148,7 +151,7 @@ int TabWidget::addTab(Widget* page, const String& label, const Drawable& icon)
 	page->setTransparent(true);
 	page->setSize(clientSize());
 	myTabs.push_back(tab);
-	myIndex=(int)myTabs.size() - 1;
+	myIndex = (int)myTabs.size() - 1;
 	addChild(page);
 	needsRedraw();
 	updateCurrentWidget();
@@ -158,7 +161,7 @@ int TabWidget::addTab(Widget* page, const String& label, const Drawable& icon)
 
 int TabWidget::addTab(const String& label, const Drawable& icon)
 {
-	Widget* page=new Widget();
+	Widget* page = new Widget();
 	return addTab(page, label, icon);
 }
 
@@ -170,9 +173,9 @@ int TabWidget::insertTab(int index, Widget* page, const String& label, const Dra
 	page->setPos(0, 0);
 	page->setSize(clientSize());
 	page->setTransparent(true);
-	std::vector<TabItem>::const_iterator it=myTabs.begin() + index;
+	std::vector<TabItem>::const_iterator it = myTabs.begin() + index;
 	myTabs.insert(it, tab);
-	myIndex=index;
+	myIndex = index;
 	addChild(page);
 	updateCurrentWidget();
 	emmitCurrentChanged();
@@ -181,7 +184,7 @@ int TabWidget::insertTab(int index, Widget* page, const String& label, const Dra
 
 int TabWidget::insertTab(int index, const String& label, const Drawable& icon)
 {
-	Widget* page=new Widget();
+	Widget* page = new Widget();
 	return insertTab(index, page, label, icon);
 }
 
@@ -238,9 +241,9 @@ const Font& TabWidget::font() const
 
 void TabWidget::setFont(const Font& font)
 {
-	myFont=font;
-	Size s=myFont.measure(L" ");
-	tabHeight=s.height + 9;
+	myFont = font;
+	Size s = myFont.measure(L" ");
+	tabHeight = s.height + 9;
 	setClientOffset(5, tabHeight + 9, 9, 9);
 
 	needsRedraw();
@@ -252,7 +255,7 @@ void TabWidget::setCurrentIndex(int index)
 {
 	if (index < 0 || index >= (int)myTabs.size()) return;
 	if (myIndex != index) {
-		myIndex=index;
+		myIndex = index;
 		needsRedraw();
 		updateCurrentWidget();
 		emmitCurrentChanged();
@@ -268,7 +271,7 @@ void TabWidget::setTabText(int index, const String& label)
 {
 	if (index < 0 || index >= (int)myTabs.size()) return;
 	if (myTabs[index].label != label) {
-		myTabs[index].label=label;
+		myTabs[index].label = label;
 		needsRedraw();
 	}
 }
@@ -276,7 +279,7 @@ void TabWidget::setTabText(int index, const String& label)
 void TabWidget::setTabIcon(int index, const Drawable& icon)
 {
 	if (index < 0 || index >= (int)myTabs.size()) return;
-	myTabs[index].icon=icon;
+	myTabs[index].icon = icon;
 	needsRedraw();
 }
 
@@ -284,7 +287,7 @@ void TabWidget::setTabVisible(int index, bool visible)
 {
 	if (index < 0 || index >= (int)myTabs.size()) return;
 	if (myTabs[index].visible != visible) {
-		myTabs[index].visible=visible;
+		myTabs[index].visible = visible;
 		needsRedraw();
 	}
 }
@@ -293,7 +296,7 @@ void TabWidget::setTabEnabled(int index, bool enabled)
 {
 	if (index < 0 || index >= (int)myTabs.size()) return;
 	if (myTabs[index].enabled != enabled) {
-		myTabs[index].enabled=enabled;
+		myTabs[index].enabled = enabled;
 		needsRedraw();
 	}
 }
@@ -301,31 +304,32 @@ void TabWidget::setTabEnabled(int index, bool enabled)
 int TabWidget::drawTab(Drawable& draw, TabItem& tab, int x, const WidgetStyle& wstyle)
 {
 	if (!tab.visible) return 0;
-	int w=2;
+	int w = 2;
 	if (tab.label.notEmpty()) {
-		Size s=myFont.measure(tab.label);
-		w+=s.width + 8;
+		Size s = myFont.measure(tab.label);
+		w += s.width + 8;
 	}
 
 	if (tab.icon.isEmpty() == false) {
-		w+=8 + tab.icon.width();
+		w += 8 + tab.icon.width();
 	}
-	if (w < 20) w=20;
+	if (w < 20) w = 20;
 
-	int y=0;
-	ppl7::grafix::Color light=wstyle.frameBackgroundColor * 1.8f;
-	ppl7::grafix::Color shadow=wstyle.frameBackgroundColor * 0.4f;
+	int y = 0;
+	ppl7::grafix::Color light = wstyle.frameBackgroundColor * 1.8f;
+	ppl7::grafix::Color shadow = wstyle.frameBackgroundColor * 0.4f;
 
 
-	Color shade1=wstyle.labelFontColor;
+	Color shade1 = wstyle.labelFontColor;
 	if (tab.widget == current_widget) {
 		draw.fillRect(x, 0, x + w, tabHeight, wstyle.frameBackgroundColor);
 		draw.line(x, 0, x + w, 0, light);
 		draw.line(x, 0, x, tabHeight, light);
 		draw.line(x + w, 0, x + w, tabHeight - 1, shadow);
-	} else {
-		y=4;
-		shade1=wstyle.buttonFontColor * 0.8f;
+	}
+	else {
+		y = 4;
+		shade1 = wstyle.buttonFontColor * 0.8f;
 		draw.fillRect(x, 4, x + w, tabHeight - 1, wstyle.tabNonSelectedBackgroundColor);
 		draw.line(x, 4, x + w, 4, light);
 		if (x == 0) draw.line(x, 4, x, tabHeight - 1, light);
@@ -334,23 +338,23 @@ int TabWidget::drawTab(Drawable& draw, TabItem& tab, int x, const WidgetStyle& w
 		draw.line(x, tabHeight, x + w, tabHeight, light);
 	}
 
-	tab.x1=x;
-	tab.x2=x + w;
+	tab.x1 = x;
+	tab.x2 = x + w;
 
 
 	if (tab.icon.isEmpty() == false) {
-		x+=6;
+		x += 6;
 		if (tab.enabled) draw.bltAlpha(tab.icon, x, y + (tabHeight - y - tab.icon.height()) / 2);
 		else draw.bltBlend(tab.icon, 0.5f, x, y + (tabHeight - y - tab.icon.height()) / 2);
-		x+=2 + tab.icon.width();
+		x += 2 + tab.icon.width();
 	}
 	if (tab.label.notEmpty()) {
 		myFont.setOrientation(Font::TOP);
 
 		if (tab.enabled) myFont.setColor(shade1);
 		else myFont.setColor(wstyle.tabDisabledFontColor);
-		Size s=myFont.measure(tab.label);
-		x+=4;
+		Size s = myFont.measure(tab.label);
+		x += 4;
 		draw.print(myFont, x, y + ((tabHeight - y - s.height) >> 1), tab.label);
 	}
 
@@ -362,27 +366,27 @@ int TabWidget::drawTab(Drawable& draw, TabItem& tab, int x, const WidgetStyle& w
 void TabWidget::paint(Drawable& draw)
 {
 	//Widget::paint(draw);
-	const WidgetStyle& wstyle=GetWidgetStyle();
+	const WidgetStyle& wstyle = GetWidgetStyle();
 	/*
 	myBackground=wstyle.frameBackgroundColor;
 	myBorderColorLight=wstyle.frameBorderColorLight;
 	myBorderColorShadow=wstyle.frameBorderColorShadow;
 	*/
-	Drawable d=draw.getDrawable(0, tabHeight, draw.width(), draw.height());
-	int w=d.width() - 1;
-	int h=d.height() - 1;
+	Drawable d = draw.getDrawable(0, tabHeight, draw.width(), draw.height());
+	int w = d.width() - 1;
+	int h = d.height() - 1;
 
-	ppl7::grafix::Color light=wstyle.frameBackgroundColor * 1.8f;
-	ppl7::grafix::Color shadow=wstyle.frameBackgroundColor * 0.4f;
+	ppl7::grafix::Color light = wstyle.frameBackgroundColor * 1.8f;
+	ppl7::grafix::Color shadow = wstyle.frameBackgroundColor * 0.4f;
 
 	d.cls(wstyle.frameBackgroundColor);
 	d.line(0, 0, 0, h, light);
 	d.line(0, h, w, h, shadow);
 	d.line(w, 0, w, h, shadow);
 	std::vector<TabItem>::iterator it;
-	int x=0;
-	for (it=myTabs.begin();it != myTabs.end();++it) {
-		x+=drawTab(draw, *it, x, wstyle);
+	int x = 0;
+	for (it = myTabs.begin();it != myTabs.end();++it) {
+		x += drawTab(draw, *it, x, wstyle);
 
 	}
 	d.line(x, 0, w, 0, light);
@@ -409,7 +413,7 @@ void TabWidget::mouseDownEvent(MouseEvent* event)
 	if (event->p.y < 30) {
 		//ppl7::PrintDebug("TabWidget::mouseDownEvent\n");
 		std::vector<TabItem>::const_iterator it;
-		for (it=myTabs.begin();it != myTabs.end();++it) {
+		for (it = myTabs.begin();it != myTabs.end();++it) {
 			if (event->p.x >= it->x1 && event->p.x < it->x2 && it->enabled == true && it->visible == true) {
 				setCurrentWidget(it->widget);
 				return;
@@ -421,7 +425,7 @@ void TabWidget::mouseDownEvent(MouseEvent* event)
 void TabWidget::resizeEvent(ResizeEvent* event)
 {
 	std::vector<TabItem>::iterator it;
-	for (it=myTabs.begin();it != myTabs.end();++it) {
+	for (it = myTabs.begin();it != myTabs.end();++it) {
 		it->widget->setSize(clientSize());
 	}
 }

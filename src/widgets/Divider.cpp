@@ -42,11 +42,13 @@ using namespace ppl7::grafix;
 
 VerticalDivider::VerticalDivider()
 {
+	setName("VerticalDivider");
 	this->setWidth(6);
 }
 
 VerticalDivider::VerticalDivider(int x, int y, int width, int height)
 {
+	setName("VerticalDivider");
 	this->setSize(6, height);
 	this->setPos(x, y);
 }
@@ -59,7 +61,7 @@ void VerticalDivider::paint(Drawable& draw)
 	Color bg;
 
 	//int w=width()-1;
-	int h=height() - 1;
+	int h = height() - 1;
 
 	draw.line(2, 0, 2, h - 1, white);
 	draw.line(3, 1, 3, h, dark);
@@ -93,11 +95,13 @@ ppl7::grafix::Size VerticalDivider::minimumSizeHint() const
 
 HorizontalDivider::HorizontalDivider()
 {
+	setName("HorizontalDivider");
 	this->setHeight(6);
 }
 
 HorizontalDivider::HorizontalDivider(int x, int y, int width, int height)
 {
+	setName("HorizontalDivider");
 	this->setSize(width, 6);
 	this->setPos(x, y);
 }
@@ -109,7 +113,7 @@ void HorizontalDivider::paint(Drawable& draw)
 	Color bg;
 
 	//int w=width()-1;
-	int h=height() - 1;
+	int h = height() - 1;
 
 	draw.line(2, 0, 2, h - 1, white);
 	draw.line(3, 1, 3, h, dark);

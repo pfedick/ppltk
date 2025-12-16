@@ -41,19 +41,20 @@ using namespace ppl7::grafix;
 ListWidget::ListWidget(int x, int y, int width, int height)
 	: ppltk::Frame(x, y, width, height)
 {
+	setName("ListWidget");
 	setClientOffset(2, 2, 2, 2);
-	scrollbar=NULL;
-	myCurrentIndex=0;
-	scrollbar=new Scrollbar(width - 29, 0, 29, height - 4);
+	scrollbar = NULL;
+	myCurrentIndex = 0;
+	scrollbar = new Scrollbar(width - 29, 0, 29, height - 4);
 	scrollbar->setEventHandler(this);
 	this->addChild(scrollbar);
-	mouseOverIndex=-1;
-	visibleItems=height / 30;
+	mouseOverIndex = -1;
+	visibleItems = height / 30;
 	scrollbar->setVisible(false);
 	scrollbar->setVisibleItems(visibleItems);
-	sortingEnabled=false;
+	sortingEnabled = false;
 
-	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
+	const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
 	setBackgroundColor(style.listBackgroundColor);
 	//printf ("visibleItems=%d\n",visibleItems);
 }
@@ -72,12 +73,12 @@ void ListWidget::setCurrentText(const ppl7::String& text)
 {
 	if (text != myCurrentText) {
 		std::list<ListWidgetItem>::iterator it;
-		for (it=items.begin();it != items.end();++it) {
+		for (it = items.begin();it != items.end();++it) {
 			if ((*it).text == text) {
-				myCurrentText=(*it).text;
-				myCurrentIdentifier=(*it).identifier;
-				myCurrentIndex=(*it).index;
-				size_t start=scrollbar->position();
+				myCurrentText = (*it).text;
+				myCurrentIdentifier = (*it).identifier;
+				myCurrentIndex = (*it).index;
+				size_t start = scrollbar->position();
 				if (start + visibleItems <= myCurrentIndex) {
 					scrollbar->setPosition(myCurrentIndex);
 				}
@@ -92,15 +93,15 @@ void ListWidget::setCurrentIndex(size_t index)
 {
 	if (index >= items.size()) return;
 	std::list<ListWidgetItem>::iterator it;
-	for (it=items.begin();it != items.end();++it) {
+	for (it = items.begin();it != items.end();++it) {
 		if ((*it).index == index) {
-			myCurrentIndex=index;
-			size_t start=scrollbar->position();
+			myCurrentIndex = index;
+			size_t start = scrollbar->position();
 			if (start + visibleItems <= index) {
 				scrollbar->setPosition(index);
 			}
-			myCurrentText=(*it).text;
-			myCurrentIdentifier=(*it).identifier;
+			myCurrentText = (*it).text;
+			myCurrentIdentifier = (*it).identifier;
 			needsRedraw();
 			return;
 		}
@@ -115,9 +116,9 @@ size_t ListWidget::currentIndex() const
 void ListWidget::add(const ppl7::String& text, const ppl7::String& identifier)
 {
 	ListWidgetItem item;
-	item.text=text;
-	item.identifier=identifier;
-	item.index=items.size();
+	item.text = text;
+	item.identifier = identifier;
+	item.index = items.size();
 	items.push_back(item);
 	if (items.size() == 1) setCurrentIndex(0);
 	scrollbar->setSize((int)items.size());
@@ -130,7 +131,7 @@ void ListWidget::add(const ppl7::String& text, const ppl7::String& identifier)
 void ListWidget::remove(size_t index)
 {
 	std::list<ListWidgetItem>::iterator it;
-	for (it=items.begin();it != items.end();++it) {
+	for (it = items.begin();it != items.end();++it) {
 		if ((*it).index == index) {
 			items.erase(it);
 			break;
@@ -147,7 +148,7 @@ void ListWidget::remove(size_t index)
 void ListWidget::remove(const ppl7::String& identifier)
 {
 	std::list<ListWidgetItem>::iterator it;
-	for (it=items.begin();it != items.end();++it) {
+	for (it = items.begin();it != items.end();++it) {
 		if ((*it).identifier == identifier) {
 			items.erase(it);
 			break;
@@ -185,25 +186,25 @@ ppl7::String ListWidget::widgetType() const
 void ListWidget::paint(ppl7::grafix::Drawable& draw)
 {
 	ppltk::Frame::paint(draw);
-	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
+	const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
 	//int h=height()-1;
-	int y=0;
-	ppl7::grafix::Font myFont=style.buttonFont;
-	ppl7::grafix::Color unevenColor=style.listBackgroundColor * 1.1f;
-	ppl7::grafix::Color selectionColor=style.inputSelectedBackgroundColor;
-	ppl7::grafix::Color mouseoverSelectionColor=style.inputSelectedBackgroundColor * 1.3f;
-	ppl7::grafix::Color mouseoverColor=style.listBackgroundColor * 1.7f;
-	ppl7::grafix::Color dividerColor=style.listBackgroundColor * 0.8f;
+	int y = 0;
+	ppl7::grafix::Font myFont = style.buttonFont;
+	ppl7::grafix::Color unevenColor = style.listBackgroundColor * 1.1f;
+	ppl7::grafix::Color selectionColor = style.inputSelectedBackgroundColor;
+	ppl7::grafix::Color mouseoverSelectionColor = style.inputSelectedBackgroundColor * 1.3f;
+	ppl7::grafix::Color mouseoverColor = style.listBackgroundColor * 1.7f;
+	ppl7::grafix::Color dividerColor = style.listBackgroundColor * 0.8f;
 	std::list<ListWidgetItem>::iterator it;
 	myFont.setColor(style.labelFontColor);
 	myFont.setOrientation(ppl7::grafix::Font::TOP);
-	int start=scrollbar->position();
+	int start = scrollbar->position();
 	//ppl7::grafix::Drawable client=draw.getDrawable(1, 1, draw.width() - 2, draw.height() - 2);
-	ppl7::grafix::Drawable client=clientDrawable(draw);
-	int w=width() - 2;
-	if (scrollbar->isVisible()) w-=29;
-	int c=0;
-	for (it=items.begin();it != items.end();++it) {
+	ppl7::grafix::Drawable client = clientDrawable(draw);
+	int w = width() - 2;
+	if (scrollbar->isVisible()) w -= 29;
+	int c = 0;
+	for (it = items.begin();it != items.end();++it) {
 		if (start <= c) {
 			if (c == mouseOverIndex && (*it).index != myCurrentIndex)
 				client.fillRect(0, y, w, y + 30, mouseoverColor);
@@ -215,10 +216,10 @@ void ListWidget::paint(ppl7::grafix::Drawable& draw)
 				client.fillRect(0, y, w, y + 30, unevenColor);
 			else
 				client.fillRect(0, y, w, y + 30, style.listBackgroundColor);
-			ppl7::grafix::Size s=myFont.measure((*it).text);
+			ppl7::grafix::Size s = myFont.measure((*it).text);
 			client.print(myFont, 4, y + ((30 - s.height) >> 1), (*it).text);
 			client.line(0, y + 29, w, y + 29, dividerColor);
-			y+=30;
+			y += 30;
 		}
 		c++;
 	}
@@ -228,7 +229,8 @@ void ListWidget::valueChangedEvent(ppltk::Event* event, int value)
 {
 	if (event->widget() == scrollbar) {
 		this->needsRedraw();
-	} else {
+	}
+	else {
 		EventHandler::valueChangedEvent(event, value);
 	}
 }
@@ -236,7 +238,7 @@ void ListWidget::valueChangedEvent(ppltk::Event* event, int value)
 void ListWidget::mouseDownEvent(ppltk::MouseEvent* event)
 {
 	if (event->p.x < width() - 29 && event->widget() == this) {
-		size_t index=scrollbar->position() + event->p.y / 30;
+		size_t index = scrollbar->position() + event->p.y / 30;
 		if (index > items.size()) return;
 		setCurrentIndex((size_t)index);
 		ppltk::Event ev(ppltk::Event::ValueChanged);
@@ -265,7 +267,7 @@ void ListWidget::mouseMoveEvent(ppltk::MouseEvent* event)
 {
 	if (event->p.x < width() - 30 && event->widget() == this) {
 		//printf ("x=%d\n",event->p.x);
-		mouseOverIndex=scrollbar->position() + event->p.y / 30;
+		mouseOverIndex = scrollbar->position() + event->p.y / 30;
 		this->needsRedraw();
 	}
 }
@@ -273,7 +275,7 @@ void ListWidget::mouseMoveEvent(ppltk::MouseEvent* event)
 
 void ListWidget::lostFocusEvent(ppltk::FocusEvent* event)
 {
-	Widget* new_widget=event->newWidget();
+	Widget* new_widget = event->newWidget();
 	if (new_widget) {
 		if (new_widget == this || new_widget->isChildOf(this)) {
 			printf("ListWidget::lostFocusEvent, but we are still inside of childs of this widget\n");
@@ -288,7 +290,7 @@ void ListWidget::lostFocusEvent(ppltk::FocusEvent* event)
 
 bool ListWidget::hasIdentifier(const ppl7::String& identifier) const
 {
-	for (auto it=items.begin();it != items.end();++it) {
+	for (auto it = items.begin();it != items.end();++it) {
 		if (it->identifier == identifier) return true;
 	}
 	return false;
@@ -296,7 +298,7 @@ bool ListWidget::hasIdentifier(const ppl7::String& identifier) const
 
 bool ListWidget::hasText(const ppl7::String& text) const
 {
-	for (auto it=items.begin();it != items.end();++it) {
+	for (auto it = items.begin();it != items.end();++it) {
 		if (it->text == text) return true;
 	}
 	return false;
@@ -305,7 +307,7 @@ bool ListWidget::hasText(const ppl7::String& text) const
 void ListWidget::updateSortedItems()
 {
 	sorted_items.clear();
-	for (auto it=items.begin();it != items.end();++it) {
+	for (auto it = items.begin();it != items.end();++it) {
 		sorted_items.insert(std::pair<ppl7::String, ListWidgetItem&>(it->text, *it));
 	}
 
@@ -313,7 +315,7 @@ void ListWidget::updateSortedItems()
 
 void ListWidget::setSortingEnabled(bool enable)
 {
-	sortingEnabled=enable;
+	sortingEnabled = enable;
 	if (sortingEnabled) updateSortedItems();
 	needsRedraw();
 }
@@ -325,20 +327,21 @@ bool ListWidget::isSortingEnabled() const
 
 void ListWidget::sortItems(SortOrder sort)
 {
-	size_t current=currentIndex();
+	size_t current = currentIndex();
 	std::map<ppl7::String, ListWidgetItem> sorted;
-	for (auto it=items.begin();it != items.end();++it) {
+	for (auto it = items.begin();it != items.end();++it) {
 		sorted.insert(std::pair<ppl7::String, ListWidgetItem>(it->text, *it));
 	}
 	items.clear();
 	if (sort == SortOrder::AscendingOrder) {
-		for (auto it=sorted.begin();it != sorted.end();++it) {
-			it->second.index=items.size();
+		for (auto it = sorted.begin();it != sorted.end();++it) {
+			it->second.index = items.size();
 			items.push_back(it->second);
 		}
-	} else {
-		for (auto it=sorted.rbegin();it != sorted.rend();++it) {
-			it->second.index=items.size();
+	}
+	else {
+		for (auto it = sorted.rbegin();it != sorted.rend();++it) {
+			it->second.index = items.size();
 			items.push_back(it->second);
 		}
 	}

@@ -40,13 +40,15 @@ using namespace ppl7::grafix;
 RadioButton::RadioButton()
 	: ppltk::Label()
 {
-	ischecked=false;
+	setName("RadioButton");
+	ischecked = false;
 }
 
 RadioButton::RadioButton(int x, int y, int width, int height, const ppl7::String& text, bool checked) // @suppress("Class members should be properly initialized")
 	: ppltk::Label(x, y, width, height, text)
 {
-	ischecked=checked;
+	setName("RadioButton");
+	ischecked = checked;
 }
 
 RadioButton::~RadioButton()
@@ -66,15 +68,15 @@ bool RadioButton::checked() const
 
 void RadioButton::setChecked(bool checked)
 {
-	bool laststate=ischecked;
-	ischecked=checked;
+	bool laststate = ischecked;
+	ischecked = checked;
 	needsRedraw();
 	parentMustRedraw();
 	// uncheck all other RadioButtons in Parent-Widget
 	if (checked == true && this->getParent()) {
-		Widget* parent=this->getParent();
+		Widget* parent = this->getParent();
 		std::list<Widget*>::iterator it;
-		for (it=parent->childsBegin(); it != parent->childsEnd();++it) {
+		for (it = parent->childsBegin(); it != parent->childsEnd();++it) {
 			if (typeid(**it) == typeid(RadioButton) && *it != this) {
 				((RadioButton*)(*it))->setChecked(false);
 			}
@@ -90,10 +92,10 @@ void RadioButton::setChecked(bool checked)
 
 void RadioButton::paint(ppl7::grafix::Drawable& draw)
 {
-	const ppltk::WidgetStyle& style=ppltk::GetWidgetStyle();
-	ppl7::grafix::Drawable d=draw.getDrawable(16, 0, draw.width(), draw.height());
+	const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
+	ppl7::grafix::Drawable d = draw.getDrawable(16, 0, draw.width(), draw.height());
 	Label::paint(d);
-	int y1=draw.height() / 2;
+	int y1 = draw.height() / 2;
 	draw.circle(9, y1, 7, style.frameBorderColorLight);
 	draw.circle(9, y1, 6, style.frameBorderColorLight);
 	if (ischecked) draw.floodFill(9, y1, this->color(), style.frameBorderColorLight);

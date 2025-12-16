@@ -160,6 +160,7 @@ private:
             Layout* layout;
             SpacerItem* spacer;
         };
+        Size sizeHint;
         Item(Widget*);
         Item(Layout*);
         Item(SpacerItem*);
@@ -172,7 +173,7 @@ public:
     BoxLayout(Direction dir, Widget* parent = NULL);
     virtual ~BoxLayout();
     void addWidget(Widget* widget);
-    void addLayout(Layout* layout);
+    //void addLayout(Layout* layout);
     void addSpacing(int size);
     void addSpacer(SpacerItem* spacer);
 

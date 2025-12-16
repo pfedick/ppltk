@@ -42,7 +42,7 @@ Layout::Layout(Widget* parent)
 	myParent = parent;
 	if (parent) parent->setLayout(this);
 	myMargins.set(0, 0, 0, 0);
-	isValid=false;
+	isValid = false;
 }
 
 Layout::~Layout()
@@ -62,7 +62,7 @@ void Layout::setContentsMargins(int left, int top, int right, int bottom)
 
 void Layout::setContentsMargins(const Margins& margins)
 {
-	myMargins=margins;
+	myMargins = margins;
 }
 
 const Margins& Layout::contentsMargins() const
@@ -75,15 +75,15 @@ const Margins& Layout::contentsMargins() const
 void Layout::invalidate()
 {
 	if (isValid) {
-		isValid=false;
+		isValid = false;
 		if (myParent) myParent->invalidateLayout();
 	}
 }
 
 void Layout::recalculate()
 {
-	update();
-	isValid=true;
+	if (!isValid) update();
+	isValid = true;
 }
 
 

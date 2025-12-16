@@ -38,6 +38,7 @@ using namespace ppl7::grafix;
 
 Button::Button(const String& text, const Drawable& icon)
 {
+	setName("Button");
 	const WidgetStyle& style = GetWidgetStyle();
 	background = style.buttonBackgroundColor;
 	foreground = style.buttonFontColor;
@@ -52,6 +53,7 @@ Button::Button(const String& text, const Drawable& icon)
 
 Button::Button(int x, int y, int width, int height, const String& text, const Drawable& icon)
 {
+	setName("Button");
 	const WidgetStyle& style = GetWidgetStyle();
 	background = style.buttonBackgroundColor;
 	foreground = style.buttonFontColor;
@@ -203,8 +205,8 @@ ppl7::grafix::Size Button::sizeHint() const
 	ppl7::grafix::Size s(6, 6);
 	ppl7::grafix::Size is = Icon.size();
 	ppl7::grafix::Size ts = myFont.measure(Text);
-	s.width += is.width;
-	s.width += ts.width;
+	//s.width += is.width;
+	//s.width += ts.width;
 	int h = 0;
 	if (is.width > 0)
 	{

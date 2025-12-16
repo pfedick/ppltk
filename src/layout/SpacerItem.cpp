@@ -39,8 +39,8 @@ using namespace ppl7::grafix;
 
 SpacerItem::SpacerItem()
 {
-    width = 40;
-    height = 40;
+    width = 0;
+    height = 0;
     hPolicy = SizePolicy::Maximum;
     vPolicy = SizePolicy::Maximum;
 }

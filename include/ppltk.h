@@ -527,15 +527,13 @@ class LayoutParameters
 {
 public:
     Layout* myLayout;
-    Layout* myParentLayout;
+    //Layout* myParentLayout;
     bool isValid;
 
     LayoutParameters() {
         isValid = true;
-        myLayout = myParentLayout = NULL;
-    }
-    ~LayoutParameters() {
-        if (myLayout) delete myLayout;
+        myLayout = NULL;
+        //myParentLayout=NULL;
     }
 };
 
@@ -1641,6 +1639,8 @@ public:
     int64_t stepSize() const;
     int64_t steps() const;
 
+    String widgetType() const override;
+
 
 
 };
@@ -1671,6 +1671,8 @@ public:
     double stepSize() const;
     double steps() const;
 
+    String widgetType() const override;
+
 };
 
 class HorizontalSlider : public AbstractSlider
@@ -1690,6 +1692,8 @@ public:
     HorizontalSlider(int x, int y, int width, int height);
     ~HorizontalSlider();
     void enableSpinBox(bool enabled, int64_t stepsize = 1, int width = 100);
+
+    String widgetType() const override;
 
     void paint(ppl7::grafix::Drawable& draw) override;
     void mouseDownEvent(ppltk::MouseEvent* event) override;
@@ -1719,6 +1723,7 @@ public:
     DoubleHorizontalSlider(int x, int y, int width, int height);
     ~DoubleHorizontalSlider();
     void enableSpinBox(bool enabled, double stepsize = 0.1f, int decimals = 2, int width = 100);
+    String widgetType() const override;
 
     void paint(ppl7::grafix::Drawable& draw) override;
     void mouseDownEvent(ppltk::MouseEvent* event) override;
