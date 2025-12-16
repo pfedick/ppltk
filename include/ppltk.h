@@ -507,40 +507,45 @@ public:
 class SizePolicy
 {
 public:
-    enum PolicyFlag {
-        GrowFlag = 1,
-        ExpandFlag = 2,
-        ShrinkFlag = 4,
-        IgnoreFlag = 8
-    };
-
     enum Policy {
         Fixed = 0,
-        Minimum = GrowFlag,
-        Maximum = ShrinkFlag,
-        Preferred = GrowFlag | ShrinkFlag,
-        MinimumExpanding = GrowFlag | ExpandFlag,
-        Expanding = GrowFlag | ShrinkFlag | ExpandFlag,
-        Ignored = ShrinkFlag | GrowFlag | IgnoreFlag
+        Minimum = 1,
+        Maximum = 2,
     };
 
     Policy HorizontalPolicy;
     Policy VerticalPolicy;
     int HorizontalStretch;
     int VerticalStretch;
-
     SizePolicy();
 };
 
 class Layout;
 
 
+class LayoutParameters
+{
+public:
+    Layout* myLayout;
+    Layout* myParentLayout;
+    bool isValid;
+
+    LayoutParameters() {
+        isValid = true;
+        myLayout = myParentLayout = NULL;
+    }
+    ~LayoutParameters() {
+        if (myLayout) delete myLayout;
+    }
+};
+
 class Widget : public EventHandler
 {
     friend class WindowManager;
 private:
     Widget* parent;
-    Layout* myLayout;
+    LayoutParameters layoutParams;
+
     Image 	drawbuffer;
     SizePolicy mySizePolicy;
     //Surface		*surface;
@@ -582,10 +587,6 @@ public:
 
     void setUseOwnDrawbuffer(bool enable);
     void destroyChilds();
-
-    void setLayout(Layout* layout);
-    Layout* layout() const;
-    void invalidateLayout();
 
     const Point& pos() const;
     Point absolutePosition() const;
@@ -655,10 +656,14 @@ public:
 
     bool isChildOf(Widget* other) const;
 
-
-
     virtual String widgetType() const;
     virtual void paint(Drawable& draw);
+
+    // Layout
+    void setLayout(Layout* layout);
+    Layout* layout() const;
+    void invalidateLayout();
+    void recalculateLayout();
     virtual ppl7::grafix::Size sizeHint() const;
     virtual ppl7::grafix::Size minimumSizeHint() const;
 

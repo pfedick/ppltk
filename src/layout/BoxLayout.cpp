@@ -50,6 +50,14 @@ BoxLayout::Item::Item(Layout* l)
 
 }
 
+BoxLayout::Item::Item(SpacerItem* s)
+    : type(BoxLayout::ItemType::Spacer), spacer(s)
+{
+
+}
+
+
+
 BoxLayout::BoxLayout(Direction dir, Widget* parent)
     : Layout(parent)
 {
@@ -79,7 +87,7 @@ int BoxLayout::spacing() const
 
 void BoxLayout::addWidget(Widget* widget)
 {
-    if (!parent()) return;
+    if (!parent()) return;  // Wieso?
     item_list.push_back(Item(widget));
     invalidate();
     parent()->addChild(widget);
@@ -87,16 +95,23 @@ void BoxLayout::addWidget(Widget* widget)
 
 void BoxLayout::addLayout(Layout* layout)
 {
-    if (!parent()) return;
-    // TODO: should we create a widtget and put the layout in?
+    if (!parent()) return; // Wieso?
     item_list.push_back(Item(layout));
     invalidate();
 }
 
 void BoxLayout::addSpacing(int size)
 {
-    if (!parent()) return;
-    // TODO: create a widget with minimum and maximum size and policy fixed
+    if (!parent()) return; // Wieso?
+    item_list.push_back(Item(new SpacerItem(size)));
+    invalidate();
+}
+
+
+void BoxLayout::addSpacer(SpacerItem* spacer)
+{
+    if (!parent()) return; // Wieso?
+    item_list.push_back(Item(spacer));
     invalidate();
 }
 

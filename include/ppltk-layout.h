@@ -89,6 +89,22 @@ Margins operator/(const Margins& margins, int divisor);
 Margins operator/(const Margins& margins, float divisor);
 Margins operator|(const Margins& m1, const Margins& m2);
 
+
+class SpacerItem
+{
+public:
+    int width;
+    int height;
+    SizePolicy::Policy hPolicy;
+    SizePolicy::Policy vPolicy;
+
+    SpacerItem();
+    SpacerItem(int size);
+    SpacerItem(int width, int height);
+    SpacerItem(int width, int height, SizePolicy::Policy hPolicy = SizePolicy::Maximum, SizePolicy::Policy vPolicy = SizePolicy::Maximum);
+
+};
+
 class Layout
 {
     friend class Widget;
@@ -130,13 +146,8 @@ private:
     enum class ItemType
     {
         Widget,
-        Layout
-    };
-
-    class SpaceItem
-    {
-    public:
-        int size;
+        Layout,
+        Spacer
     };
 
     class Item
@@ -147,9 +158,11 @@ private:
         {
             Widget* widget;
             Layout* layout;
+            SpacerItem* spacer;
         };
         Item(Widget*);
         Item(Layout*);
+        Item(SpacerItem*);
     };
     std::list<Item> item_list;
     Direction myDirection;
@@ -161,7 +174,7 @@ public:
     void addWidget(Widget* widget);
     void addLayout(Layout* layout);
     void addSpacing(int size);
-    // void addStretch(int stretch=0);
+    void addSpacer(SpacerItem* spacer);
 
     void setSpacing(int spacing);
     int spacing() const;

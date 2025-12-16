@@ -39,10 +39,10 @@ using namespace ppl7::grafix;
 
 SizePolicy::SizePolicy()
 {
-	HorizontalPolicy=Policy::Preferred;
-	VerticalPolicy=Policy::Preferred;
-	HorizontalStretch=0;
-	VerticalStretch=0;
+	HorizontalPolicy = Policy::Minimum;
+	VerticalPolicy = Policy::Minimum;
+	HorizontalStretch = 1;
+	VerticalStretch = 1;
 }
 
 

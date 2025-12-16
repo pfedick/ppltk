@@ -67,7 +67,8 @@ OBJECTS = 	compile/WindowManager.o \
 	compile/layout_HBoxLayout.o \
 	compile/layout_VBoxLayout.o \
 	compile/layout_FormLayout.o \
-	compile/layout_Margins.o
+	compile/layout_Margins.o \
+	compile/layout_SpacerItem.o
 
 
 compile/$(LIBNAME).a: $(OBJECTS)
@@ -213,6 +214,10 @@ compile/widget_TabWidget.o: src/widgets/TabWidget.cpp Makefile include/ppltk.h
 compile/layout_Layout.o: src/layout/Layout.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
 	$(CXX) -o compile/layout_Layout.o -c src/layout/Layout.cpp $(CFLAGS)
+
+compile/layout_SpacerItem.o: src/layout/SpacerItem.cpp Makefile include/ppltk.h include/ppltk-layout.h
+	- @mkdir -p compile
+	$(CXX) -o compile/layout_SpacerItem.o -c src/layout/SpacerItem.cpp $(CFLAGS)
 
 compile/layout_BoxLayout.o: src/layout/BoxLayout.cpp Makefile include/ppltk.h include/ppltk-layout.h
 	- @mkdir -p compile
