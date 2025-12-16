@@ -66,7 +66,20 @@ BoxLayout::BoxLayout(Direction dir, Widget* parent)
 
 BoxLayout::~BoxLayout()
 {
-
+    for (auto it = item_list.begin();it != item_list.end();++it) {
+        switch (it->type) {
+        case ItemType::Layout:
+            delete it->layout;
+            break;
+        case ItemType::Widget:
+            delete it->widget;
+            break;
+        case ItemType::Spacer:
+            delete it->spacer;
+            break;
+        }
+    }
+    item_list.clear();
 }
 
 
