@@ -890,6 +890,9 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 
 static ppl7::grafix::Point translateCoordinatesToUi(Window* w, int x, int y)
 {
+#ifndef HAVE_SDL2
+	throw UnsupportedFeatureException("SDL2");
+#else
 	if (w->hasFixedUiSize()) {
 		const ppl7::grafix::Size& wSize = w->windowSize();
 		SDL_Rect dest = { 0,0,wSize.width, wSize.height };
@@ -909,6 +912,7 @@ static ppl7::grafix::Point translateCoordinatesToUi(Window* w, int x, int y)
 	}
 	//ppl7::PrintDebug("wir sind hier falsch\n");
 	return ppl7::grafix::Point(x, y);
+#endif
 }
 
 
