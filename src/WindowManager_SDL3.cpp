@@ -763,10 +763,7 @@ void WindowManager_SDL3::handleEvents()
                 te.text.set(event->text);
                 keyFocusWidget->textInputEvent(&te);
             }
-            else
-            {
-                ppl7::PrintDebug("No keyboard focus widget for TEXTINPUT\n");
-            }
+
             break;
         }
         case SDL_EVENT_USER:
