@@ -578,6 +578,13 @@ void WindowManager_SDL3::createWindow(Window& w)
     }
     //ppl7::PrintDebug("SDL Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
 
+    // Enable VSync to limit framerate to display refresh rate
+    if (wf & Window::WaitVsync) {
+        if (!SDL_SetRenderVSync(priv->renderer, 1)) {
+            throw WindowCreateException("SDL_SetRenderVSync ERROR: %s", SDL_GetError());
+        }
+    }
+
     SDL_StartTextInput(priv->win);
 
     int width, height;
