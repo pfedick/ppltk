@@ -679,6 +679,7 @@ typedef struct PRIV_WINDOW_FUNCTIONS {
     void (*unlockWindowSurface) (void* privatedata);
     void (*drawWindowSurface) (void* privatedata);
     void* (*getRenderer) (void* privatedata);
+    void* (*getSDLWindow) (void* privatedata);
     void (*clearScreen) (void* privatedata);
     void (*presentScreen) (void* privatedata);
 } PRIV_WINDOW_FUNCTIONS;
@@ -770,6 +771,7 @@ public:
     void setPrivateData(void* data, WindowManager* wm, PRIV_WINDOW_FUNCTIONS* fn);
 
     void* getRenderer();
+    void* getSDLWindow();
     void clearScreen();
     void presentScreen();
     MouseState getMouseState();

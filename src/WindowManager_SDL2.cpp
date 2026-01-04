@@ -316,6 +316,14 @@ static void* sdlGetRenderer(void* privatedata)
 	return priv->renderer;
 }
 
+static void* sdlGetSDLWindow(void* privatedata)
+{
+	SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+	if (!priv)
+		throw NullPointerException();
+	return priv->win;
+}
+
 static void sdlClearScreen(void* privatedata)
 {
 	SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
@@ -383,6 +391,7 @@ static PRIV_WINDOW_FUNCTIONS sdlWmFunctions = {
 		sdlUnlockWindowSurface,
 		sdlDrawWindowSurface,
 		sdlGetRenderer,
+		sdlGetSDLWindow,
 		sdlClearScreen,
 		sdlPresentScreen
 };
@@ -601,7 +610,7 @@ void WindowManager_SDL2::startEventLoop()
 	while (numWindows() > 0) {
 		handleEvents();
 		ppl7::MSleep(5);
-	}
+}
 #endif
 }
 
@@ -767,7 +776,7 @@ void WindowManager_SDL2::handleEvents()
 		break;
 		}
 
-	}
+}
 #endif
 }
 
@@ -884,7 +893,7 @@ void WindowManager_SDL2::DispatchWindowEvent(void* e)
 		printf("SDL Window %d got unknown event %d\n",
 			event->window.windowID, event->window.event);
 		break;
-	}
+}
 #endif
 }
 
@@ -998,7 +1007,7 @@ void WindowManager_SDL2::DispatchMouseEvent(void* e)
 
 		//ev.setType(Event::MouseUp);
 
-	}
+}
 #endif
 }
 
@@ -1208,7 +1217,7 @@ void WindowManager_SDL2::DispatchKeyEvent(void* e)
 	}
 	else if (event->type == SDL_KEYUP) {
 		keyFocusWidget->keyUpEvent(&kev);
-	}
+}
 #endif
 }
 

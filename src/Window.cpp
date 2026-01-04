@@ -44,6 +44,7 @@ static Drawable lockWindowSurface(void* privatedata) { return Drawable(); }
 static void unlockWindowSurface(void* privatedata) {}
 static void drawWindowSurface(void* privatedata) {}
 static void* getRenderer(void* privatedata) { return NULL; }
+static void* getSDLWindow(void* privatedata) { return NULL; }
 static void clearScreen(void* privatedata) {}
 static void presentScreen(void* privatedata) {}
 
@@ -56,6 +57,7 @@ static PRIV_WINDOW_FUNCTIONS defWmFunctions = {
 	unlockWindowSurface,
 	drawWindowSurface,
 	getRenderer,
+	getSDLWindow,
 	clearScreen,
 	presentScreen };
 
@@ -158,6 +160,11 @@ void Window::setPrivateData(void* data, WindowManager* wm, PRIV_WINDOW_FUNCTIONS
 void* Window::getRenderer()
 {
 	return fn->getRenderer(privateData);
+}
+
+void* Window::getSDLWindow()
+{
+	return fn->getSDLWindow(privateData);
 }
 
 void Window::clearScreen()

@@ -356,6 +356,15 @@ static void* sdlGetRenderer(void* privatedata)
     return priv->renderer;
 }
 
+static void* sdlGetSDLWindow(void* privatedata)
+{
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
+    if (!priv)
+        throw NullPointerException();
+    return priv->win;
+}
+
+
 static void sdlClearScreen(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
@@ -453,6 +462,7 @@ static PRIV_WINDOW_FUNCTIONS sdlWmFunctions = {
     sdlUnlockWindowSurface,
     sdlDrawWindowSurface,
     sdlGetRenderer,
+    sdlGetSDLWindow,
     sdlClearScreen,
     sdlPresentScreen };
 
