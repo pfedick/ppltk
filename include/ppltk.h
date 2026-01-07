@@ -690,6 +690,7 @@ class Window : public Widget
     friend class WindowManager;
 private:
     void* privateData;
+    ppl7::grafix::Drawable* useWidgetDrawbuffer;
     PRIV_WINDOW_FUNCTIONS* fn;
     WindowManager* wm;
     Widget* keyfocus;
@@ -713,6 +714,7 @@ public:
         TopMost = 0x00000010,
         Fullscreen = 0x00000020,
         FullscreenDesktop = 0x00000040,
+        NoSDLRenderer = 0x00000080,
         WaitVsync = 0x00200000,
         ZBuffer = 0x00400000,
         StencilBuffer = 0x00800000,
@@ -755,6 +757,8 @@ public:
     void setWindowIcon(const Drawable& icon);
     const RGBFormat& rgbFormat() const;
     void setRGBFormat(const RGBFormat& format);
+    void setWidgetDrawbuffer(ppl7::grafix::Drawable* drawbuffer);
+    ppl7::grafix::Drawable* getWidgetDrawbuffer();
 
     void setPos(int x, int y);
     void setPos(const Point& p);

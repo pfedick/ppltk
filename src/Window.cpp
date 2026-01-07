@@ -89,6 +89,7 @@ Window::Window()
 	myBackground = style.windowBackgroundColor;
 	keyfocus = this;
 	uiSizeIsFixed = false;
+	useWidgetDrawbuffer = NULL;
 }
 
 Window::~Window()
@@ -257,14 +258,19 @@ String Window::widgetType() const
 void Window::drawWidgets()
 {
 	recalculateLayout();
-	if (redrawRequired())
-	{
-		// ppl7::PrintDebugTime("Window::drawWidgets => redraw\n");
-		Drawable d = fn->lockWindowSurface(privateData);
-		draw(d);
-		fn->unlockWindowSurface(privateData);
+	if (useWidgetDrawbuffer) {
+		draw(*useWidgetDrawbuffer);
 	}
-	fn->drawWindowSurface(privateData);
+	else {
+		if (redrawRequired())
+		{
+			// ppl7::PrintDebugTime("Window::drawWidgets => redraw\n");
+			Drawable d = fn->lockWindowSurface(privateData);
+			draw(d);
+			fn->unlockWindowSurface(privateData);
+		}
+		fn->drawWindowSurface(privateData);
+	}
 }
 
 MouseState Window::getMouseState()
@@ -307,6 +313,16 @@ void Window::setWindowDisplayMode(const DisplayMode& mode)
 	if (!wm)
 		return;
 	wm->setWindowDisplayMode(*this, mode);
+}
+
+void Window::setWidgetDrawbuffer(ppl7::grafix::Drawable* drawbuffer)
+{
+	useWidgetDrawbuffer = drawbuffer;
+}
+
+ppl7::grafix::Drawable* Window::getWidgetDrawbuffer()
+{
+	return useWidgetDrawbuffer;
 }
 
 } // EOF namespace ppltk

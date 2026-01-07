@@ -278,6 +278,7 @@ static Drawable sdlLockWindowSurface(void* privatedata)
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
     if (!priv)
         throw NullPointerException();
+    if (!priv->renderer || !priv->gui) throw NullPointerException();
     void* pixels;
     int pitch;
     SDL_LockTexture(priv->gui, NULL, &pixels, &pitch);
@@ -290,6 +291,7 @@ static void sdlUnlockWindowSurface(void* privatedata)
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
     if (!priv)
         throw NullPointerException();
+    if (!priv->renderer || !priv->gui) throw NullPointerException();
     SDL_UnlockTexture(priv->gui);
 }
 
@@ -336,6 +338,7 @@ static void sdlDrawWindowSurface(void* privatedata)
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
     if (!priv)
         throw NullPointerException();
+    if (!priv->renderer || !priv->gui) return;
     if (priv->scaleUi)
     {
         SDL_FRect dest;
@@ -370,7 +373,7 @@ static void sdlClearScreen(void* privatedata)
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
     if (!priv)
         throw NullPointerException();
-    SDL_RenderClear(priv->renderer);
+    if (priv->renderer) SDL_RenderClear(priv->renderer);
 }
 
 static void sdlPresentScreen(void* privatedata)
@@ -378,7 +381,7 @@ static void sdlPresentScreen(void* privatedata)
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
     if (!priv)
         throw NullPointerException();
-    SDL_RenderPresent(priv->renderer);
+    if (priv->renderer) SDL_RenderPresent(priv->renderer);
 }
 
 static int TranslateKeyModifierFromSDL(int sdl_key_modifier)
@@ -578,22 +581,6 @@ void WindowManager_SDL3::createWindow(Window& w)
     }
 
     SDL_SetPointerProperty(SDL_GetWindowProperties(priv->win), "WindowClass", &w);
-    priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
-    if (priv->renderer == 0)
-    {
-        const char* e = SDL_GetError();
-        SDL_DestroyWindow(priv->win);
-        free(priv);
-        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
-    }
-    //ppl7::PrintDebug("SDL Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
-
-    // Enable VSync to limit framerate to display refresh rate
-    if (wf & Window::WaitVsync) {
-        if (!SDL_SetRenderVSync(priv->renderer, 1)) {
-            throw WindowCreateException("SDL_SetRenderVSync ERROR: %s", SDL_GetError());
-        }
-    }
 
     SDL_StartTextInput(priv->win);
 
@@ -603,27 +590,53 @@ void WindowManager_SDL3::createWindow(Window& w)
 
     Size ui_size = w.uiSize();
 
-    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ui_size.width, ui_size.height);
-    if (priv->gui == 0)
-    {
-        const char* e = SDL_GetError();
-        SDL_DestroyRenderer(priv->renderer);
-        SDL_DestroyWindow(priv->win);
-        free(priv);
-        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+
+    if (!(wf & Window::NoSDLRenderer)) {
+        // Use SDL Renderer
+
+        priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
+        if (priv->renderer == 0)
+        {
+            const char* e = SDL_GetError();
+            SDL_DestroyWindow(priv->win);
+            free(priv);
+            throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+        }
+        //ppl7::PrintDebug("SDL Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
+
+        // Enable VSync to limit framerate to display refresh rate
+        if (wf & Window::WaitVsync) {
+            if (!SDL_SetRenderVSync(priv->renderer, 1)) {
+                throw WindowCreateException("SDL_SetRenderVSync ERROR: %s", SDL_GetError());
+            }
+        }
+
+        priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ui_size.width, ui_size.height);
+        if (priv->gui == 0)
+        {
+            const char* e = SDL_GetError();
+            SDL_DestroyRenderer(priv->renderer);
+            SDL_DestroyWindow(priv->win);
+            free(priv);
+            throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+        }
+        if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND))
+        {
+            const char* e = SDL_GetError();
+            SDL_DestroyTexture(priv->gui);
+            SDL_DestroyRenderer(priv->renderer);
+            SDL_DestroyWindow(priv->win);
+            free(priv);
+            throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
+        }
+        if (priv->scaleUi)
+        {
+            SDL_SetTextureScaleMode(priv->gui, SDL_ScaleMode::SDL_SCALEMODE_LINEAR);
+        }
     }
-    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND))
-    {
-        const char* e = SDL_GetError();
-        SDL_DestroyTexture(priv->gui);
-        SDL_DestroyRenderer(priv->renderer);
-        SDL_DestroyWindow(priv->win);
-        free(priv);
-        throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
-    }
-    if (priv->scaleUi)
-    {
-        SDL_SetTextureScaleMode(priv->gui, SDL_ScaleMode::SDL_SCALEMODE_LINEAR);
+    else {
+        priv->renderer = NULL;
+        priv->gui = NULL;
     }
 
     priv->format = RGBFormat::A8R8G8B8;
