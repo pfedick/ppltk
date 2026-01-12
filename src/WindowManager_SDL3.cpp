@@ -479,6 +479,7 @@ WindowManager_SDL3::WindowManager_SDL3()
     if (wm != NULL && wm != this)
         throw DuplicateWindowManagerException();
     wm = this;
+    gpu_device = NULL;
 
     /* Get init data on all the subsystems */
     uint32_t subsystem_init;
@@ -594,7 +595,12 @@ void WindowManager_SDL3::createWindow(Window& w)
     if (!(wf & Window::NoSDLRenderer)) {
         // Use SDL Renderer
 
-        priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
+        if (gpu_device) {
+            priv->renderer = SDL_CreateGPURenderer((SDL_GPUDevice*)gpu_device, priv->win);
+        }
+        else {
+            priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
+        }
         if (priv->renderer == 0)
         {
             const char* e = SDL_GetError();
@@ -1707,6 +1713,11 @@ void* WindowManager_SDL3::getSDLWindow(Window& w)
         return NULL;
     return priv->win;
 #endif
+}
+
+void WindowManager_SDL3::enableGPURenderer(void* gpu)
+{
+    gpu_device = gpu;
 }
 
 } // EOF namespace ppltk

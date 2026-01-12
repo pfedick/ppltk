@@ -898,7 +898,6 @@ public:
     virtual bool hasClipboardText() const;
     virtual String getClipboardText() const;
 
-
     int startTimer(Widget* w, int intervall);
     void removeTimer(int timer_id);
 
@@ -916,6 +915,7 @@ private:
 
     List<Window*>	windows;
     Window* lastWindowEnterEvent;
+    void* gpu_device;
 
     void DispatchSdlActiveEvent(void* e);
     void DispatchSdlKeyEvent(void* e);
@@ -952,7 +952,7 @@ public:
     virtual bool hasClipboardText() const;
     virtual String getClipboardText() const;
 
-
+    void enableGPURenderer(void* gpu);
     int startTimer(Widget* w, int intervall);
     void removeTimer(int timer_id);
 
