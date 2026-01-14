@@ -959,6 +959,7 @@ public:
     void changeWindowMode(Window& w, Window::WindowMode mode);
     Window::WindowMode getWindowMode(Window& w);
     void* getSDLWindow(Window& w);
+    void* getBackbufferTexture(Window& w);
 };
 
 

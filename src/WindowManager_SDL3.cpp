@@ -597,6 +597,7 @@ void WindowManager_SDL3::createWindow(Window& w)
 
         if (gpu_device) {
             priv->renderer = SDL_CreateGPURenderer((SDL_GPUDevice*)gpu_device, priv->win);
+            ppl7::PrintDebug("SDL GPU Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
         }
         else {
             priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
@@ -1712,6 +1713,18 @@ void* WindowManager_SDL3::getSDLWindow(Window& w)
     if (!priv)
         return NULL;
     return priv->win;
+#endif
+}
+
+void* WindowManager_SDL3::getBackbufferTexture(Window& w)
+{
+#ifndef HAVE_SDL3
+    throw UnsupportedFeatureException("SDL3");
+#else
+    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
+    if (!priv)
+        return NULL;
+    return priv->gui;
 #endif
 }
 
