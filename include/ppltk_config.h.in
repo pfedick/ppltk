@@ -68,6 +68,6 @@
 
 #undef HAVE_SDL2 1
 #undef HAVE_SDL3 1
-
+#undef HAVE_SDL3_GPU_RENDERER 1
 
 #endif

@@ -29,10 +29,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 ###############################################################################
 
-ACLOCAL=aclocal
-AUTOMAKE=automake
-AUTOCONF=autoconf
 
-$ACLOCAL
-$AUTOMAKE --add-missing
-$AUTOCONF
+aclocal -I autoconf --install
+automake --add-missing
+autoconf
+

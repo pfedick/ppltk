@@ -99,6 +99,14 @@ AC_ARG_VAR(SDL3_FRAMEWORK, [Path to SDL3.framework])
              sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
       sdl_micro_version=`$SDL3_CONFIG $sdl_config_args --version | \
              sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+
+      dnl Check for GPU Renderer (SDL >= 3.4.0)
+      if test "$sdl_major_version" -gt 3 || \
+         (test "$sdl_major_version" -eq 3 && test "$sdl_minor_version" -ge 4); then
+        AC_DEFINE(HAVE_SDL3_GPU_RENDERER, 1, [Define if SDL3 supports GPU Renderer])
+        AC_SUBST(HAVE_SDL3_GPU_RENDERER)
+      fi
+
       if test "x$enable_sdltest" = "xyes" ; then
         ac_save_CFLAGS="$CFLAGS"
         ac_save_CXXFLAGS="$CXXFLAGS"
