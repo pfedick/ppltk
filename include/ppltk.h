@@ -714,7 +714,6 @@ public:
         TopMost = 0x00000010,
         Fullscreen = 0x00000020,
         FullscreenDesktop = 0x00000040,
-        NoSDLRenderer = 0x00000080,
         WaitVsync = 0x00200000,
         ZBuffer = 0x00400000,
         StencilBuffer = 0x00800000,
@@ -916,6 +915,7 @@ private:
     List<Window*>	windows;
     Window* lastWindowEnterEvent;
     void* gpu_device;
+    bool use_gpu_api;
 
     void DispatchSdlActiveEvent(void* e);
     void DispatchSdlKeyEvent(void* e);
@@ -928,6 +928,9 @@ private:
     void DispatchWindowEvent(void* e);
 
     Window* getWindow(uint32_t id);
+    void createWindowWithRenderer(void* context, uint32_t wf, ppl7::grafix::Size& ui_size);
+    void createWindowWithGPU(void* context, uint32_t wf, ppl7::grafix::Size& ui_size);
+
 
 public:
     WindowManager_SDL3();
@@ -953,6 +956,7 @@ public:
     virtual String getClipboardText() const;
 
     void enableGPURenderer(void* gpu);
+    void useGPUAPI(void* gpu);
     int startTimer(Widget* w, int intervall);
     void removeTimer(int timer_id);
 
@@ -960,6 +964,10 @@ public:
     Window::WindowMode getWindowMode(Window& w);
     void* getSDLWindow(Window& w);
     void* getBackbufferTexture(Window& w);
+
+
+    void updateGPUTexture(Window& w, void* cmdbuf);
+    void* getGPUTexture(Window& w);
 };
 
 

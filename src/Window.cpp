@@ -259,12 +259,13 @@ void Window::drawWidgets()
 {
 	recalculateLayout();
 	if (useWidgetDrawbuffer) {
+		//ppl7::PrintDebugTime("Window::drawWidgets => useWidgetDrawbuffer\n");
 		draw(*useWidgetDrawbuffer);
 	}
 	else {
 		if (redrawRequired())
 		{
-			// ppl7::PrintDebugTime("Window::drawWidgets => redraw\n");
+			//ppl7::PrintDebugTime("Window::drawWidgets => redrawRequired\n");
 			Drawable d = fn->lockWindowSurface(privateData);
 			draw(d);
 			fn->unlockWindowSurface(privateData);

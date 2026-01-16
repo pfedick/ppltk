@@ -161,6 +161,7 @@ String Button::widgetType() const
 
 void Button::mouseDownEvent(MouseEvent* event)
 {
+	//ppl7::PrintDebug("Button::mouseDownEvent\n");
 	if (is_checkable)
 	{
 		is_checked = !is_checked;
@@ -175,6 +176,7 @@ void Button::mouseDownEvent(MouseEvent* event)
 
 void Button::mouseUpEvent(MouseEvent* event)
 {
+	//ppl7::PrintDebug("Button::mouseUpEvent\n");
 	if (is_checkable)
 	{
 		isDown = is_checked;
@@ -255,6 +257,7 @@ Size Button::contentSize() const
 
 void Button::paint(Drawable& draw)
 {
+	//ppl7::PrintDebug("Button::paint, isdown:%d\n", (int)isDown);
 	Color light = background * 1.8f;
 	Color shadow = background * 0.4f;
 	Color shade1 = background * 1.05f;
