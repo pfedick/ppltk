@@ -596,8 +596,12 @@ void WindowManager_SDL3::createWindow(Window& w)
         // Use SDL Renderer
 
         if (gpu_device) {
+#ifdef HAVE_SDL3_GPU_RENDERER
             priv->renderer = SDL_CreateGPURenderer((SDL_GPUDevice*)gpu_device, priv->win);
             ppl7::PrintDebug("SDL GPU Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
+#else
+            throw UnsupportedFeatureException("SDL3 GPU Renderer");
+#endif
         }
         else {
             priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
@@ -1730,7 +1734,11 @@ void* WindowManager_SDL3::getBackbufferTexture(Window& w)
 
 void WindowManager_SDL3::enableGPURenderer(void* gpu)
 {
+#ifdef HAVE_SDL3_GPU_RENDERER
     gpu_device = gpu;
+#else
+    throw UnsupportedFeatureException("SDL3 GPU Renderer");
+#endif
 }
 
 } // EOF namespace ppltk
