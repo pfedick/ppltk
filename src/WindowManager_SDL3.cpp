@@ -404,7 +404,6 @@ static Drawable sdlGPULockWindowSurface(void* privatedata)
     );
 
     if (pixels) {
-        ppl7::PrintDebug("GPULockScreen\n");
         // wrapper für ppltk erstellen (Pitch = Breite * 4 Bytes)
         return ppl7::grafix::Drawable(pixels, priv->width * 4, priv->width, priv->height, priv->format);
     }
@@ -418,25 +417,13 @@ static void sdlGPUUnlockWindowSurface(void* privatedata)
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
     if (!priv)
         throw NullPointerException();
-    ppl7::PrintDebug("GPUUnlockScreen\n");
     priv->texture_needs_update = true;
     SDL_UnmapGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer);
 }
 
 static void sdlGPUClearScreen(void* privatedata)
 {
-    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
-    ppl7::PrintDebug("GPUClearScreen\n");
-    // Wir nutzen cycle=true, um einen frischen Buffer zu bekommen (vermeidet Warten auf GPU)
-    void* pixels = SDL_MapGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer, true);
-    if (pixels) {
-        // Komplett mit 0 (transparent) überschreiben
-        memset(pixels, 0, priv->width * priv->height * 4);
-        SDL_UnmapGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer);
-        priv->texture_needs_update = true;
-    }
+    return;
 }
 
 static void sdlGPUPresentScreen(void* privatedata)
@@ -446,12 +433,7 @@ static void sdlGPUPresentScreen(void* privatedata)
 
 static void sdlGPUDrawWindowSurface(void* privatedata)
 {
-    SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
-    // Diese Funktion macht hier nichts, da es bei der GPU-API anders funktioniert und wir den
-    // Command Buffer bräuchten
-    ppl7::PrintDebug("GPUDrawWindowSurface - no operation\n");
+    return;
 }
 
 
@@ -668,6 +650,7 @@ void WindowManager_SDL3::createWindow(Window& w)
         free(priv);
         throw WindowCreateException("SDL_CreateWindow ERROR: %s", SDL_GetError());
     }
+    SDL_RaiseWindow(priv->win);
 
     SDL_SetPointerProperty(SDL_GetWindowProperties(priv->win), "WindowClass", &w);
 
@@ -708,7 +691,7 @@ void WindowManager_SDL3::createWindowWithGPU(void* context, uint32_t wf, ppl7::g
     SDL_GPUTextureCreateInfo textureInfo;
     memset(&textureInfo, 0, sizeof(SDL_GPUTextureCreateInfo));
     textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
-    textureInfo.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
+    textureInfo.format = SDL_GPU_TEXTUREFORMAT_B8G8R8A8_UNORM;
     textureInfo.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER; // WICHTIG: Soll im Shader gelesen werden
     textureInfo.width = ui_size.width;
     textureInfo.height = ui_size.height;
@@ -800,7 +783,7 @@ void WindowManager_SDL3::destroyWindow(Window& w)
     windows.erase(&w);
     if (priv->gpu_device && priv->gpu_transfer_buffer) {
         SDL_ReleaseGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer);
-    }
+}
     if (priv->gpu_device && priv->gpu_texture) {
         SDL_ReleaseGPUTexture(priv->gpu_device, priv->gpu_texture);
     }
@@ -874,7 +857,7 @@ void WindowManager_SDL3::startEventLoop()
         ppl7::MSleep(5);
     }
 #endif
-}
+    }
 
 Window* WindowManager_SDL3::getWindow(uint32_t id)
 {
@@ -1081,9 +1064,11 @@ void WindowManager_SDL3::DispatchWindowEvent(void* e)
     {
     case SDL_EVENT_WINDOW_SHOWN:
         // printf("Window %d shown", event->window.windowID);
+        /*
         w->clearScreen();
         w->drawWidgets();
         w->presentScreen();
+        */
         break;
     case SDL_EVENT_WINDOW_HIDDEN:
         // fprintf(stderr, "Window %d hidden", event->window.windowID);
@@ -1222,7 +1207,7 @@ void WindowManager_SDL3::DispatchMouseEvent(void* e)
         ev.button = (MouseEvent::MouseButton)0;
         getButtonMask(ev);
         dispatchMouseEvent(w, ev);
-    }
+}
     else if (type == SDL_EVENT_MOUSE_BUTTON_DOWN)
     {
         SDL_MouseButtonEvent* event = (SDL_MouseButtonEvent*)e;
@@ -1891,13 +1876,13 @@ void WindowManager_SDL3::updateGPUTexture(Window& w, void* cmdbuf)
     if (!priv->gpu_texture) return;
     //SDL_GPUCommandBuffer* cmdbuf, SDL_GPUTexture* swapchainTexture
     if (priv->texture_needs_update) {
-        ppl7::PrintDebug("Updating GPU texture\n");
+        //ppl7::PrintDebug("Updating GPU texture\n");
         SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass((SDL_GPUCommandBuffer*)cmdbuf);
         SDL_GPUTextureTransferInfo transferInfo = {
             .transfer_buffer = priv->gpu_transfer_buffer,
             .offset = 0,
-            .pixels_per_row = 0,
-            .rows_per_layer = 0
+            .pixels_per_row = (Uint32)priv->width,
+            .rows_per_layer = (Uint32)priv->height
         };
         SDL_GPUTextureRegion texture_region = {
             .texture = priv->gpu_texture,
