@@ -85,20 +85,32 @@ AC_ARG_VAR(SDL3_FRAMEWORK, [Path to SDL3.framework])
         no_sdl=yes
       fi
     fi
+  fi
 
-    if test "$SDL3_CONFIG" != "no"; then
-      if test "x$sdl_pc" = "xno"; then
-        AC_MSG_CHECKING(for SDL3 - version >= $min_sdl_version)
-        SDL3_CFLAGS=`$SDL3_CONFIG $sdl_config_args --cflags`
-        SDL3_LIBS=`$SDL3_CONFIG $sdl_config_args --libs`
+  if test "x$no_sdl" = x ; then
+      if test "x$sdl_pc" = "xyes"; then
+        sdl_major_version=`$SDL3_CONFIG --modversion | \
+               sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+        sdl_minor_version=`$SDL3_CONFIG --modversion | \
+               sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+        sdl_micro_version=`$SDL3_CONFIG --modversion | \
+               sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+      else
+        if test "$SDL3_CONFIG" != "no" ; then
+          if test "x$sdl_pc" = "xno"; then
+             AC_MSG_CHECKING(for SDL3 - version >= $min_sdl_version)
+             SDL3_CFLAGS=`$SDL3_CONFIG $sdl_config_args --cflags`
+             SDL3_LIBS=`$SDL3_CONFIG $sdl_config_args --libs`
+          fi
+
+          sdl_major_version=`$SDL3_CONFIG $sdl_config_args --version | \
+                 sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+          sdl_minor_version=`$SDL3_CONFIG $sdl_config_args --version | \
+                 sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+          sdl_micro_version=`$SDL3_CONFIG $sdl_config_args --version | \
+                 sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+        fi
       fi
-
-      sdl_major_version=`$SDL3_CONFIG $sdl_config_args --version | \
-             sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-      sdl_minor_version=`$SDL3_CONFIG $sdl_config_args --version | \
-             sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-      sdl_micro_version=`$SDL3_CONFIG $sdl_config_args --version | \
-             sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
 
       dnl Check for GPU Renderer (SDL >= 3.4.0)
       if test "$sdl_major_version" -gt 3 || \
@@ -189,7 +201,6 @@ int main (int argc, char *argv[])
           AC_MSG_RESULT(yes)
         fi
       fi
-    fi
   fi
   if test "$SDL3_CONFIG" = "no"; then
     no_sdl="yes"
