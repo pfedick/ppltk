@@ -77,8 +77,7 @@ typedef struct
 
 static RGBFormat SDL2RGBFormat(const Uint32 f)
 {
-    switch (f)
-    {
+    switch (f) {
     case SDL_PIXELFORMAT_INDEX8:
         return RGBFormat::Palette;
     case SDL_PIXELFORMAT_RGB332:
@@ -220,8 +219,7 @@ static SDL_COLORFORMAT RGBFormat2SDLStruct(const RGBFormat& format)
 
 static SDL_PixelFormat RGBFormat2SDLFormat(const ppl7::grafix::RGBFormat& format)
 {
-    switch (format)
-    {
+    switch (format) {
     case ppl7::grafix::RGBFormat::Palette:
         return SDL_PIXELFORMAT_INDEX8;
     case ppl7::grafix::RGBFormat::A8R8G8B8:
@@ -241,30 +239,22 @@ static SDL_PixelFormat RGBFormat2SDLFormat(const ppl7::grafix::RGBFormat& format
 static void sdlSetWindowTitle(void* privatedata, const String& Title)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        return;
+    if (!priv) return;
     SDL_SetWindowTitle(priv->win, (const char*)Title);
 }
 static void sdlSetWindowIcon(void* privatedata, const Drawable& Icon)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        return;
-    if (Icon.isEmpty())
-    {
+    if (!priv) return;
+    if (Icon.isEmpty()) {
         SDL_SetWindowIcon(priv->win, NULL);
         return;
     }
     // SDL_COLORFORMAT cf = RGBFormat2SDLStruct(Icon.rgbformat());
 
-    SDL_Surface* s = SDL_CreateSurfaceFrom(
-        Icon.width(),
-        Icon.height(),
-        RGBFormat2SDLFormat(Icon.rgbformat()),
-        Icon.adr(),
-        Icon.pitch());
-    if (!s)
-        throw SurfaceCreateException("sdlSetWindowIcon ERROR: %s", SDL_GetError());
+    SDL_Surface* s = SDL_CreateSurfaceFrom(Icon.width(), Icon.height(), RGBFormat2SDLFormat(Icon.rgbformat()),
+                                           Icon.adr(), Icon.pitch());
+    if (!s) throw SurfaceCreateException("sdlSetWindowIcon ERROR: %s", SDL_GetError());
     SDL_SetWindowIcon(priv->win, s);
     SDL_DestroySurface(s);
 }
@@ -280,8 +270,7 @@ static void sdlCreateTexture(void* privatedata)
 static Drawable sdlLockWindowSurface(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     if (!priv->renderer || !priv->gui) throw NullPointerException();
     void* pixels;
     int pitch;
@@ -295,13 +284,11 @@ static Drawable sdlLockWindowSurface(void* privatedata)
 static void sdlUnlockWindowSurface(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     if (!priv->renderer || !priv->gui) throw NullPointerException();
     SDL_UnlockTexture(priv->gui);
     priv->texture_needs_update = true;
 }
-
 
 static void getDestinationRect(SDL_WINDOW_PRIVATE* priv, SDL_Rect& dest)
 {
@@ -310,11 +297,9 @@ static void getDestinationRect(SDL_WINDOW_PRIVATE* priv, SDL_Rect& dest)
     dest.y = 0;
     dest.w = priv->window_width;
     dest.h = priv->window_height;
-    if (dest.w > priv->window_width)
-        dest.w = priv->window_width;
+    if (dest.w > priv->window_width) dest.w = priv->window_width;
     dest.h = dest.w / aspect;
-    if (dest.h > priv->window_height)
-    {
+    if (dest.h > priv->window_height) {
         dest.h = priv->window_height;
         dest.w = dest.h * aspect;
     }
@@ -329,11 +314,9 @@ static void getDestinationFRect(SDL_WINDOW_PRIVATE* priv, SDL_FRect& dest)
     dest.y = 0.0f;
     dest.w = priv->window_width;
     dest.h = priv->window_height;
-    if (dest.w > priv->window_width)
-        dest.w = priv->window_width;
+    if (dest.w > priv->window_width) dest.w = priv->window_width;
     dest.h = dest.w / aspect;
-    if (dest.h > priv->window_height)
-    {
+    if (dest.h > priv->window_height) {
         dest.h = priv->window_height;
         dest.w = dest.h * aspect;
     }
@@ -344,17 +327,13 @@ static void getDestinationFRect(SDL_WINDOW_PRIVATE* priv, SDL_FRect& dest)
 static void sdlDrawWindowSurface(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     if (!priv->renderer || !priv->gui) return;
-    if (priv->scaleUi)
-    {
+    if (priv->scaleUi) {
         SDL_FRect dest;
         getDestinationFRect(priv, dest);
         SDL_RenderTexture(priv->renderer, priv->gui, NULL, &dest);
-    }
-    else
-    {
+    } else {
         SDL_RenderTexture(priv->renderer, priv->gui, NULL, NULL);
     }
 }
@@ -362,33 +341,28 @@ static void sdlDrawWindowSurface(void* privatedata)
 static void* sdlGetRenderer(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     return priv->renderer;
 }
 
 static void* sdlGetSDLWindow(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     return priv->win;
 }
-
 
 static void sdlClearScreen(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     if (priv->renderer) SDL_RenderClear(priv->renderer);
 }
 
 static void sdlPresentScreen(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     if (priv->renderer) SDL_RenderPresent(priv->renderer);
 }
 
@@ -396,18 +370,16 @@ static void sdlPresentScreen(void* privatedata)
 static Drawable sdlGPULockWindowSurface(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
-    Uint8* pixels = (Uint8*)SDL_MapGPUTransferBuffer(
-        priv->gpu_device, priv->gpu_transfer_buffer,
-        false // false = write-only/discard (schneller, wenn wir alles neu zeichnen)
-    );
+    if (!priv) throw NullPointerException();
+    Uint8* pixels =
+        (Uint8*)SDL_MapGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer,
+                                         false // false = write-only/discard (schneller, wenn wir alles neu zeichnen)
+        );
 
     if (pixels) {
         // wrapper für ppltk erstellen (Pitch = Breite * 4 Bytes)
         return ppl7::grafix::Drawable(pixels, priv->width * 4, priv->width, priv->height, priv->format);
-    }
-    else {
+    } else {
         throw SDLException("SDL_MapGPUTransferBuffer failed: %s", SDL_GetError());
     }
 }
@@ -415,8 +387,7 @@ static Drawable sdlGPULockWindowSurface(void* privatedata)
 static void sdlGPUUnlockWindowSurface(void* privatedata)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)privatedata;
-    if (!priv)
-        throw NullPointerException();
+    if (!priv) throw NullPointerException();
     priv->texture_needs_update = true;
     SDL_UnmapGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer);
 }
@@ -436,108 +407,60 @@ static void sdlGPUDrawWindowSurface(void* privatedata)
     return;
 }
 
-
-
 // ################################ END GPU API ##############################
-
 
 static int TranslateKeyModifierFromSDL(int sdl_key_modifier)
 {
     int modifier = KeyEvent::KEYMOD_NONE;
-    if (sdl_key_modifier & SDL_KMOD_LSHIFT)
-        modifier |= KeyEvent::KEYMOD_LEFTSHIFT;
-    if (sdl_key_modifier & SDL_KMOD_RSHIFT)
-        modifier |= KeyEvent::KEYMOD_RIGHTSHIFT;
-    if (sdl_key_modifier & SDL_KMOD_LCTRL)
-        modifier |= KeyEvent::KEYMOD_LEFTCTRL;
-    if (sdl_key_modifier & SDL_KMOD_RCTRL)
-        modifier |= KeyEvent::KEYMOD_RIGHTCTRL;
-    if (sdl_key_modifier & SDL_KMOD_LALT)
-        modifier |= KeyEvent::KEYMOD_LEFTALT;
-    if (sdl_key_modifier & SDL_KMOD_RALT)
-        modifier |= KeyEvent::KEYMOD_RIGHTALT;
-    if (sdl_key_modifier & SDL_KMOD_LGUI)
-        modifier |= KeyEvent::KEYMOD_LEFTGUI;
-    if (sdl_key_modifier & SDL_KMOD_RGUI)
-        modifier |= KeyEvent::KEYMOD_RIGHTGUI;
-    if (sdl_key_modifier & SDL_KMOD_NUM)
-        modifier |= KeyEvent::KEYMOD_NUM;
-    if (sdl_key_modifier & SDL_KMOD_CAPS)
-        modifier |= KeyEvent::KEYMOD_CAPS;
-    if (sdl_key_modifier & SDL_KMOD_MODE)
-        modifier |= KeyEvent::KEYMOD_MODE;
+    if (sdl_key_modifier & SDL_KMOD_LSHIFT) modifier |= KeyEvent::KEYMOD_LEFTSHIFT;
+    if (sdl_key_modifier & SDL_KMOD_RSHIFT) modifier |= KeyEvent::KEYMOD_RIGHTSHIFT;
+    if (sdl_key_modifier & SDL_KMOD_LCTRL) modifier |= KeyEvent::KEYMOD_LEFTCTRL;
+    if (sdl_key_modifier & SDL_KMOD_RCTRL) modifier |= KeyEvent::KEYMOD_RIGHTCTRL;
+    if (sdl_key_modifier & SDL_KMOD_LALT) modifier |= KeyEvent::KEYMOD_LEFTALT;
+    if (sdl_key_modifier & SDL_KMOD_RALT) modifier |= KeyEvent::KEYMOD_RIGHTALT;
+    if (sdl_key_modifier & SDL_KMOD_LGUI) modifier |= KeyEvent::KEYMOD_LEFTGUI;
+    if (sdl_key_modifier & SDL_KMOD_RGUI) modifier |= KeyEvent::KEYMOD_RIGHTGUI;
+    if (sdl_key_modifier & SDL_KMOD_NUM) modifier |= KeyEvent::KEYMOD_NUM;
+    if (sdl_key_modifier & SDL_KMOD_CAPS) modifier |= KeyEvent::KEYMOD_CAPS;
+    if (sdl_key_modifier & SDL_KMOD_MODE) modifier |= KeyEvent::KEYMOD_MODE;
     return modifier;
 }
 
 static void getButtonMask(MouseState& ev)
 {
     uint8_t state = SDL_GetMouseState(NULL, NULL);
-    if (state & 1)
-        ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Left);
-    if (state & 2)
-        ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Middle);
-    if (state & 4)
-        ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Right);
-    if (state & 8)
-        ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::WheelUp);
-    if (state & 16)
-        ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::WheelDown);
-    if (state & 32)
-        ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X1);
-    if (state & 64)
-        ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X2);
+    if (state & 1) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Left);
+    if (state & 2) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Middle);
+    if (state & 4) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::Right);
+    if (state & 8) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::WheelUp);
+    if (state & 16) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::WheelDown);
+    if (state & 32) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X1);
+    if (state & 64) ev.buttonMask = (MouseEvent::MouseButton)(ev.buttonMask | MouseEvent::X2);
 
     const bool* kstate = SDL_GetKeyboardState(NULL);
     ev.keyModifier = 0;
-    if (kstate[SDL_SCANCODE_LCTRL])
-        ev.keyModifier |= KeyEvent::KEYMOD_LEFTCTRL;
-    if (kstate[SDL_SCANCODE_RCTRL])
-        ev.keyModifier |= KeyEvent::KEYMOD_RIGHTCTRL;
-    if (kstate[SDL_SCANCODE_LSHIFT])
-        ev.keyModifier |= KeyEvent::KEYMOD_LEFTSHIFT;
-    if (kstate[SDL_SCANCODE_RSHIFT])
-        ev.keyModifier |= KeyEvent::KEYMOD_RIGHTSHIFT;
-    if (kstate[SDL_SCANCODE_LALT])
-        ev.keyModifier |= KeyEvent::KEYMOD_LEFTALT;
-    if (kstate[SDL_SCANCODE_RALT])
-        ev.keyModifier |= KeyEvent::KEYMOD_RIGHTALT;
-    if (kstate[SDL_SCANCODE_LGUI])
-        ev.keyModifier |= KeyEvent::KEYMOD_LEFTGUI;
-    if (kstate[SDL_SCANCODE_RGUI])
-        ev.keyModifier |= KeyEvent::KEYMOD_RIGHTGUI;
-    if (kstate[SDL_SCANCODE_MODE])
-        ev.keyModifier |= KeyEvent::KEYMOD_MODE;
-    if (kstate[SDL_SCANCODE_NUMLOCKCLEAR])
-        ev.keyModifier |= KeyEvent::KEYMOD_NUM;
-    if (kstate[SDL_SCANCODE_CAPSLOCK])
-        ev.keyModifier |= KeyEvent::KEYMOD_CAPS;
+    if (kstate[SDL_SCANCODE_LCTRL]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTCTRL;
+    if (kstate[SDL_SCANCODE_RCTRL]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTCTRL;
+    if (kstate[SDL_SCANCODE_LSHIFT]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTSHIFT;
+    if (kstate[SDL_SCANCODE_RSHIFT]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTSHIFT;
+    if (kstate[SDL_SCANCODE_LALT]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTALT;
+    if (kstate[SDL_SCANCODE_RALT]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTALT;
+    if (kstate[SDL_SCANCODE_LGUI]) ev.keyModifier |= KeyEvent::KEYMOD_LEFTGUI;
+    if (kstate[SDL_SCANCODE_RGUI]) ev.keyModifier |= KeyEvent::KEYMOD_RIGHTGUI;
+    if (kstate[SDL_SCANCODE_MODE]) ev.keyModifier |= KeyEvent::KEYMOD_MODE;
+    if (kstate[SDL_SCANCODE_NUMLOCKCLEAR]) ev.keyModifier |= KeyEvent::KEYMOD_NUM;
+    if (kstate[SDL_SCANCODE_CAPSLOCK]) ev.keyModifier |= KeyEvent::KEYMOD_CAPS;
 }
 
-static PRIV_WINDOW_FUNCTIONS sdlWmFunctions = {
-    sdlSetWindowTitle,
-    sdlSetWindowIcon,
-    sdlCreateSurface,
-    sdlCreateTexture,
-    sdlLockWindowSurface,
-    sdlUnlockWindowSurface,
-    sdlDrawWindowSurface,
-    sdlGetRenderer,
-    sdlGetSDLWindow,
-    sdlClearScreen,
-    sdlPresentScreen };
+static PRIV_WINDOW_FUNCTIONS sdlWmFunctions = {sdlSetWindowTitle,    sdlSetWindowIcon,     sdlCreateSurface,
+                                               sdlCreateTexture,     sdlLockWindowSurface, sdlUnlockWindowSurface,
+                                               sdlDrawWindowSurface, sdlGetRenderer,       sdlGetSDLWindow,
+                                               sdlClearScreen,       sdlPresentScreen};
 
 static PRIV_WINDOW_FUNCTIONS sdlGPUWmFunctions = {
-    sdlSetWindowTitle,
-    sdlSetWindowIcon,
-    sdlCreateSurface,
-    sdlCreateTexture,
-    sdlGPULockWindowSurface,
-    sdlGPUUnlockWindowSurface,
-    sdlGPUDrawWindowSurface,
-    sdlGetRenderer,
-    sdlGetSDLWindow,
-    sdlGPUClearScreen,
-    sdlGPUPresentScreen };
+    sdlSetWindowTitle,       sdlSetWindowIcon,          sdlCreateSurface,        sdlCreateTexture,
+    sdlGPULockWindowSurface, sdlGPUUnlockWindowSurface, sdlGPUDrawWindowSurface, sdlGetRenderer,
+    sdlGetSDLWindow,         sdlGPUClearScreen,         sdlGPUPresentScreen};
 #endif // HAVE_SDL3
 
 WindowManager_SDL3::WindowManager_SDL3()
@@ -545,8 +468,7 @@ WindowManager_SDL3::WindowManager_SDL3()
 #ifndef HAVE_SDL3
     throw UnsupportedFeatureException("SDL3");
 #else
-    if (wm != NULL && wm != this)
-        throw DuplicateWindowManagerException();
+    if (wm != NULL && wm != this) throw DuplicateWindowManagerException();
     wm = this;
     gpu_device = NULL;
     use_gpu_api = false;
@@ -554,14 +476,12 @@ WindowManager_SDL3::WindowManager_SDL3()
     /* Get init data on all the subsystems */
     uint32_t subsystem_init;
     subsystem_init = SDL_WasInit(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    if (!(subsystem_init & SDL_INIT_EVENTS))
-    {
+    if (!(subsystem_init & SDL_INIT_EVENTS)) {
         if (!SDL_Init(SDL_INIT_EVENTS))
             throw InitializationException("WindowManager_SDL3: SDL_INIT_EVENTS [%s]", SDL_GetError());
     }
 
-    if (!(subsystem_init & SDL_INIT_VIDEO))
-    {
+    if (!(subsystem_init & SDL_INIT_VIDEO)) {
         if (!SDL_Init(SDL_INIT_VIDEO))
             throw InitializationException("WindowManager_SDL3: SDL_INIT_VIDEO [%s]", SDL_GetError());
     }
@@ -571,27 +491,25 @@ WindowManager_SDL3::WindowManager_SDL3()
 
     int count = 0;
     SDL_DisplayID* displaysIDs = SDL_GetDisplays(&count);
-    if (count < 1)
-        throw InitializationException("No display found!");
+    if (count < 1) throw InitializationException("No display found!");
 
     const SDL_DisplayMode* current = SDL_GetDesktopDisplayMode(displaysIDs[0]);
-    if (!current)
-    {
+    if (!current) {
         return;
         throw InitializationException("SDL-ERROR: %s\n", SDL_GetError());
     }
     screenRGBFormat = SDL2RGBFormat(current->format);
     screenSize.setSize(current->w, current->h);
     screenRefreshRate = current->refresh_rate;
-    // printf ("Auflösung: %i x %i, Format: %s, Refresh: %i\n",screenSize.width,screenSize.height,(const char*)screenRGBFormat.name(),screenRefreshRate);
+    // printf ("Auflösung: %i x %i, Format: %s, Refresh: %i\n",screenSize.width,screenSize.height,(const
+    // char*)screenRGBFormat.name(),screenRefreshRate);
 #endif
 }
 
 WindowManager_SDL3::~WindowManager_SDL3()
 {
 #ifdef HAVE_SDL3
-    if (wm == this)
-        wm = NULL;
+    if (wm == this) wm = NULL;
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 #endif
 }
@@ -611,31 +529,22 @@ void WindowManager_SDL3::createWindow(Window& w)
 #ifndef HAVE_SDL3
     throw UnsupportedFeatureException("SDL3");
 #else
-    if (w.getPrivateData() != NULL)
-        throw WindowAlreadyCreatedException();
+    if (w.getPrivateData() != NULL) throw WindowAlreadyCreatedException();
 
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)calloc(sizeof(SDL_WINDOW_PRIVATE), 1);
-    if (!priv)
-        throw OutOfMemoryException();
+    if (!priv) throw OutOfMemoryException();
     int flags = 0;
     uint32_t wf = w.flags();
-    if (wf & Window::NoBorder)
-        flags |= SDL_WINDOW_BORDERLESS;
-    if (wf & Window::Resizeable)
-        flags |= SDL_WINDOW_RESIZABLE;
-    if (wf & Window::Maximized)
-        flags |= SDL_WINDOW_MAXIMIZED;
-    if (wf & Window::Minimized)
-        flags |= SDL_WINDOW_MINIMIZED;
-    if (wf & Window::Fullscreen)
-        flags |= SDL_WINDOW_FULLSCREEN;
+    if (wf & Window::NoBorder) flags |= SDL_WINDOW_BORDERLESS;
+    if (wf & Window::Resizeable) flags |= SDL_WINDOW_RESIZABLE;
+    if (wf & Window::Maximized) flags |= SDL_WINDOW_MAXIMIZED;
+    if (wf & Window::Minimized) flags |= SDL_WINDOW_MINIMIZED;
+    if (wf & Window::Fullscreen) flags |= SDL_WINDOW_FULLSCREEN;
     // if (wf & Window::FullscreenDesktop) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    if (wf & Window::OpenGL)
-        flags |= SDL_WINDOW_OPENGL;
+    if (wf & Window::OpenGL) flags |= SDL_WINDOW_OPENGL;
 
     Size windowSize = w.windowSize();
-    if (windowSize.width == 0 || windowSize.height == 0)
-    {
+    if (windowSize.width == 0 || windowSize.height == 0) {
         windowSize = w.size();
         w.setWindowSize(windowSize);
     }
@@ -643,10 +552,8 @@ void WindowManager_SDL3::createWindow(Window& w)
     priv->window_width = windowSize.width;
     priv->window_height = windowSize.height;
 
-    priv->win = SDL_CreateWindow((const char*)w.windowTitle(),
-        windowSize.width, windowSize.height, flags);
-    if (priv->win == 0)
-    {
+    priv->win = SDL_CreateWindow((const char*)w.windowTitle(), windowSize.width, windowSize.height, flags);
+    if (priv->win == 0) {
         free(priv);
         throw WindowCreateException("SDL_CreateWindow ERROR: %s", SDL_GetError());
     }
@@ -664,16 +571,13 @@ void WindowManager_SDL3::createWindow(Window& w)
 
     if (use_gpu_api && gpu_device) {
         ppl7::PrintDebug("createWindowWithGPU\n");
-        createWindowWithGPU(priv, wf, ui_size);
+        createWindowWithGPU(priv, ui_size);
         w.setPrivateData(priv, this, &sdlGPUWmFunctions);
         ppl7::PrintDebug("Done\n");
-    }
-    else {
+    } else {
         createWindowWithRenderer(priv, wf, ui_size);
         w.setPrivateData(priv, this, &sdlWmFunctions);
     }
-
-
 
     priv->format = RGBFormat::A8R8G8B8;
     priv->width = ui_size.width;
@@ -684,10 +588,21 @@ void WindowManager_SDL3::createWindow(Window& w)
 #endif
 }
 
-void WindowManager_SDL3::createWindowWithGPU(void* context, uint32_t wf, ppl7::grafix::Size& ui_size)
+void WindowManager_SDL3::createWindowWithGPU(void* context, const ppl7::grafix::Size& ui_size)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)context;
-    priv->gpu_device = (SDL_GPUDevice*)gpu_device;
+    if (!gpu_device) {
+        throw WindowCreateException("No GPU Device available");
+    }
+
+    if (!priv->gpu_device) priv->gpu_device = (SDL_GPUDevice*)gpu_device;
+
+    if (priv->gpu_texture == NULL) {
+        SDL_ReleaseGPUTexture(priv->gpu_device, priv->gpu_texture);
+    }
+    if (priv->gpu_transfer_buffer == NULL) {
+        SDL_ReleaseGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer);
+    }
     SDL_GPUTextureCreateInfo textureInfo;
     memset(&textureInfo, 0, sizeof(SDL_GPUTextureCreateInfo));
     textureInfo.type = SDL_GPU_TEXTURETYPE_2D;
@@ -703,10 +618,8 @@ void WindowManager_SDL3::createWindowWithGPU(void* context, uint32_t wf, ppl7::g
         free(priv);
         throw WindowCreateException("SDL_CreateGPUTexture ERROR: %s", SDL_GetError());
     }
-    SDL_GPUTransferBufferCreateInfo transferInfo = {
-        .usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
-        .size = (Uint32)(ui_size.width * ui_size.height * 4)
-    };
+    SDL_GPUTransferBufferCreateInfo transferInfo = {.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+                                                    .size = (Uint32)(ui_size.width * ui_size.height * 4)};
     priv->gpu_transfer_buffer = SDL_CreateGPUTransferBuffer((SDL_GPUDevice*)gpu_device, &transferInfo);
     if (!priv->gpu_transfer_buffer) {
         SDL_ReleaseGPUTexture((SDL_GPUDevice*)gpu_device, priv->gpu_texture);
@@ -715,7 +628,6 @@ void WindowManager_SDL3::createWindowWithGPU(void* context, uint32_t wf, ppl7::g
         throw WindowCreateException("SDL_CreateGPUTransferBuffer ERROR: %s", SDL_GetError());
     }
     ppl7::PrintDebug("Created GPU Texture and Buffer\n");
-
 }
 
 void WindowManager_SDL3::createWindowWithRenderer(void* context, uint32_t wf, ppl7::grafix::Size& ui_size)
@@ -728,18 +640,16 @@ void WindowManager_SDL3::createWindowWithRenderer(void* context, uint32_t wf, pp
 #else
         throw UnsupportedFeatureException("SDL3 GPU Renderer");
 #endif
-    }
-    else {
+    } else {
         priv->renderer = SDL_CreateRenderer(priv->win, "gpu");
     }
-    if (priv->renderer == 0)
-    {
+    if (priv->renderer == 0) {
         const char* e = SDL_GetError();
         SDL_DestroyWindow(priv->win);
         free(priv);
         throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
     }
-    //ppl7::PrintDebug("SDL Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
+    // ppl7::PrintDebug("SDL Renderer created: %s\n", SDL_GetRendererName(priv->renderer));
 
     // Enable VSync to limit framerate to display refresh rate
     if (wf & Window::WaitVsync) {
@@ -748,17 +658,16 @@ void WindowManager_SDL3::createWindowWithRenderer(void* context, uint32_t wf, pp
         }
     }
 
-    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ui_size.width, ui_size.height);
-    if (priv->gui == 0)
-    {
+    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, ui_size.width,
+                                  ui_size.height);
+    if (priv->gui == 0) {
         const char* e = SDL_GetError();
         SDL_DestroyRenderer(priv->renderer);
         SDL_DestroyWindow(priv->win);
         free(priv);
         throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
     }
-    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND))
-    {
+    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND)) {
         const char* e = SDL_GetError();
         SDL_DestroyTexture(priv->gui);
         SDL_DestroyRenderer(priv->renderer);
@@ -766,8 +675,7 @@ void WindowManager_SDL3::createWindowWithRenderer(void* context, uint32_t wf, pp
         free(priv);
         throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
     }
-    if (priv->scaleUi)
-    {
+    if (priv->scaleUi) {
         SDL_SetTextureScaleMode(priv->gui, SDL_ScaleMode::SDL_SCALEMODE_LINEAR);
     }
 }
@@ -778,21 +686,17 @@ void WindowManager_SDL3::destroyWindow(Window& w)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return;
+    if (!priv) return;
     windows.erase(&w);
     if (priv->gpu_device && priv->gpu_transfer_buffer) {
         SDL_ReleaseGPUTransferBuffer(priv->gpu_device, priv->gpu_transfer_buffer);
-}
+    }
     if (priv->gpu_device && priv->gpu_texture) {
         SDL_ReleaseGPUTexture(priv->gpu_device, priv->gpu_texture);
     }
-    if (priv->gui)
-        SDL_DestroyTexture(priv->gui);
-    if (priv->renderer)
-        SDL_DestroyRenderer(priv->renderer);
-    if (priv->win)
-        SDL_DestroyWindow(priv->win);
+    if (priv->gui) SDL_DestroyTexture(priv->gui);
+    if (priv->renderer) SDL_DestroyRenderer(priv->renderer);
+    if (priv->win) SDL_DestroyWindow(priv->win);
     free(priv);
     w.setPrivateData(NULL, NULL, NULL);
 #endif
@@ -804,8 +708,7 @@ void WindowManager_SDL3::setWindowPosition(Window& w, int x, int y)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return;
+    if (!priv) return;
     SDL_SetWindowPosition(priv->win, x, y);
 #endif
 }
@@ -851,13 +754,12 @@ void WindowManager_SDL3::startEventLoop()
 #ifndef HAVE_SDL3
     throw UnsupportedFeatureException("SDL3");
 #else
-    while (numWindows() > 0)
-    {
+    while (numWindows() > 0) {
         handleEvents();
         ppl7::MSleep(5);
     }
 #endif
-    }
+}
 
 Window* WindowManager_SDL3::getWindow(uint32_t id)
 {
@@ -865,8 +767,7 @@ Window* WindowManager_SDL3::getWindow(uint32_t id)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_Window* win = SDL_GetWindowFromID(id);
-    if (!win)
-        return NULL;
+    if (!win) return NULL;
     return (Window*)SDL_GetPointerProperty(SDL_GetWindowProperties(win), "WindowClass", NULL);
 #endif
 }
@@ -877,18 +778,15 @@ void WindowManager_SDL3::handleEvents()
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_Event sdl_event;
-    while (SDL_PollEvent(&sdl_event))
-    { // Alle Events verarbeiten
+    while (SDL_PollEvent(&sdl_event)) { // Alle Events verarbeiten
         // printf ("event vorhanden: %d\n",sdl_event.type);
 
-        if (sdl_event.type >= SDL_EVENT_WINDOW_FIRST && sdl_event.type <= SDL_EVENT_WINDOW_LAST)
-        {
+        if (sdl_event.type >= SDL_EVENT_WINDOW_FIRST && sdl_event.type <= SDL_EVENT_WINDOW_LAST) {
             DispatchWindowEvent(&sdl_event);
             return;
         }
 
-        switch (sdl_event.type)
-        {
+        switch (sdl_event.type) {
         case SDL_EVENT_QUIT:
             DispatchQuitEvent(&sdl_event);
             break;
@@ -905,12 +803,10 @@ void WindowManager_SDL3::handleEvents()
             DispatchKeyEvent(&sdl_event);
             break;
 
-        case SDL_EVENT_TEXT_INPUT:
-        {
+        case SDL_EVENT_TEXT_INPUT: {
             // ppl7::PrintDebug("SDL_EVENT_TEXT_INPUT\n");
             Widget* keyFocusWidget = getKeyboardFocus();
-            if (keyFocusWidget)
-            {
+            if (keyFocusWidget) {
                 SDL_TextInputEvent* event = (SDL_TextInputEvent*)&sdl_event;
                 TextInputEvent te;
                 te.text.set(event->text);
@@ -921,13 +817,10 @@ void WindowManager_SDL3::handleEvents()
         }
         case SDL_EVENT_USER:
 
-            if (sdl_event.user.code == 1)
-            { // ClickTimer
+            if (sdl_event.user.code == 1) { // ClickTimer
                 // printf("SDL_USEREVENT 1\n");
                 dispatchClickEvent((Window*)sdl_event.user.data1);
-            }
-            else if (sdl_event.user.code == 2)
-            { // TimerEvent
+            } else if (sdl_event.user.code == 2) { // TimerEvent
                 // printf("SDL_USEREVENT 2, windowid=%d\n", sdl_event.user.windowID);
                 Widget* w = (Widget*)sdl_event.user.data1;
                 Event e;
@@ -935,11 +828,9 @@ void WindowManager_SDL3::handleEvents()
                 w->timerEvent(&e);
             }
             break;
-        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-        {
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION: {
             Widget* gcWidget = getGameControllerFocus();
-            if (gcWidget)
-            {
+            if (gcWidget) {
                 SDL_GamepadAxisEvent* event = (SDL_GamepadAxisEvent*)&sdl_event;
                 GameControllerAxisEvent ev;
                 ev.setType(Event::GameControllerAxisMotion);
@@ -947,15 +838,14 @@ void WindowManager_SDL3::handleEvents()
                 ev.axis = event->axis;
                 ev.value = event->value;
                 gcWidget->gameControllerAxisMotionEvent(&ev);
-                // printf("Event: SDL_EVENT_GAMEPAD_AXIS_MOTION id=%d, axis=%d, value=%d\n", event->which, event->axis, event->value);
+                // printf("Event: SDL_EVENT_GAMEPAD_AXIS_MOTION id=%d, axis=%d, value=%d\n", event->which, event->axis,
+                // event->value);
             }
             break;
         }
-        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-        {
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN: {
             Widget* gcWidget = getGameControllerFocus();
-            if (gcWidget)
-            {
+            if (gcWidget) {
                 SDL_GamepadButtonEvent* event = (SDL_GamepadButtonEvent*)&sdl_event;
                 GameControllerButtonEvent ev;
                 ev.setType(Event::GameControllerButtonDown);
@@ -963,15 +853,14 @@ void WindowManager_SDL3::handleEvents()
                 ev.button = event->button;
                 ev.state = event->down;
                 gcWidget->gameControllerButtonDownEvent(&ev);
-                // printf("Event: SDL_EVENT_GAMEPAD_BUTTON_DOWN, id=%d, button=%d, state=%d\n", event->which, event->button, event->state);
+                // printf("Event: SDL_EVENT_GAMEPAD_BUTTON_DOWN, id=%d, button=%d, state=%d\n", event->which,
+                // event->button, event->state);
             }
             break;
         }
-        case SDL_EVENT_GAMEPAD_BUTTON_UP:
-        {
+        case SDL_EVENT_GAMEPAD_BUTTON_UP: {
             Widget* gcWidget = getGameControllerFocus();
-            if (gcWidget)
-            {
+            if (gcWidget) {
                 SDL_GamepadButtonEvent* event = (SDL_GamepadButtonEvent*)&sdl_event;
                 GameControllerButtonEvent ev;
                 ev.setType(Event::GameControllerButtonUp);
@@ -979,15 +868,14 @@ void WindowManager_SDL3::handleEvents()
                 ev.button = event->button;
                 ev.state = event->down;
                 gcWidget->gameControllerButtonUpEvent(&ev);
-                // printf("Event: SDL_EVENT_GAMEPAD_BUTTON_UP, id=%d, button=%d, state=%d\n", event->which, event->button, event->state);
+                // printf("Event: SDL_EVENT_GAMEPAD_BUTTON_UP, id=%d, button=%d, state=%d\n", event->which,
+                // event->button, event->state);
             }
             break;
         }
-        case SDL_EVENT_GAMEPAD_ADDED:
-        {
+        case SDL_EVENT_GAMEPAD_ADDED: {
             Widget* gcWidget = getGameControllerFocus();
-            if (gcWidget)
-            {
+            if (gcWidget) {
                 SDL_GamepadDeviceEvent* event = (SDL_GamepadDeviceEvent*)&sdl_event;
                 GameControllerEvent ev;
                 ev.setType(Event::GameControllerButtonUp);
@@ -995,13 +883,10 @@ void WindowManager_SDL3::handleEvents()
                 ev.which = event->which;
                 gcWidget->gameControllerDeviceAdded(&ev);
             }
-        }
-        break;
-        case SDL_EVENT_GAMEPAD_REMOVED:
-        {
+        } break;
+        case SDL_EVENT_GAMEPAD_REMOVED: {
             Widget* gcWidget = getGameControllerFocus();
-            if (gcWidget)
-            {
+            if (gcWidget) {
                 SDL_GamepadDeviceEvent* event = (SDL_GamepadDeviceEvent*)&sdl_event;
                 GameControllerEvent ev;
                 ev.setType(Event::GameControllerButtonUp);
@@ -1009,26 +894,21 @@ void WindowManager_SDL3::handleEvents()
                 ev.which = event->which;
                 gcWidget->gameControllerDeviceRemoved(&ev);
             }
-        }
-        break;
+        } break;
 
-        case SDL_EVENT_DROP_FILE:
-        {
+        case SDL_EVENT_DROP_FILE: {
             // ppl7::PrintDebug("SDL_DROPFILE\n");
             DropEvent ev;
             ev.setType(Event::DropFileEvent);
             ev.text.set(sdl_event.drop.data);
-            if (sdl_event.drop.source)
-                ev.source.set(sdl_event.drop.source);
+            if (sdl_event.drop.source) ev.source.set(sdl_event.drop.source);
             ev.p.x = sdl_event.drop.x;
             ev.p.y = sdl_event.drop.y;
             // Window* w=getWindow(sdl_event.window.windowID);
-            if (!lastWindowEnterEvent)
-                return;
+            if (!lastWindowEnterEvent) return;
             // ppl7::PrintDebug("OK\n");
             lastWindowEnterEvent->dropEvent(&ev);
-        }
-        break;
+        } break;
         }
     }
 #endif
@@ -1041,8 +921,7 @@ void WindowManager_SDL3::DispatchQuitEvent(void* e)
 #else
     const SDL_Event* event = (SDL_Event*)e;
     Window* w = getWindow(event->window.windowID);
-    if (!w)
-        return;
+    if (!w) return;
     Event ev(Event::Quit);
     ev.setWidget(w);
     w->quitEvent(&ev);
@@ -1057,11 +936,9 @@ void WindowManager_SDL3::DispatchWindowEvent(void* e)
     const SDL_Event* event = (SDL_Event*)e;
 
     Window* w = getWindow(event->window.windowID);
-    if (!w)
-        return;
+    if (!w) return;
 
-    switch (event->window.type)
-    {
+    switch (event->window.type) {
     case SDL_EVENT_WINDOW_SHOWN:
         // printf("Window %d shown", event->window.windowID);
         /*
@@ -1087,19 +964,20 @@ void WindowManager_SDL3::DispatchWindowEvent(void* e)
         //         event->window.data2);
         break;
     case SDL_EVENT_WINDOW_RESIZED:
-        // ppl7::PrintDebug("SDL_WINDOWEVENT_RESIZED on window %d, resized to %d x %d\n", event->window.windowID,event->window.data1, event->window.data2 );
-    {
-        w->setWindowSize(event->window.data1, event->window.data2);
-        resizeWindow(*w, event->window.data1, event->window.data2);
-        ResizeEvent e;
-        e.setWidget(w);
-        e.width = event->window.data1;
-        e.height = event->window.data2;
+        // ppl7::PrintDebug("SDL_WINDOWEVENT_RESIZED on window %d, resized to %d x %d\n",
+        // event->window.windowID,event->window.data1, event->window.data2 );
+        {
+            w->setWindowSize(event->window.data1, event->window.data2);
+            resizeWindow(*w, event->window.data1, event->window.data2);
+            ResizeEvent e;
+            e.setWidget(w);
+            e.width = event->window.data1;
+            e.height = event->window.data2;
 
-        w->resizeEvent(&e);
-    }
+            w->resizeEvent(&e);
+        }
 
-    break;
+        break;
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         // printf("SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED on window %d\n", event->window.windowID);
         break;
@@ -1128,13 +1006,11 @@ void WindowManager_SDL3::DispatchWindowEvent(void* e)
         // fprintf(stderr, "Window %d lost keyboard focus",
         //         event->window.windowID);
         break;
-    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-    {
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED: {
         Event e(Event::Close);
         e.setWidget(w);
         w->closeEvent(&e);
-    }
-    break;
+    } break;
     case SDL_EVENT_WINDOW_HIT_TEST:
         break;
     case SDL_EVENT_WINDOW_ICCPROF_CHANGED:
@@ -1153,8 +1029,7 @@ void WindowManager_SDL3::DispatchWindowEvent(void* e)
         break;
 
     default:
-        printf("SDL Window %d got unknown event %d\n",
-            event->window.windowID, event->window.type);
+        printf("SDL Window %d got unknown event %d\n", event->window.windowID, event->window.type);
         fflush(stdout);
         break;
     }
@@ -1163,13 +1038,11 @@ void WindowManager_SDL3::DispatchWindowEvent(void* e)
 
 static ppl7::grafix::Point translateCoordinatesToUi(Window* w, int x, int y)
 {
-    if (w->hasFixedUiSize())
-    {
+    if (w->hasFixedUiSize()) {
         const ppl7::grafix::Size& wSize = w->windowSize();
-        SDL_Rect dest = { 0, 0, wSize.width, wSize.height };
+        SDL_Rect dest = {0, 0, wSize.width, wSize.height};
         SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w->getPrivateData();
-        if (priv)
-            getDestinationRect(priv, dest);
+        if (priv) getDestinationRect(priv, dest);
 
         const ppl7::grafix::Size& uiSize = w->uiSize();
         float x_factor = (float)uiSize.width / (float)dest.w;
@@ -1194,57 +1067,42 @@ void WindowManager_SDL3::DispatchMouseEvent(void* e)
     MouseEvent ev;
     Uint32 type = ((SDL_Event*)e)->type;
 
-    if (type == SDL_EVENT_MOUSE_MOTION)
-    {
+    if (type == SDL_EVENT_MOUSE_MOTION) {
         SDL_MouseMotionEvent* event = (SDL_MouseMotionEvent*)e;
 
         Window* w = getWindow(event->windowID);
-        if (!w)
-            return;
+        if (!w) return;
         ev.setType(Event::MouseMove);
         ev.p = translateCoordinatesToUi(w, event->x, event->y);
         ev.buttonMask = (MouseEvent::MouseButton)0;
         ev.button = (MouseEvent::MouseButton)0;
         getButtonMask(ev);
         dispatchMouseEvent(w, ev);
-}
-    else if (type == SDL_EVENT_MOUSE_BUTTON_DOWN)
-    {
+    } else if (type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
         SDL_MouseButtonEvent* event = (SDL_MouseButtonEvent*)e;
         // ppl7::PrintDebug("SDL_MOUSEBUTTONDOWN, clicks: %d\n", event->clicks);
         Window* w = getWindow(event->windowID);
-        if (!w)
-            return;
+        if (!w) return;
         ev.setType(Event::MouseDown);
         ev.clicks = event->clicks;
         ev.p = translateCoordinatesToUi(w, event->x, event->y);
         ev.buttonMask = (MouseEvent::MouseButton)0;
         ev.button = (MouseEvent::MouseButton)0;
         getButtonMask(ev);
-        if (event->button == 1)
-            ev.button = MouseEvent::Left;
-        if (event->button == 2)
-            ev.button = MouseEvent::Middle;
-        if (event->button == 3)
-            ev.button = MouseEvent::Right;
-        if (event->button == 4)
-            ev.button = MouseEvent::WheelUp;
-        if (event->button == 5)
-            ev.button = MouseEvent::WheelDown;
-        if (event->button == 6)
-            ev.button = MouseEvent::X1;
-        if (event->button == 7)
-            ev.button = MouseEvent::X2;
+        if (event->button == 1) ev.button = MouseEvent::Left;
+        if (event->button == 2) ev.button = MouseEvent::Middle;
+        if (event->button == 3) ev.button = MouseEvent::Right;
+        if (event->button == 4) ev.button = MouseEvent::WheelUp;
+        if (event->button == 5) ev.button = MouseEvent::WheelDown;
+        if (event->button == 6) ev.button = MouseEvent::X1;
+        if (event->button == 7) ev.button = MouseEvent::X2;
         dispatchMouseEvent(w, ev);
-    }
-    else if (type == SDL_EVENT_MOUSE_BUTTON_UP)
-    {
+    } else if (type == SDL_EVENT_MOUSE_BUTTON_UP) {
         SDL_MouseButtonEvent* event = (SDL_MouseButtonEvent*)e;
         // ppl7::PrintDebug("SDL_MOUSEBUTTONUP, clicks: %d\n", event->clicks);
 
         Window* w = getWindow(event->windowID);
-        if (!w)
-            return;
+        if (!w) return;
 
         ev.setType(Event::MouseUp);
         ev.clicks = event->clicks;
@@ -1252,28 +1110,18 @@ void WindowManager_SDL3::DispatchMouseEvent(void* e)
         ev.buttonMask = (MouseEvent::MouseButton)0;
         ev.button = (MouseEvent::MouseButton)0;
         getButtonMask(ev);
-        if (event->button == 1)
-            ev.button = MouseEvent::Left;
-        if (event->button == 2)
-            ev.button = MouseEvent::Middle;
-        if (event->button == 3)
-            ev.button = MouseEvent::Right;
-        if (event->button == 4)
-            ev.button = MouseEvent::WheelUp;
-        if (event->button == 5)
-            ev.button = MouseEvent::WheelDown;
-        if (event->button == 6)
-            ev.button = MouseEvent::X1;
-        if (event->button == 7)
-            ev.button = MouseEvent::X2;
+        if (event->button == 1) ev.button = MouseEvent::Left;
+        if (event->button == 2) ev.button = MouseEvent::Middle;
+        if (event->button == 3) ev.button = MouseEvent::Right;
+        if (event->button == 4) ev.button = MouseEvent::WheelUp;
+        if (event->button == 5) ev.button = MouseEvent::WheelDown;
+        if (event->button == 6) ev.button = MouseEvent::X1;
+        if (event->button == 7) ev.button = MouseEvent::X2;
         dispatchMouseEvent(w, ev);
-    }
-    else if (type == SDL_EVENT_MOUSE_WHEEL)
-    {
+    } else if (type == SDL_EVENT_MOUSE_WHEEL) {
         SDL_MouseWheelEvent* event = (SDL_MouseWheelEvent*)e;
         Window* w = getWindow(event->windowID);
-        if (!w)
-            return;
+        if (!w) return;
         ev.setType(Event::MouseWheel);
         MouseState mouse;
         ev.buttonMask = (MouseEvent::MouseButton)0;
@@ -1391,8 +1239,7 @@ void WindowManager_SDL3::DispatchKeyEvent(void* e)
     */
 
     Widget* keyFocusWidget = getKeyboardFocus();
-    if (!keyFocusWidget)
-    {
+    if (!keyFocusWidget) {
         // ppl7::PrintDebug("No keyboard focus widget\n");
         return;
     }
@@ -1401,18 +1248,12 @@ void WindowManager_SDL3::DispatchKeyEvent(void* e)
     kev.setWidget(keyFocusWidget);
     kev.repeat = (bool)event->repeat;
 
-    if (event->key >= SDLK_A && event->key <= SDLK_Z)
-    {
+    if (event->key >= SDLK_A && event->key <= SDLK_Z) {
         kev.key = event->key - SDLK_A + KeyEvent::KEY_a;
-    }
-    else if (event->key >= SDLK_0 && event->key <= SDLK_9)
-    {
+    } else if (event->key >= SDLK_0 && event->key <= SDLK_9) {
         kev.key = event->key - SDLK_0 + KeyEvent::KEY_0;
-    }
-    else
-    {
-        switch (event->key)
-        {
+    } else {
+        switch (event->key) {
         case SDLK_UNKNOWN:
             kev.key = KeyEvent::KEY_UNKNOWN;
             break;
@@ -1639,20 +1480,16 @@ void WindowManager_SDL3::DispatchKeyEvent(void* e)
     kev.modifier = TranslateKeyModifierFromSDL(event->mod);
     // ppl7::PrintDebug("Translated modifier: %d\n", kev.modifier);
 
-    if (kev.key == KeyEvent::KEY_UNKNOWN)
-    {
+    if (kev.key == KeyEvent::KEY_UNKNOWN) {
         ppl7::PrintDebug("Unknown KeyEvent: State: %i, Repeat: %i, ", event->down, event->repeat);
         ppl7::PrintDebug("Scancode: %i, Keycode: %i, Modifier: %i\n", event->scancode, event->key, event->mod);
         return;
     }
 
-    if (event->type == SDL_EVENT_KEY_DOWN)
-    {
+    if (event->type == SDL_EVENT_KEY_DOWN) {
         // ppl7::PrintDebug("Dispatching keyDownEvent\n");
         keyFocusWidget->keyDownEvent(&kev);
-    }
-    else if (event->type == SDL_EVENT_KEY_UP)
-    {
+    } else if (event->type == SDL_EVENT_KEY_UP) {
         // ppl7::PrintDebug("Dispatching keyDownEvent\n");
         keyFocusWidget->keyUpEvent(&kev);
     }
@@ -1665,11 +1502,9 @@ void WindowManager_SDL3::changeWindowMode(Window& w, Window::WindowMode mode)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return;
+    if (!priv) return;
     uint32_t flags = 0;
-    if (mode == Window::WindowMode::Fullscreen)
-        flags = SDL_WINDOW_FULLSCREEN;
+    if (mode == Window::WindowMode::Fullscreen) flags = SDL_WINDOW_FULLSCREEN;
     // else if (mode == Window::WindowMode::FullscreenDesktop) flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
     SDL_SetWindowFullscreen(priv->win, flags);
 
@@ -1682,13 +1517,11 @@ Window::WindowMode WindowManager_SDL3::getWindowMode(Window& w)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        throw NoWindowException();
+    if (!priv) throw NoWindowException();
 
     uint32_t flags = SDL_GetWindowFlags(priv->win);
     // if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) return Window::WindowMode::FullscreenDesktop;
-    if (flags & SDL_WINDOW_FULLSCREEN)
-        return Window::WindowMode::Fullscreen;
+    if (flags & SDL_WINDOW_FULLSCREEN) return Window::WindowMode::Fullscreen;
     return Window::WindowMode::Window;
 #endif
 }
@@ -1699,54 +1532,45 @@ void WindowManager_SDL3::setWindowDisplayMode(Window& w, const Window::DisplayMo
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return;
+    if (!priv) return;
     Uint32 flags = SDL_GetWindowFlags(priv->win);
     SDL_DisplayMode sdlmode;
     // sdlmode.driverdata = NULL;
 
-    if (flags & SDL_WINDOW_FULLSCREEN)
-    {
+    if (flags & SDL_WINDOW_FULLSCREEN) {
 
         sdlmode.h = mode.height;
         sdlmode.w = mode.width;
         sdlmode.refresh_rate = mode.refresh_rate;
         sdlmode.format = RGBFormat2SDLFormat(mode.format);
-        if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode))
-        {
+        if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode)) {
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
         }
-    }
-    else
-    {
+    } else {
         SDL_SetWindowSize(priv->win, mode.width, mode.height);
-        if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode))
-        {
+        if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode)) {
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
         }
     }
 
     w.setRGBFormat(SDL2RGBFormat(sdlmode.format));
     w.setSize(sdlmode.w, sdlmode.h);
-    if (w.hasFixedUiSize())
-    {
+    if (w.hasFixedUiSize()) {
         // ppl7::PrintDebug("we don't change the gui size, which is: %d x %d\n",priv->width, priv->height);
         return;
     }
 
-    if (priv->gui)
-        SDL_DestroyTexture(priv->gui);
-    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w.width(), w.height());
-    if (priv->gui == 0)
-    {
+    if (priv->gui) SDL_DestroyTexture(priv->gui);
+    priv->gui =
+        SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w.width(), w.height());
+    if (priv->gui == 0) {
         const char* e = SDL_GetError();
         SDL_DestroyRenderer(priv->renderer);
         SDL_DestroyWindow(priv->win);
         free(priv);
         throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
     }
-    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND))
-    {
+    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND)) {
         const char* e = SDL_GetError();
         SDL_DestroyTexture(priv->gui);
         SDL_DestroyRenderer(priv->renderer);
@@ -1764,32 +1588,34 @@ void WindowManager_SDL3::resizeWindow(Window& w, int width, int height)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return;
+    if (!priv) return;
     // printf("recreating gui texture\n");
     priv->window_width = width;
     priv->window_height = height;
 
-    if (w.hasFixedUiSize())
-    {
+    if (w.hasFixedUiSize()) {
         // ppl7::PrintDebug("we don't change the gui size, which is: %d x %d\n",priv->width, priv->height);
         return;
     }
-    if (priv->gui)
-        SDL_DestroyTexture(priv->gui);
-    priv->gui = SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
-    if (priv->gui == 0)
-    {
-        const char* e = SDL_GetError();
-        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+    if (use_gpu_api && gpu_device) {
+        Size ui_size = ppl7::grafix::Size(width, height);
+        createWindowWithGPU(priv, ui_size);
+
+    } else {
+        if (priv->gui) SDL_DestroyTexture(priv->gui);
+        priv->gui =
+            SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+        if (priv->gui == 0) {
+            const char* e = SDL_GetError();
+            throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
+        }
+        if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND)) {
+            const char* e = SDL_GetError();
+            throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
+        }
     }
     priv->width = width;
     priv->height = height;
-    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND))
-    {
-        const char* e = SDL_GetError();
-        throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
-    }
     w.needsRedraw();
 #endif
 }
@@ -1819,8 +1645,7 @@ String WindowManager_SDL3::getClipboardText() const
 #else
     String t;
     char* text = SDL_GetClipboardText();
-    if (text)
-    {
+    if (text) {
         t.set(text);
         SDL_free(text);
     }
@@ -1835,8 +1660,7 @@ void* WindowManager_SDL3::getSDLWindow(Window& w)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return NULL;
+    if (!priv) return NULL;
     return priv->win;
 #endif
 }
@@ -1847,8 +1671,7 @@ void* WindowManager_SDL3::getBackbufferTexture(Window& w)
     throw UnsupportedFeatureException("SDL3");
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return NULL;
+    if (!priv) return NULL;
     return priv->gui;
 #endif
 }
@@ -1868,33 +1691,28 @@ void WindowManager_SDL3::useGPUAPI(void* gpu)
     use_gpu_api = true;
 }
 
-
 void WindowManager_SDL3::updateGPUTexture(Window& w, void* cmdbuf)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
     if (!priv) return;
     if (!priv->gpu_texture) return;
-    //SDL_GPUCommandBuffer* cmdbuf, SDL_GPUTexture* swapchainTexture
+    // SDL_GPUCommandBuffer* cmdbuf, SDL_GPUTexture* swapchainTexture
     if (priv->texture_needs_update) {
-        //ppl7::PrintDebug("Updating GPU texture\n");
+        // ppl7::PrintDebug("Updating GPU texture\n");
         SDL_GPUCopyPass* copyPass = SDL_BeginGPUCopyPass((SDL_GPUCommandBuffer*)cmdbuf);
-        SDL_GPUTextureTransferInfo transferInfo = {
-            .transfer_buffer = priv->gpu_transfer_buffer,
-            .offset = 0,
-            .pixels_per_row = (Uint32)priv->width,
-            .rows_per_layer = (Uint32)priv->height
-        };
-        SDL_GPUTextureRegion texture_region = {
-            .texture = priv->gpu_texture,
-            .mip_level = 0,
-            .layer = 0,
-            .x = 0,
-            .y = 0,
-            .z = 0,
-            .w = (Uint32)priv->width,
-            .h = (Uint32)priv->height,
-            .d = 1
-        };
+        SDL_GPUTextureTransferInfo transferInfo = {.transfer_buffer = priv->gpu_transfer_buffer,
+                                                   .offset = 0,
+                                                   .pixels_per_row = (Uint32)priv->width,
+                                                   .rows_per_layer = (Uint32)priv->height};
+        SDL_GPUTextureRegion texture_region = {.texture = priv->gpu_texture,
+                                               .mip_level = 0,
+                                               .layer = 0,
+                                               .x = 0,
+                                               .y = 0,
+                                               .z = 0,
+                                               .w = (Uint32)priv->width,
+                                               .h = (Uint32)priv->height,
+                                               .d = 1};
         SDL_UploadToGPUTexture(copyPass, &transferInfo, &texture_region, false);
         SDL_EndGPUCopyPass(copyPass);
         priv->texture_needs_update = false;
@@ -1904,10 +1722,8 @@ void WindowManager_SDL3::updateGPUTexture(Window& w, void* cmdbuf)
 void* WindowManager_SDL3::getGPUTexture(Window& w)
 {
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
-    if (!priv)
-        return NULL;
+    if (!priv) return NULL;
     return priv->gpu_texture;
 }
 
-
-} // EOF namespace ppltk
+} // namespace ppltk

@@ -28,7 +28,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-
 #ifndef _PPLTK_INCLUDE
 #define _PPLTK_INCLUDE
 
@@ -40,12 +39,11 @@
 #include <ppl7-grafix.h>
 #endif
 
-
 #include <list>
 #include <vector>
 
-
-namespace ppltk {
+namespace ppltk
+{
 
 PPL7EXCEPTION(NoWindowManagerException, Exception);
 PPL7EXCEPTION(DuplicateWindowManagerException, Exception);
@@ -62,9 +60,7 @@ PPL7EXCEPTION(SDLException, Exception);
 using namespace ppl7;
 using namespace ppl7::grafix;
 
-
 ppl7::Resource* GetPPLTKResource();
-
 
 enum class SortOrder
 {
@@ -72,41 +68,39 @@ enum class SortOrder
     DescendingOrder = 1
 };
 
-
 class WidgetStyle
 {
 private:
-
 public:
-    enum PredefinedStyle {
+    enum PredefinedStyle
+    {
         Light = 0,
         Dark = 1
     };
     WidgetStyle(PredefinedStyle style = Light);
     void setStyle(PredefinedStyle style);
-    Color	windowBackgroundColor;
-    Color	frameBackgroundColor;
-    Color	frameBorderColorLight;
-    Color	frameBorderColorShadow;
-    Color	labelFontColor;
-    Font	labelFont;
-    Color	buttonBackgroundColor;
-    Color	buttonFontColor;
-    Font	buttonFont;
-    Color	surfaceBackgroundColor;
-    Color	inputFontColor;
-    Font	inputFont;
-    Color	inputBackgroundColor;
-    Color	inputInvalidBackgroundColor;
-    Color   inputSelectedBackgroundColor;
-    Color	sliderHighlightColor;
-    Color	sliderSelectedColor;
-    Color	buttonSymbolColor;
-    Color   tabNonSelectedBackgroundColor;
-    Color   tabDisabledFontColor;
-    Color   listBackgroundColor;
-    Color   comboBoxBackgroundColor;
-
+    Color windowBackgroundColor;
+    Color frameBackgroundColor;
+    Color frameBorderColorLight;
+    Color frameBorderColorShadow;
+    Color labelFontColor;
+    Font labelFont;
+    Color buttonBackgroundColor;
+    Color buttonFontColor;
+    Font buttonFont;
+    Color surfaceBackgroundColor;
+    Color inputFontColor;
+    Font inputFont;
+    Color inputBackgroundColor;
+    Color inputInvalidBackgroundColor;
+    Color inputSelectedBackgroundColor;
+    Color sliderHighlightColor;
+    Color sliderSelectedColor;
+    Color buttonSymbolColor;
+    Color tabNonSelectedBackgroundColor;
+    Color tabDisabledFontColor;
+    Color listBackgroundColor;
+    Color comboBoxBackgroundColor;
 };
 
 class Widget;
@@ -114,8 +108,10 @@ class Widget;
 class Event
 {
     friend class EventHandler;
+
 public:
-    enum Type {
+    enum Type
+    {
         Unknown = 0,
         MouseEnter,
         MouseMove,
@@ -147,13 +143,13 @@ public:
         DropFileEvent,
         DropTextEvent
     };
+
 private:
     Type t;
     bool accepted;
     bool ignored;
     Widget* eventWidget;
     int custom_id;
-
 
 public:
     Event();
@@ -171,14 +167,13 @@ public:
     String name() const;
     Widget* widget() const;
     void setWidget(Widget* w);
-
-
 };
 
 class KeyEvent : public Event
 {
 public:
-    enum keycode {
+    enum keycode
+    {
         KEY_UNKNOWN = 0,
         KEY_0 = 1,
         KEY_1 = 2,
@@ -289,7 +284,8 @@ public:
         KEY_MODE = 257,
     };
 
-    enum keymodifier {
+    enum keymodifier
+    {
         KEYMOD_NONE = 0,
         KEYMOD_LEFTSHIFT = 0x0001,
         KEYMOD_RIGHTSHIFT = 0x0002,
@@ -308,12 +304,10 @@ public:
         KEYMOD_CTRL = KEYMOD_LEFTCTRL | KEYMOD_RIGHTCTRL,
         KEYMOD_ALT = KEYMOD_LEFTALT | KEYMOD_RIGHTALT,
         KEYMOD_GUI = KEYMOD_LEFTGUI | KEYMOD_RIGHTGUI,
-
-
     };
     KeyEvent();
     int key;
-    int	modifier;
+    int modifier;
     bool repeat;
 };
 
@@ -327,7 +321,8 @@ class MouseState
 {
 public:
     MouseState();
-    enum MouseButton {
+    enum MouseButton
+    {
         Left = 1,
         Middle = 2,
         Right = 4,
@@ -342,17 +337,13 @@ public:
     MouseButton button;
     int keyModifier;
     uint8_t clicks;
-
 };
 
 class MouseEvent : public Event, public MouseState
 {
 private:
-
 public:
 };
-
-
 
 class ResizeEvent : public Event
 {
@@ -366,6 +357,7 @@ class FocusEvent : public Event
 private:
     Widget* new_widget;
     bool bAccepted;
+
 public:
     FocusEvent(Event::Type t, Widget* old_widget, Widget* new_widget);
     Widget* oldWidget() const;
@@ -404,11 +396,11 @@ public:
     ppl7::grafix::Point p;
 };
 
-
 class EventHandler
 {
 private:
     EventHandler* handler;
+
 public:
     EventHandler();
     virtual ~EventHandler();
@@ -452,15 +444,14 @@ public:
     virtual void gameControllerDeviceRemoved(GameControllerEvent* event);
 
     virtual void dropEvent(DropEvent* event);
-
 };
 
 typedef struct PRIV_SURFACE_FUNCTIONS
 {
-    void (*lock) (void* privatedata, Drawable& draw);
-    void (*unlock) (void* privatedata);
-    void (*destroy) (void* privatedata);
-    void (*update) (void* privatedata, const Drawable& source);
+    void (*lock)(void* privatedata, Drawable& draw);
+    void (*unlock)(void* privatedata);
+    void (*destroy)(void* privatedata);
+    void (*update)(void* privatedata, const Drawable& source);
 } PRIV_SURFACE_FUNCTIONS;
 
 class Surface
@@ -468,12 +459,13 @@ class Surface
 private:
     PRIV_SURFACE_FUNCTIONS* fn;
     void* privatedata;
-    int			myFlags;
-    int			w, h;
-    RGBFormat	myFormat;
+    int myFlags;
+    int w, h;
+    RGBFormat myFormat;
 
 public:
-    enum SurfaceFlags {
+    enum SurfaceFlags
+    {
         Hardware = 0x00000001,
         Lockable = 0x00000002,
         VideoMemory = 0x00000004,
@@ -507,7 +499,8 @@ public:
 class SizePolicy
 {
 public:
-    enum Policy {
+    enum Policy
+    {
         Fixed = 0,
         Minimum = 1,
         Maximum = 2,
@@ -522,49 +515,50 @@ public:
 
 class Layout;
 
-
 class LayoutParameters
 {
 public:
     Layout* myLayout;
-    //Layout* myParentLayout;
+    // Layout* myParentLayout;
     bool isValid;
 
-    LayoutParameters() {
+    LayoutParameters()
+    {
         isValid = true;
         myLayout = NULL;
-        //myParentLayout=NULL;
+        // myParentLayout=NULL;
     }
 };
 
 class Widget : public EventHandler
 {
     friend class WindowManager;
+
 private:
     Widget* parent;
     LayoutParameters layoutParams;
 
-    Image 	drawbuffer;
+    Image drawbuffer;
     SizePolicy mySizePolicy;
-    //Surface		*surface;
-    RGBFormat	format;
-    Point		p;
-    Size		s;
-    Size		MaxSize, MinSize;
-    Rect		myClientOffset;
-    std::list<Widget*>	childs;
-    uint32_t	lockcount;
-    bool		visible;
-    bool		enabled;
-    bool		needsredraw;
-    bool		child_needsredraw;
-    bool		topMost;
-    bool		transparent;
-    bool		deleteRequested;
-    bool		modal;
-    bool        use_own_drawbuffer;
-    bool        depug_paint;
-    String		myName;
+    // Surface		*surface;
+    RGBFormat format;
+    Point p;
+    Size s;
+    Size MaxSize, MinSize;
+    Rect myClientOffset;
+    std::list<Widget*> childs;
+    uint32_t lockcount;
+    bool visible;
+    bool enabled;
+    bool needsredraw;
+    bool child_needsredraw;
+    bool topMost;
+    bool transparent;
+    bool deleteRequested;
+    bool modal;
+    bool use_own_drawbuffer;
+    bool depug_paint;
+    String myName;
     void updateDrawbuffer();
     void markWidgetsAboveForRedraw(Widget* widget);
     void sendResizeEvent();
@@ -602,7 +596,6 @@ public:
     void setSizePolicy(const SizePolicy& policy);
     void setSizePolicy(SizePolicy::Policy horizontal, SizePolicy::Policy vertical);
 
-
     int width() const;
     int height() const;
     int x() const;
@@ -629,7 +622,6 @@ public:
     bool isVisible() const;
     void setFocus();
     bool hasFocus() const;
-
 
     void setModal(bool flag);
     bool isModal() const;
@@ -664,30 +656,30 @@ public:
     void recalculateLayout();
     virtual ppl7::grafix::Size sizeHint() const;
     virtual ppl7::grafix::Size minimumSizeHint() const;
-
 };
 
 class WindowManager;
 class Window;
 
-typedef struct PRIV_WINDOW_FUNCTIONS {
-    void (*setWindowTitle) (void* privatedata, const String& Title);
-    void (*setWindowIcon) (void* privatedata, const Drawable& Icon);
-    void (*createSurface) (void* privatedata);
-    void (*createTexture) (void* privatedata);
-    Drawable(*lockWindowSurface) (void* privatedata);
-    void (*unlockWindowSurface) (void* privatedata);
-    void (*drawWindowSurface) (void* privatedata);
-    void* (*getRenderer) (void* privatedata);
-    void* (*getSDLWindow) (void* privatedata);
-    void (*clearScreen) (void* privatedata);
-    void (*presentScreen) (void* privatedata);
+typedef struct PRIV_WINDOW_FUNCTIONS
+{
+    void (*setWindowTitle)(void* privatedata, const String& Title);
+    void (*setWindowIcon)(void* privatedata, const Drawable& Icon);
+    void (*createSurface)(void* privatedata);
+    void (*createTexture)(void* privatedata);
+    Drawable (*lockWindowSurface)(void* privatedata);
+    void (*unlockWindowSurface)(void* privatedata);
+    void (*drawWindowSurface)(void* privatedata);
+    void* (*getRenderer)(void* privatedata);
+    void* (*getSDLWindow)(void* privatedata);
+    void (*clearScreen)(void* privatedata);
+    void (*presentScreen)(void* privatedata);
 } PRIV_WINDOW_FUNCTIONS;
-
 
 class Window : public Widget
 {
     friend class WindowManager;
+
 private:
     void* privateData;
     ppl7::grafix::Drawable* useWidgetDrawbuffer;
@@ -698,15 +690,16 @@ private:
     String WindowTitle;
     Image WindowIcon;
     RGBFormat WindowRGBFormat;
-    Color	myBackground;
+    Color myBackground;
 
-    MouseState	mouseState;
+    MouseState mouseState;
     bool uiSizeIsFixed;
     Size myUiSize;
     Size myWindowSize;
 
 public:
-    enum WindowFlags {
+    enum WindowFlags
+    {
         NoBorder = 0x00000001,
         Resizeable = 0x00000002,
         Maximized = 0x00000004,
@@ -724,20 +717,22 @@ public:
         DefaultFullscreenDesktop = NoBorder | WaitVsync | FullscreenDesktop | TopMost,
     };
 
-    enum class WindowMode {
+    enum class WindowMode
+    {
         Window = 0,
         Fullscreen,
         FullscreenDesktop
     };
 
-    class DisplayMode {
+    class DisplayMode
+    {
     public:
         DisplayMode();
         DisplayMode(const ppl7::grafix::RGBFormat& format, int width, int height, int refresh_rate);
-        ppl7::grafix::RGBFormat	format;
-        int			width;
-        int			height;
-        int			refresh_rate;
+        ppl7::grafix::RGBFormat format;
+        int width;
+        int height;
+        int refresh_rate;
     };
 
     Window();
@@ -791,9 +786,9 @@ private:
     Widget* LastMouseEnter;
     Widget* LastMouseFocus;
 
-    MouseEvent	clickEvent;
-    int			clickCount;
-    int			doubleClickIntervall;
+    MouseEvent clickEvent;
+    int clickCount;
+    int doubleClickIntervall;
 
     Widget* KeyboardFocus;
     Widget* GameControllerFocus;
@@ -802,9 +797,8 @@ private:
     void deferedDeleteWidgets(Widget* widget);
 
 public:
-    ImageList	ButtonSymbols;
-    ImageList	Toolbar;
-
+    ImageList ButtonSymbols;
+    ImageList Toolbar;
 
     WindowManager();
     virtual ~WindowManager();
@@ -841,7 +835,8 @@ public:
     virtual void startClickEvent(Window* win) = 0;
     virtual int startTimer(Widget* w, int intervall) = 0;
     virtual void removeTimer(int timer_id) = 0;
-    //virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int flags=Surface::DefaultSurface) = 0;
+    // virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int
+    // flags=Surface::DefaultSurface) = 0;
 
     virtual void setClipboardText(const ppl7::String& text) = 0;
     virtual bool hasClipboardText() const = 0;
@@ -851,15 +846,14 @@ public:
 WindowManager* GetWindowManager();
 const WidgetStyle& GetWidgetStyle();
 
-
 class WindowManager_SDL2 : public WindowManager
 {
 private:
-    RGBFormat	screenRGBFormat;
-    Size		screenSize;
-    int			screenRefreshRate;
+    RGBFormat screenRGBFormat;
+    Size screenSize;
+    int screenRefreshRate;
 
-    List<Window*>	windows;
+    List<Window*> windows;
     Window* lastWindowEnterEvent;
 
     void DispatchSdlActiveEvent(void* e);
@@ -877,7 +871,8 @@ private:
 public:
     WindowManager_SDL2();
     ~WindowManager_SDL2();
-    //virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int flags=Surface::DefaultSurface);
+    // virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int
+    // flags=Surface::DefaultSurface);
     virtual void createWindow(Window& w);
     virtual void destroyWindow(Window& w);
     virtual void setWindowPosition(Window& w, int x, int y);
@@ -908,11 +903,11 @@ public:
 class WindowManager_SDL3 : public WindowManager
 {
 private:
-    RGBFormat	screenRGBFormat;
-    Size		screenSize;
-    int			screenRefreshRate;
+    RGBFormat screenRGBFormat;
+    Size screenSize;
+    int screenRefreshRate;
 
-    List<Window*>	windows;
+    List<Window*> windows;
     Window* lastWindowEnterEvent;
     void* gpu_device;
     bool use_gpu_api;
@@ -929,13 +924,13 @@ private:
 
     Window* getWindow(uint32_t id);
     void createWindowWithRenderer(void* context, uint32_t wf, ppl7::grafix::Size& ui_size);
-    void createWindowWithGPU(void* context, uint32_t wf, ppl7::grafix::Size& ui_size);
-
+    void createWindowWithGPU(void* context, const ppl7::grafix::Size& ui_size);
 
 public:
     WindowManager_SDL3();
     ~WindowManager_SDL3();
-    //virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int flags=Surface::DefaultSurface);
+    // virtual void createSurface(Widget &w, int width, int height, const RGBFormat &format=RGBFormat(), int
+    // flags=Surface::DefaultSurface);
     virtual void createWindow(Window& w);
     virtual void destroyWindow(Window& w);
     virtual void setWindowPosition(Window& w, int x, int y);
@@ -965,24 +960,21 @@ public:
     void* getSDLWindow(Window& w);
     void* getBackbufferTexture(Window& w);
 
-
     void updateGPUTexture(Window& w, void* cmdbuf);
     void* getGPUTexture(Window& w);
 };
 
-
-
-
 class Button : public Widget
 {
 private:
-    Font	myFont;
-    String	Text;
-    Image	Icon;
-    Color	foreground, background;
-    bool	isDown;
-    bool	is_checkable;
-    bool	is_checked;
+    Font myFont;
+    String Text;
+    Image Icon;
+    Color foreground, background;
+    bool isDown;
+    bool is_checkable;
+    bool is_checked;
+
 public:
     Button(const String& text = String(), const Drawable& icon = Drawable());
     Button(int x, int y, int width, int height, const String& text = String(), const Drawable& icon = Drawable());
@@ -1004,8 +996,6 @@ public:
     bool isChecked() const;
     void setChecked(bool);
 
-
-
     String widgetType() const override;
     void paint(Drawable& draw) override;
     ppl7::grafix::Size sizeHint() const override;
@@ -1013,16 +1003,17 @@ public:
     void mouseDownEvent(MouseEvent* event) override;
     void mouseUpEvent(MouseEvent* event) override;
     void mouseLeaveEvent(MouseEvent* event) override;
-
 };
 
 class Frame : public Widget
 {
 private:
-    int		myBorderStyle;
-    Color	myBackground, myBorderColorLight, myBorderColorShadow;
+    int myBorderStyle;
+    Color myBackground, myBorderColorLight, myBorderColorShadow;
+
 public:
-    enum BorderStyle {
+    enum BorderStyle
+    {
         NoBorder = 0,
         Normal,
         Upset,
@@ -1047,10 +1038,11 @@ public:
 class Label : public Frame
 {
 private:
-    String	myText;
-    Font	myFont;
-    Image	myIcon;
-    Color	myColor;
+    String myText;
+    Font myFont;
+    Image myIcon;
+    Color myColor;
+
 public:
     Label(const String& text = String(), BorderStyle style = NoBorder);
     Label(int x, int y, int width, int height, const String& text = String(), BorderStyle style = NoBorder);
@@ -1068,13 +1060,13 @@ public:
     void paint(Drawable& draw) override;
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size minimumSizeHint() const override;
-
 };
 
 class TabWidget : public Widget
 {
 private:
-    class TabItem {
+    class TabItem
+    {
     public:
         String label;
         Image icon;
@@ -1179,25 +1171,23 @@ private:
         bool exists() const;
         void clear();
         void begin(int position);
-
-
     };
-    WideString	myText;
+    WideString myText;
     WideString validatedText;
-    Font	myFont;
-    Color	myColor;
-    Color	myBackgroundColor;
-    size_t	cursorpos;
-    size_t	startpos;
+    Font myFont;
+    Color myColor;
+    Color myBackgroundColor;
+    size_t cursorpos;
+    size_t startpos;
     Selection selection;
-    int		cursorx;
-    int     cursory;
-    int		cursorwidth;
-    bool	blinker;
-    bool 	drag_started;
-    bool	overwrite;
-    int		drag_start_position;
-    int		timerId;
+    int cursorx;
+    int cursory;
+    int cursorwidth;
+    bool blinker;
+    bool drag_started;
+    bool overwrite;
+    int drag_start_position;
+    int timerId;
     InputValidator* validator;
 
     void calcSelectionPosition();
@@ -1206,6 +1196,7 @@ private:
     int getDrawStartPositionOfChar(size_t pos);
     void validateAndSendEvent(const WideString& text);
     void deleteSelection();
+
 public:
     LineInput();
     LineInput(int x, int y, int width, int height, const String& text = String());
@@ -1219,14 +1210,12 @@ public:
     const Color& backgroundColor() const;
     void setBackgroundColor(const Color& c);
 
-
     void setInputValidator(InputValidator* validator);
 
     String widgetType() const override;
     void paint(Drawable& draw) override;
     ppl7::grafix::Size sizeHint() const override;
     ppl7::grafix::Size minimumSizeHint() const override;
-
 
     virtual void mouseDownEvent(MouseEvent* event) override;
     virtual void mouseMoveEvent(ppltk::MouseEvent* event) override;
@@ -1238,9 +1227,7 @@ public:
     virtual void keyUpEvent(KeyEvent* event) override;
     virtual void timerEvent(Event* event) override;
     void mouseDblClickEvent(MouseEvent* event) override;
-
 };
-
 
 class Scrollbar : public ppltk::Widget
 {
@@ -1274,7 +1261,6 @@ public:
     void mouseMoveEvent(ppltk::MouseEvent* event) override;
     void mouseWheelEvent(ppltk::MouseEvent* event) override;
     void resizeEvent(ResizeEvent* event) override;
-
 };
 
 class TextEdit : public Frame
@@ -1313,22 +1299,22 @@ private:
     std::map<size_t, CacheItem> position_cache;
     bool cache_is_valid;
 
-    size_t	cursorpos;
+    size_t cursorpos;
     Selection selection;
-    int		cursorx;
-    int     cursory;
-    int		cursorwidth;
-    int     line_height;
-    int     cache_line_width;
-    bool	blinker;
-    bool 	drag_started;
-    bool	overwrite;
-    int		drag_start_position;
-    int		timerId;
-    int     total_lines;
-    int     current_line;
-    int     visible_lines;
-    int     first_cursor_up_down_x;
+    int cursorx;
+    int cursory;
+    int cursorwidth;
+    int line_height;
+    int cache_line_width;
+    bool blinker;
+    bool drag_started;
+    bool overwrite;
+    int drag_start_position;
+    int timerId;
+    int total_lines;
+    int current_line;
+    int visible_lines;
+    int first_cursor_up_down_x;
     InputValidator* validator;
 
     void calcCursorPosition();
@@ -1343,7 +1329,6 @@ private:
     void enableScrollbar(bool enable);
     void updateScrollbar();
     void moveScrollbarToCursor();
-
 
 public:
     TextEdit();
@@ -1386,7 +1371,7 @@ public:
 class CheckBox : public ppltk::Label
 {
 private:
-    bool	ischecked;
+    bool ischecked;
 
 public:
     CheckBox();
@@ -1403,7 +1388,7 @@ public:
 class RadioButton : public ppltk::Label
 {
 private:
-    bool	ischecked;
+    bool ischecked;
 
 public:
     RadioButton();
@@ -1426,6 +1411,7 @@ public:
         ppl7::String identifier;
         size_t index;
     };
+
 private:
     Scrollbar* scrollbar;
     ppl7::String myCurrentText;
@@ -1518,11 +1504,10 @@ public:
 class AbstractSpinBox : public Widget
 {
 private:
-    //Image img_up, img_down;
+    // Image img_up, img_down;
     Button* up_button;
     Button* down_button;
     LineInput* text_input;
-
 
     void createUi();
     void resizeUi();
@@ -1546,7 +1531,7 @@ public:
 
     void setInputValidator(InputValidator* validator);
 
-    //virtual bool validateText(const ppl7::WideString& text)=0;
+    // virtual bool validateText(const ppl7::WideString& text)=0;
 
     String widgetType() const override;
     void paint(Drawable& draw) override;
@@ -1560,7 +1545,6 @@ public:
 
     virtual void stepUp() = 0;
     virtual void stepDown() = 0;
-
 };
 
 class SpinBox : public AbstractSpinBox, public InputValidator
@@ -1621,21 +1605,21 @@ public:
     void stepUp() override;
     void stepDown() override;
 
-
     bool validateText(const ppl7::WideString& text);
     bool validateInput(const ppl7::WideString& text);
     void textChangedEvent(Event* event, const String& text) override;
-
 };
 
 class AbstractSlider : public ppltk::Widget
 {
     friend class HorizontalSlider;
+
 private:
     int64_t min;
     int64_t max;
     int64_t current_value;
     int64_t my_steps;
+
 protected:
     virtual void sliderValueChanged(int64_t value) = 0;
 
@@ -1655,19 +1639,18 @@ public:
     int64_t steps() const;
 
     String widgetType() const override;
-
-
-
 };
 
 class DoubleAbstractSlider : public ppltk::Widget
 {
     friend class HorizontalSlider;
+
 private:
     double min;
     double max;
     double current_value;
     double my_steps;
+
 protected:
     virtual void sliderValueChanged(double value) = 0;
 
@@ -1687,7 +1670,6 @@ public:
     double steps() const;
 
     String widgetType() const override;
-
 };
 
 class HorizontalSlider : public AbstractSlider
@@ -1716,9 +1698,6 @@ public:
     void lostFocusEvent(ppltk::FocusEvent* event) override;
     void mouseMoveEvent(ppltk::MouseEvent* event) override;
     void mouseWheelEvent(ppltk::MouseEvent* event) override;
-
-
-
 };
 
 class DoubleHorizontalSlider : public DoubleAbstractSlider
@@ -1746,10 +1725,7 @@ public:
     void lostFocusEvent(ppltk::FocusEvent* event) override;
     void mouseMoveEvent(ppltk::MouseEvent* event) override;
     void mouseWheelEvent(ppltk::MouseEvent* event) override;
-
-
 };
-
 
 } // end of namespace ppltk
 
