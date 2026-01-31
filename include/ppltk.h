@@ -568,6 +568,7 @@ public:
     Widget(int x, int y, int width, int height);
     virtual ~Widget();
     size_t numChilds() const;
+    void printChildsTree(int level = 0) const;
     std::list<Widget*>::iterator childsBegin();
     std::list<Widget*>::iterator childsEnd();
     std::list<Widget*>::const_iterator childsBegin() const;
