@@ -28,84 +28,80 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 
-
 #include "ppltk.h"
 
-
-namespace ppltk {
+namespace ppltk
+{
 
 using namespace ppl7;
 using namespace ppl7::grafix;
 
 RadioButton::RadioButton()
-	: ppltk::Label()
+    : ppltk::Label()
 {
-	setName("RadioButton");
-	ischecked = false;
+    setName("RadioButton");
+    ischecked = false;
 }
 
-RadioButton::RadioButton(int x, int y, int width, int height, const ppl7::String& text, bool checked) // @suppress("Class members should be properly initialized")
-	: ppltk::Label(x, y, width, height, text)
+RadioButton::RadioButton(int x, int y, int width, int height, const ppl7::String& text,
+                         bool checked) // @suppress("Class members should be properly initialized")
+    : ppltk::Label(x, y, width, height, text)
 {
-	setName("RadioButton");
-	ischecked = checked;
+    setName("RadioButton");
+    ischecked = checked;
 }
 
 RadioButton::~RadioButton()
 {
-
 }
 
 ppl7::String RadioButton::widgetType() const
 {
-	return ppl7::String("RadioButton");
+    return ppl7::String("RadioButton");
 }
 
 bool RadioButton::checked() const
 {
-	return ischecked;
+    return ischecked;
 }
 
 void RadioButton::setChecked(bool checked)
 {
-	bool laststate = ischecked;
-	ischecked = checked;
-	needsRedraw();
-	parentMustRedraw();
-	// uncheck all other RadioButtons in Parent-Widget
-	if (checked == true && this->getParent()) {
-		Widget* parent = this->getParent();
-		std::list<Widget*>::iterator it;
-		for (it = parent->childsBegin(); it != parent->childsEnd();++it) {
-			if (typeid(**it) == typeid(RadioButton) && *it != this) {
-				((RadioButton*)(*it))->setChecked(false);
-			}
-		}
-	}
-	ppltk::Event ev(ppltk::Event::Toggled);
-	ev.setWidget(this);
-	if (checked != laststate) {
-		toggledEvent(&ev, checked);
-	}
+    bool laststate = ischecked;
+    ischecked = checked;
+    needsRedraw();
+    parentMustRedraw();
+    // uncheck all other RadioButtons in Parent-Widget
+    if (checked == true && this->getParent()) {
+        Widget* parent = this->getParent();
+        std::list<Widget*>::iterator it;
+        for (it = parent->childsBegin(); it != parent->childsEnd(); ++it) {
+            if (typeid(**it) == typeid(RadioButton) && *it != this) {
+                ((RadioButton*)(*it))->setChecked(false);
+            }
+        }
+    }
+    if (checked != laststate) {
+        ppltk::Event ev(ppltk::Event::Toggled);
+        ev.setWidget(this);
+        toggledEvent(&ev, checked);
+    }
 }
-
 
 void RadioButton::paint(ppl7::grafix::Drawable& draw)
 {
-	const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
-	ppl7::grafix::Drawable d = draw.getDrawable(16, 0, draw.width(), draw.height());
-	Label::paint(d);
-	int y1 = draw.height() / 2;
-	draw.circle(9, y1, 7, style.frameBorderColorLight);
-	draw.circle(9, y1, 6, style.frameBorderColorLight);
-	if (ischecked) draw.floodFill(9, y1, this->color(), style.frameBorderColorLight);
+    const ppltk::WidgetStyle& style = ppltk::GetWidgetStyle();
+    ppl7::grafix::Drawable d = draw.getDrawable(16, 0, draw.width(), draw.height());
+    Label::paint(d);
+    int y1 = draw.height() / 2;
+    draw.circle(9, y1, 7, style.frameBorderColorLight);
+    draw.circle(9, y1, 6, style.frameBorderColorLight);
+    if (ischecked) draw.floodFill(9, y1, this->color(), style.frameBorderColorLight);
 }
 
 void RadioButton::mouseDownEvent(ppltk::MouseEvent* event)
 {
-	setChecked(true);
+    setChecked(true);
 }
 
-
-
-} //EOF namespace
+} // namespace ppltk
