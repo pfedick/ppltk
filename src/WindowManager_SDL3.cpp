@@ -570,10 +570,10 @@ void WindowManager_SDL3::createWindow(Window& w)
     Size ui_size = w.uiSize();
 
     if (use_gpu_api && gpu_device) {
-        ppl7::PrintDebug("createWindowWithGPU\n");
+        // ppl7::PrintDebug("createWindowWithGPU\n");
         createWindowWithGPU(priv, ui_size);
         w.setPrivateData(priv, this, &sdlGPUWmFunctions);
-        ppl7::PrintDebug("Done\n");
+        // ppl7::PrintDebug("Done\n");
     } else {
         createWindowWithRenderer(priv, wf, ui_size);
         w.setPrivateData(priv, this, &sdlWmFunctions);
@@ -612,7 +612,7 @@ void WindowManager_SDL3::createWindowWithGPU(void* context, const ppl7::grafix::
     textureInfo.height = ui_size.height;
     textureInfo.layer_count_or_depth = 1;
     textureInfo.num_levels = 1;
-    ppl7::PrintDebug("SDL_CreateGPUTexture for Window\n");
+    // ppl7::PrintDebug("SDL_CreateGPUTexture for Window\n");
     priv->gpu_texture = SDL_CreateGPUTexture((SDL_GPUDevice*)gpu_device, &textureInfo);
     if (!priv->gpu_texture) {
         free(priv);
@@ -627,7 +627,7 @@ void WindowManager_SDL3::createWindowWithGPU(void* context, const ppl7::grafix::
         free(priv);
         throw WindowCreateException("SDL_CreateGPUTransferBuffer ERROR: %s", SDL_GetError());
     }
-    ppl7::PrintDebug("Created GPU Texture and Buffer\n");
+    // ppl7::PrintDebug("Created GPU Texture and Buffer\n");
 }
 
 void WindowManager_SDL3::createWindowWithRenderer(void* context, uint32_t wf, ppl7::grafix::Size& ui_size)
