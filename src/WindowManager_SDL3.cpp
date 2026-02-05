@@ -1556,7 +1556,7 @@ void WindowManager_SDL3::setWindowDisplayMode(Window& w, const Window::DisplayMo
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
         }
     } else {
-        ppl7::PrintDebug("We are in windowed mode, changing window size\n");
+        // ppl7::PrintDebug("We are in windowed mode, changing window size\n");
         SDL_SetWindowSize(priv->win, mode.width, mode.height);
         if (!SDL_SetWindowFullscreenMode(priv->win, NULL)) {
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
