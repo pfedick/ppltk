@@ -1503,9 +1503,8 @@ void WindowManager_SDL3::changeWindowMode(Window& w, Window::WindowMode mode)
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
     if (!priv) return;
-    uint32_t flags = 0;
-    if (mode == Window::WindowMode::Fullscreen) flags = SDL_WINDOW_FULLSCREEN;
-    // else if (mode == Window::WindowMode::FullscreenDesktop) flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+    bool flags = false;
+    if (mode == Window::WindowMode::Fullscreen || mode == Window::WindowMode::FullscreenDesktop) flags = true;
     SDL_SetWindowFullscreen(priv->win, flags);
 
 #endif
@@ -1519,9 +1518,14 @@ Window::WindowMode WindowManager_SDL3::getWindowMode(Window& w)
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
     if (!priv) throw NoWindowException();
 
-    uint32_t flags = SDL_GetWindowFlags(priv->win);
+    SDL_WindowFlags flags = SDL_GetWindowFlags(priv->win);
     // if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) return Window::WindowMode::FullscreenDesktop;
-    if (flags & SDL_WINDOW_FULLSCREEN) return Window::WindowMode::Fullscreen;
+    if (flags & SDL_WINDOW_FULLSCREEN) {
+        const SDL_DisplayMode* mode = SDL_GetWindowFullscreenMode(priv->win);
+        if (mode) return Window::WindowMode::Fullscreen;
+        return Window::WindowMode::FullscreenDesktop;
+    }
+
     return Window::WindowMode::Window;
 #endif
 }
@@ -1533,22 +1537,28 @@ void WindowManager_SDL3::setWindowDisplayMode(Window& w, const Window::DisplayMo
 #else
     SDL_WINDOW_PRIVATE* priv = (SDL_WINDOW_PRIVATE*)w.getPrivateData();
     if (!priv) return;
-    Uint32 flags = SDL_GetWindowFlags(priv->win);
-    SDL_DisplayMode sdlmode;
-    // sdlmode.driverdata = NULL;
+    Window::WindowMode current_mode = getWindowMode(w);
 
-    if (flags & SDL_WINDOW_FULLSCREEN) {
+    SDL_DisplayMode sdlmode = {};
+    sdlmode.h = mode.height;
+    sdlmode.w = mode.width;
+    sdlmode.refresh_rate = (float)mode.refresh_rate;
+    sdlmode.format = RGBFormat2SDLFormat(mode.format);
+    sdlmode.displayID = SDL_GetDisplayForWindow(priv->win);
 
-        sdlmode.h = mode.height;
-        sdlmode.w = mode.width;
-        sdlmode.refresh_rate = mode.refresh_rate;
-        sdlmode.format = RGBFormat2SDLFormat(mode.format);
+    if (current_mode == Window::WindowMode::Fullscreen) {
         if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode)) {
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
         }
-    } else {
+    } else if (current_mode == Window::WindowMode::FullscreenDesktop) {
         SDL_SetWindowSize(priv->win, mode.width, mode.height);
-        if (!SDL_SetWindowFullscreenMode(priv->win, &sdlmode)) {
+        if (!SDL_SetWindowFullscreenMode(priv->win, NULL)) {
+            throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
+        }
+    } else {
+        ppl7::PrintDebug("We are in windowed mode, changing window size\n");
+        SDL_SetWindowSize(priv->win, mode.width, mode.height);
+        if (!SDL_SetWindowFullscreenMode(priv->win, NULL)) {
             throw SDLException("SDL_SetWindowFullscreenMode failed with: %s", SDL_GetError());
         }
     }
@@ -1559,26 +1569,9 @@ void WindowManager_SDL3::setWindowDisplayMode(Window& w, const Window::DisplayMo
         // ppl7::PrintDebug("we don't change the gui size, which is: %d x %d\n",priv->width, priv->height);
         return;
     }
-
-    if (priv->gui) SDL_DestroyTexture(priv->gui);
-    priv->gui =
-        SDL_CreateTexture(priv->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w.width(), w.height());
-    if (priv->gui == 0) {
-        const char* e = SDL_GetError();
-        SDL_DestroyRenderer(priv->renderer);
-        SDL_DestroyWindow(priv->win);
-        free(priv);
-        throw WindowCreateException("SDL_CreateWindow ERROR: %s", e);
-    }
-    if (!SDL_SetTextureBlendMode(priv->gui, SDL_BLENDMODE_BLEND)) {
-        const char* e = SDL_GetError();
-        SDL_DestroyTexture(priv->gui);
-        SDL_DestroyRenderer(priv->renderer);
-        SDL_DestroyWindow(priv->win);
-        free(priv);
-        throw WindowCreateException("SDL_SetTextureBlendMode ERROR: %s", e);
-    }
     w.needsRedraw();
+    // UI wird durch Event resizing neu erstellt, siehe DispatchWindowEvent
+
 #endif
 }
 
